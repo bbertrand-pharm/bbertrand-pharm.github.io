@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- page:start -->
+<title>Benjamin Bertrand</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Benjamin Bertrand, pharmacien clinicien au Centre Hospitalier de Grasse : oncologie, gériatrie, infectiologie. Parcours, engagements et travaux scientifiques.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
+<style>
+/* Layout: identité fixe à gauche (fiche praticien), contenu qui défile à droite ; empilé sur mobile. */
+:root {
+  --bg: #f4f6f4;
+  --surface: #ffffff;
+  --ink: #15211d;
+  --muted: #5a6a64;
+  --line: #d9e0dc;
+  --accent: #1d6b4e;
+  --accent-soft: #e2efe8;
+  --oral: #9a5b1e;
+  --poster: #3a5683;
+  --display: "Literata", Georgia, "Times New Roman", serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1614; --surface: #16201d; --ink: #e4ebe7; --muted: #94a59e; --line: #26332f;
+    --accent: #6cc39d; --accent-soft: #1b2e27; --oral: #e0a466; --poster: #93b0e0; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1614; --surface: #16201d; --ink: #e4ebe7; --muted: #94a59e; --line: #26332f;
+  --accent: #6cc39d; --accent-soft: #1b2e27; --oral: #e0a466; --poster: #93b0e0; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 400 16px/1.6 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; margin: 0; line-height: 1.2; }
+
+.wrap {
+  max-width: 1180px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+  display: grid; grid-template-columns: 330px minmax(0, 1fr); gap: 56px; align-items: start;
+}
+@media (max-width: 880px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 32px; padding-block: 24px 48px; } }
+
+/* Fiche d'identité */
+.id { position: sticky; top: calc(24px + env(safe-area-inset-top, 0px)); display: grid; gap: 22px; }
+@media (max-width: 880px) { .id { position: static; } }
+.monogram {
+  width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--accent); color: var(--bg); font: 600 24px/1 var(--display); letter-spacing: .02em;
+}
+.id h1 { font-size: 34px; }
+.role { margin: 6px 0 0; color: var(--muted); }
+.role strong { color: var(--ink); font-weight: 500; display: block; }
+.contact { display: grid; gap: 10px; padding: 18px 0; border-block: 1px solid var(--line); font-size: 15px; }
+.contact div { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 8px; align-items: baseline; }
+.contact dt { font: 500 11px/1.4 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.contact dd { margin: 0; overflow-wrap: anywhere; }
+.copy { font: 500 11px var(--mono); background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 4px; padding: 1px 6px; margin-left: 6px; cursor: pointer; }
+.copy:hover { color: var(--accent); border-color: var(--accent); }
+nav.toc { display: grid; gap: 2px; }
+nav.toc a { color: var(--muted); text-decoration: none; padding: 4px 0 4px 12px; border-left: 2px solid var(--line); font-size: 15px; }
+nav.toc a:hover, nav.toc a.on { color: var(--ink); border-left-color: var(--accent); }
+@media (max-width: 880px) { nav.toc { display: flex; flex-wrap: wrap; gap: 8px; } nav.toc a { border: 1px solid var(--line); border-radius: 99px; padding: 4px 12px; } }
+
+/* Contenu */
+main { display: grid; gap: 72px; min-width: 0; }
+section { display: grid; gap: 24px; scroll-margin-top: 24px; }
+.eyebrow { font: 500 12px/1 var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--accent); }
+section > header { display: grid; gap: 10px; }
+section h2 { font-size: 30px; }
+.lead { font: 500 clamp(21px, 2.4vw, 26px)/1.45 var(--display); margin: 0; max-width: 34em; }
+.axes { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.axes li { padding: 14px 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; }
+.axes li::before { content: "℞"; font-family: var(--display); color: var(--accent); font-size: 18px; line-height: 1.4; }
+
+.stats { display: flex; flex-wrap: wrap; gap: 12px 36px; }
+.stat b { display: block; font: 600 34px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 14px; }
+
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+@media (max-width: 640px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px 22px; display: grid; gap: 10px; align-content: start; }
+.card h3 { font-size: 19px; }
+.card ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--ink); }
+.card li::marker { color: var(--accent); }
+
+.engage { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.engage article { padding: 18px 0; border-bottom: 1px solid var(--line); display: grid; gap: 6px; }
+.engage h3 { font-size: 18px; }
+.engage h3 a { color: var(--ink); text-decoration: none; }
+.engage h3 a:hover { color: var(--accent); text-decoration: underline; }
+.engage ul { margin: 0; padding: 0; list-style: none; color: var(--muted); display: grid; gap: 2px; }
+
+/* Travaux */
+.tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.chip { font: 500 14px var(--body); border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 6px 14px; border-radius: 99px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+.chip .n { font: 500 12px var(--mono); color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip[aria-pressed="true"] .n { color: var(--bg); opacity: .7; }
+.search { flex: 1 1 220px; min-width: 0; font: 15px var(--body); padding: 8px 14px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); color: var(--ink); }
+.year { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 16px; padding-top: 18px; border-top: 1px solid var(--line); }
+@media (max-width: 560px) { .year { grid-template-columns: minmax(0, 1fr); gap: 6px; } }
+.year > h3 { font: 500 20px/1.3 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.items { display: grid; gap: 18px; min-width: 0; }
+.item { display: grid; gap: 4px; min-width: 0; }
+.tag { font: 500 11px/1 var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+.tag.article { color: var(--accent); } .tag.oral { color: var(--oral); } .tag.poster { color: var(--poster); }
+.item .t { font-weight: 600; line-height: 1.45; }
+.item .a { color: var(--muted); font-size: 14px; }
+.item .a mark { background: none; color: var(--ink); font-weight: 600; }
+.item .s { font-size: 14px; font-style: italic; }
+.links { display: flex; flex-wrap: wrap; gap: 6px 14px; font: 500 13px var(--mono); }
+.status { font: 500 11px var(--mono); color: var(--oral); border: 1px solid currentColor; border-radius: 4px; padding: 1px 6px; justify-self: start; }
+.empty { color: var(--muted); }
+
+footer { color: var(--muted); font-size: 13px; padding-top: 24px; border-top: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="id">
+    <div class="monogram" aria-hidden="true">BB</div>
+    <div>
+      <h1 id="nom">Benjamin Bertrand</h1>
+      <p class="role"><strong id="titre"></strong><span id="etab"></span></p>
+    </div>
+    <dl class="contact" id="contact"></dl>
+    <nav class="toc" aria-label="Sections">
+      <a href="#profil">Profil</a>
+      <a href="#expertise">Expertise</a>
+      <a href="#engagements">Engagements</a>
+      <a href="#enseignement">Enseignement</a>
+      <a href="#travaux">Travaux</a>
+      <a href="#perso">Perso</a>
+    </nav>
+  </aside>
+
+  <main>
+    <section id="profil">
+      <header><span class="eyebrow">Profil</span></header>
+      <p class="lead" id="accroche"></p>
+      <ul class="axes" id="axes"></ul>
+      <div class="stats" id="stats"></div>
+    </section>
+
+    <section id="expertise">
+      <header><span class="eyebrow">Expertise</span><h2>Domaines d'exercice</h2></header>
+      <div class="grid2" id="expertises"></div>
+    </section>
+
+    <section id="engagements">
+      <header><span class="eyebrow">Engagements</span><h2>Sociétés savantes et réseaux</h2></header>
+      <div class="engage" id="engage"></div>
+    </section>
+
+    <section id="enseignement">
+      <header><span class="eyebrow">Transmission</span><h2>Enseignement et encadrement</h2></header>
+      <ul class="axes" id="enseign"></ul>
+    </section>
+
+    <section id="travaux">
+      <header><span class="eyebrow">Travaux</span><h2>Publications et communications</h2></header>
+      <div class="tools">
+        <div class="tools" id="filters" role="group" aria-label="Type de travaux"></div>
+        <input class="search" id="q" type="search" placeholder="Rechercher un titre, un congrès, un co-auteur…" aria-label="Rechercher dans les travaux">
+      </div>
+      <div id="list"></div>
+    </section>
+
+    <section id="perso">
+      <header><span class="eyebrow">Perso</span><h2 id="perso-titre"></h2></header>
+      <p class="lead" id="perso-texte"></p>
+    </section>
+
+    <footer id="foot"></footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  var TYPES = { article: "Article", oral: "Communication orale", poster: "Poster" };
+  var FILTERS = [["tous", "Tout"], ["article", "Articles"], ["oral", "Orales"], ["poster", "Posters"]];
+  var state = { type: "tous", q: "" };
+  var travaux = [];
+
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    for (var k in (attrs || {})) {
+      if (k === "text") n.textContent = attrs[k]; else n.setAttribute(k, attrs[k]);
+    }
+    (kids || []).forEach(function (c) { if (c) n.appendChild(c); });
+    return n;
+  }
+  function $(id) { return document.getElementById(id); }
+  function norm(s) { return (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase(); }
+
+  function renderProfil(p) {
+    $("nom").textContent = p.nom;
+    $("titre").textContent = p.titre;
+    $("etab").textContent = p.etablissement;
+    $("accroche").textContent = p.accroche;
+    p.axes.forEach(function (a) { $("axes").appendChild(el("li", { text: a })); });
+
+    var c = p.contact, dl = $("contact");
+    function row(label, node) { dl.appendChild(el("div", {}, [el("dt", { text: label }), el("dd", {}, [node])])); }
+    if (c.email) {
+      var dd = el("span", {}, [el("a", { href: "mailto:" + c.email, text: c.email })]);
+      var b = el("button", { class: "copy", type: "button", text: "copier" });
+      b.addEventListener("click", function () {
+        var done = function () { b.textContent = "copié"; setTimeout(function () { b.textContent = "copier"; }, 1500); };
+        try { navigator.clipboard.writeText(c.email).then(done, function () {}); } catch (e) {}
+      });
+      dd.appendChild(b);
+      row("E-mail", dd);
+    }
+    if (c.telephone) row("Tél.", el("span", { text: c.telephone }));
+    if (c.orcid) row("ORCID", el("a", { href: c.orcid, target: "_blank", rel: "noopener", text: c.orcid.replace(/^https?:\/\/orcid\.org\//, "") }));
+    if (c.linkedin) row("LinkedIn", el("a", { href: c.linkedin, target: "_blank", rel: "noopener", text: "Profil LinkedIn" }));
+
+    p.expertises.forEach(function (x) {
+      $("expertises").appendChild(el("div", { class: "card" }, [
+        el("h3", { text: x.domaine }),
+        el("ul", {}, x.points.map(function (t) { return el("li", { text: t }); }))
+      ]));
+    });
+    p.engagements.forEach(function (g) {
+      var h = el("h3", {}, [g.url ? el("a", { href: g.url, target: "_blank", rel: "noopener", text: g.organisation }) : document.createTextNode(g.organisation)]);
+      $("engage").appendChild(el("article", {}, [h, el("ul", {}, g.roles.map(function (r) { return el("li", { text: r }); }))]));
+    });
+    p.enseignement.forEach(function (t) { $("enseign").appendChild(el("li", { text: t })); });
+    if (p.perso && p.perso.texte) {
+      $("perso-titre").textContent = p.perso.titre || "";
+      $("perso-texte").textContent = p.perso.texte;
+    } else {
+      $("perso").hidden = true;
+      document.querySelector('nav.toc a[href="#perso"]').hidden = true;
+    }
+    $("foot").textContent = "© " + new Date().getFullYear() + " " + p.nom + " · " + p.titre;
+  }
+
+  function renderStats() {
+    var n = { article: 0, oral: 0, poster: 0 };
+    travaux.forEach(function (t) { n[t.type]++; });
+    var since = Math.min.apply(null, travaux.filter(function (t) { return t.type !== "article"; }).map(function (t) { return t.annee; }));
+    [[n.article, "articles scientifiques"], [n.oral, "communications orales"], [n.poster, "posters en congrès"], [since, "premier congrès"]]
+      .forEach(function (s) { $("stats").appendChild(el("div", { class: "stat" }, [el("b", { text: String(s[0]) }), el("span", { text: s[1] })])); });
+
+    FILTERS.forEach(function (f) {
+      var count = f[0] === "tous" ? travaux.length : n[f[0]];
+      var b = el("button", { class: "chip", type: "button", "aria-pressed": String(f[0] === state.type), "data-type": f[0] },
+        [document.createTextNode(f[1]), el("span", { class: "n", text: String(count) })]);
+      b.addEventListener("click", function () {
+        state.type = f[0];
+        document.querySelectorAll("#filters .chip").forEach(function (c) { c.setAttribute("aria-pressed", String(c.dataset.type === state.type)); });
+        renderList();
+      });
+      $("filters").appendChild(b);
+    });
+  }
+
+  function authors(s) {
+    var span = el("span", { class: "a" });
+    (s || "").split(/(B\. Bertrand)/).forEach(function (part) {
+      span.appendChild(part === "B. Bertrand" ? el("mark", { text: part }) : document.createTextNode(part));
+    });
+    return span;
+  }
+
+  function renderList() {
+    var q = norm(state.q), list = $("list");
+    list.textContent = "";
+    var rows = travaux.filter(function (t) {
+      if (state.type !== "tous" && t.type !== state.type) return false;
+      if (!q) return true;
+      return norm([t.titre, t.auteurs, t.source, t.evenement, t.annee].join(" ")).indexOf(q) !== -1;
+    });
+    if (!rows.length) { list.appendChild(el("p", { class: "empty", text: "Aucun travail ne correspond à cette recherche." })); return; }
+    var byYear = {};
+    rows.forEach(function (t) { (byYear[t.annee] = byYear[t.annee] || []).push(t); });
+    Object.keys(byYear).sort(function (a, b) { return b - a; }).forEach(function (y) {
+      var items = byYear[y].map(function (t) {
+        var links = (t.liens || []).map(function (l) { return el("a", { href: l.url, target: "_blank", rel: "noopener", text: l.label + " ↗" }); });
+        if (t.doi) links.unshift(el("a", { href: "https://doi.org/" + t.doi, target: "_blank", rel: "noopener", text: "doi:" + t.doi }));
+        return el("div", { class: "item" }, [
+          el("span", { class: "tag " + t.type, text: TYPES[t.type] + (t.evenement ? " · " + t.evenement : "") }),
+          el("span", { class: "t", text: t.titre }),
+          t.auteurs ? authors(t.auteurs) : null,
+          t.source ? el("span", { class: "s", text: t.source }) : null,
+          t.statut ? el("span", { class: "status", text: t.statut }) : null,
+          links.length ? el("div", { class: "links" }, links) : null
+        ]);
+      });
+      list.appendChild(el("div", { class: "year" }, [el("h3", { text: y }), el("div", { class: "items" }, items)]));
+    });
+  }
+
+  $("q").addEventListener("input", function (e) { state.q = e.target.value; renderList(); });
+
+  // Surligne la section visible dans le sommaire
+  if ("IntersectionObserver" in window) {
+    var links = document.querySelectorAll("nav.toc a");
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) links.forEach(function (a) { a.classList.toggle("on", a.getAttribute("href") === "#" + en.target.id); });
+      });
+    }, { rootMargin: "-30% 0px -60% 0px" });
+    document.querySelectorAll("main section").forEach(function (s) { io.observe(s); });
+  }
+
+  Promise.all([
+    fetch("data/profil.json").then(function (r) { return r.json(); }),
+    fetch("data/travaux.json").then(function (r) { return r.json(); })
+  ]).then(function (res) {
+    renderProfil(res[0]);
+    travaux = res[1].travaux.slice().sort(function (a, b) { return b.annee - a.annee; });
+    renderStats();
+    renderList();
+  }).catch(function () {
+    $("list").appendChild(el("p", { class: "empty", text: "Le contenu n'a pas pu être chargé. Rechargez la page." }));
+  });
+})();
+</script>
+<!-- page:end -->
+</body>
+</html>

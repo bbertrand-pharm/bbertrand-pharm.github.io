@@ -1,0 +1,83 @@
+{
+  "nom": "Benjamin Bertrand",
+  "titre": "Pharmacien clinicien · Docteur en pharmacie",
+  "etablissement": "Centre Hospitalier de Grasse",
+  "accroche": "Pharmacien hospitalier, je mets la pharmacie clinique au service des patients : optimiser chaque prise en charge médicamenteuse, en particulier en oncologie, en gériatrie et en infectiologie.",
+  "axes": [
+    "Responsable d'une Unité de Pharmacie Clinique",
+    "Soins pharmaceutiques en oncologie, dont le renouvellement et l'adaptation des prescriptions (RAP)",
+    "Coordination interprofessionnelle et innovation en santé"
+  ],
+  "contact": {
+    "email": "ben.bertrand@ch-grasse.fr",
+    "telephone": "04 93 09 54 28",
+    "orcid": "https://orcid.org/0000-0002-9638-3784",
+    "linkedin": "https://www.linkedin.com/in/benjamin-bertrand-82b4b9223"
+  },
+  "expertises": [
+    {
+      "domaine": "Pharmacie clinique oncologique",
+      "points": [
+        "Consultations pharmaceutiques des patients sous thérapies orales anticancéreuses",
+        "Télésurveillance des patients",
+        "Coordination de l'hôpital de jour des thérapies orales et des soins de support",
+        "Validation et contrôle des préparations de chimiothérapies injectables"
+      ]
+    },
+    {
+      "domaine": "Gériatrie",
+      "points": [
+        "Bilans de médication et plans pharmaceutiques personnalisés",
+        "Prévention de l'iatrogénie médicamenteuse"
+      ]
+    },
+    {
+      "domaine": "Infectiologie",
+      "points": [
+        "Bon usage des antibiotiques (antibiothérapie raisonnée)",
+        "Travaux en réseau régional d'infectiologie"
+      ]
+    },
+    {
+      "domaine": "Médecine intensive-réanimation",
+      "points": [
+        "Optimisation et sécurisation des médicaments de soins critiques"
+      ]
+    }
+  ],
+  "engagements": [
+    {
+      "organisation": "SFPO, Société Française de Pharmacie Oncologique",
+      "url": "https://www.sfpo.com/",
+      "roles": [
+        "Membre depuis 2013",
+        "Cofondateur et membre de la Commission Junior, membre du conseil d'administration (2015–2023)",
+        "Rédacteur et relecteur des fiches OncoLien et OncoThériaque"
+      ]
+    },
+    {
+      "organisation": "ResO InfectiO PACA-Est, réseau régional d'infectiologie",
+      "url": "https://www.reso-infectio.fr/",
+      "roles": [
+        "Membre depuis 2014",
+        "Membre élu du bureau (2019–2025)"
+      ]
+    },
+    {
+      "organisation": "CPP Sud Méditerranée V, comité de protection des personnes",
+      "url": "https://cpp-sud-mediterranee-v.fr/",
+      "roles": [
+        "Membre du collège 1 (2018)"
+      ]
+    }
+  ],
+  "enseignement": [
+    "Formation et encadrement des internes en pharmacie",
+    "Direction de thèses d'exercice et de mémoires de DES, Aix-Marseille Université (2018–2025)",
+    "Enseignements à l'IFSI de Cannes"
+  ],
+  "perso": {
+    "titre": "En dehors de l'hôpital",
+    "texte": "Papa de Valentine, Augustin et Léonie, et heureux avec Caroline ♥️"
+  }
+}

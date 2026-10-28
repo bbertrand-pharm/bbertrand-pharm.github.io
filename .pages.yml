@@ -1,0 +1,78 @@
+# Interface d'édition Pages CMS (https://app.pagescms.org)
+# Chaque entrée ci-dessous devient un formulaire dans l'interface.
+content:
+  - name: profil
+    label: Profil et contact
+    type: file
+    path: data/profil.json
+    format: json
+    fields:
+      - { name: nom, label: Nom, type: string }
+      - { name: titre, label: Titre, type: string }
+      - { name: etablissement, label: Établissement, type: string }
+      - { name: accroche, label: Phrase de présentation, type: text }
+      - { name: axes, label: Axes principaux, type: string, list: true }
+      - name: contact
+        label: Contact
+        type: object
+        fields:
+          - { name: email, label: E-mail, type: string }
+          - { name: telephone, label: Téléphone, type: string }
+          - { name: orcid, label: Lien ORCID, type: string }
+          - { name: linkedin, label: Lien LinkedIn, type: string }
+      - name: expertises
+        label: Domaines d'expertise
+        type: object
+        list: true
+        fields:
+          - { name: domaine, label: Domaine, type: string }
+          - { name: points, label: Points, type: string, list: true }
+      - name: engagements
+        label: Sociétés savantes et réseaux
+        type: object
+        list: true
+        fields:
+          - { name: organisation, label: Organisation, type: string }
+          - { name: url, label: Site web, type: string }
+          - { name: roles, label: Rôles, type: string, list: true }
+      - { name: enseignement, label: Enseignement et encadrement, type: string, list: true }
+      - name: perso
+        label: Section Perso (laisser le texte vide pour la masquer)
+        type: object
+        fields:
+          - { name: titre, label: Titre, type: string }
+          - { name: texte, label: Texte, type: text }
+
+  - name: travaux
+    label: Travaux (articles, communications, posters)
+    type: file
+    path: data/travaux.json
+    format: json
+    fields:
+      - name: travaux
+        label: Travaux
+        type: object
+        list: true
+        fields:
+          - name: type
+            label: Type
+            type: select
+            options:
+              values:
+                - { value: article, label: Article scientifique }
+                - { value: oral, label: Communication orale }
+                - { value: poster, label: Poster }
+          - { name: annee, label: Année, type: number }
+          - { name: titre, label: Titre, type: text }
+          - { name: auteurs, label: Auteurs, type: text }
+          - { name: evenement, label: "Congrès / événement (communications et posters)", type: string }
+          - { name: source, label: "Revue, année, volume, pages (articles)", type: string }
+          - { name: doi, label: "DOI (ex. 10.1016/j.xxx), sans https://doi.org/", type: string }
+          - { name: statut, label: "Statut (ex. En cours de soumission)", type: string }
+          - name: liens
+            label: Liens (PDF, vidéo…)
+            type: object
+            list: true
+            fields:
+              - { name: label, label: Libellé, type: string }
+              - { name: url, label: Adresse, type: string }
