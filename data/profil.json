@@ -2,11 +2,13 @@
   "nom": "Benjamin Bertrand",
   "titre": "Pharmacien clinicien · Docteur en pharmacie",
   "etablissement": "Centre Hospitalier de Grasse",
-  "accroche": "Pharmacien hospitalier, je mets la pharmacie clinique au service des patients : optimiser chaque prise en charge médicamenteuse, en particulier en oncologie, en gériatrie et en infectiologie.",
+  "accroche": "Pharmacien hospitalier, je mets la pharmacie clinique au service des patients : optimiser chaque prise en charge médicamenteuse",
   "axes": [
     "Responsable d'une Unité de Pharmacie Clinique",
-    "Soins pharmaceutiques en oncologie, dont le renouvellement et l'adaptation des prescriptions (RAP)",
-    "Coordination interprofessionnelle et innovation en santé"
+    "Responsable de l'Unité de Recherche Clinique",
+    "Soins pharmaceutiques en oncologie, avec le renouvellement et l'adaptation des prescriptions (RAP)",
+    "Coordination interprofessionnelle, lien Ville - Hôpital et innovation en santé",
+    "Ethique et Recherche, protection des patients"
   ],
   "contact": {
     "email": "ben.bertrand@ch-grasse.fr",
@@ -21,14 +23,15 @@
         "Consultations pharmaceutiques des patients sous thérapies orales anticancéreuses",
         "Télésurveillance des patients",
         "Coordination de l'hôpital de jour des thérapies orales et des soins de support",
-        "Validation et contrôle des préparations de chimiothérapies injectables"
+        "Renouvellement et adaptation des prescriptions en coopération avec les oncologues"
       ]
     },
     {
-      "domaine": "Gériatrie",
+      "domaine": "Pharmacie Clinique gériatrique",
       "points": [
         "Bilans de médication et plans pharmaceutiques personnalisés",
-        "Prévention de l'iatrogénie médicamenteuse"
+        "Prévention de l'iatrogénie médicamenteuse",
+        "CEPPIM (Cente Expert pour la Prévention et la Prise en charge de l'Iatrogénie Médicamenteuse)"
       ]
     },
     {
@@ -56,6 +59,13 @@
       ]
     },
     {
+      "organisation": "CPP Sud Méditerranée V, comité de protection des personnes",
+      "url": "https://cpp-sud-mediterranee-v.fr/",
+      "roles": [
+        "Membre du collège 1 depuis 2018"
+      ]
+    },
+    {
       "organisation": "ResO InfectiO PACA-Est, réseau régional d'infectiologie",
       "url": "https://www.reso-infectio.fr/",
       "roles": [
@@ -64,17 +74,17 @@
       ]
     },
     {
-      "organisation": "CPP Sud Méditerranée V, comité de protection des personnes",
-      "url": "https://cpp-sud-mediterranee-v.fr/",
+      "organisation": "3C7 Centre de Coordination en Cancérologie PACA n°1 (Alpes-Maritimes Ouest)",
+      "url": "https://www.oncopacacorse.org/structures/3c7-alpes-maritimes-ouest/",
       "roles": [
-        "Membre du collège 1 (2018)"
+        "Coordinateur Médical du 3C"
       ]
     }
   ],
   "enseignement": [
-    "Formation et encadrement des internes en pharmacie",
-    "Direction de thèses d'exercice et de mémoires de DES, Aix-Marseille Université (2018–2025)",
-    "Enseignements à l'IFSI de Cannes"
+    "Formation et encadrement des internes en pharmacie depuis 2016",
+    "Direction de thèses d'exercice et de mémoires de DES, Aix-Marseille Université depuis 2018",
+    "Enseignements à l'IFSI de Cannes depuis 2020"
   ],
   "perso": {
     "titre": "En dehors de l'hôpital",
