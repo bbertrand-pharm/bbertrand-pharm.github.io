@@ -35,7 +35,7 @@
       ]
     },
     {
-      "domaine": "Infectiologie",
+      "domaine": "Pharmacie clinique en infectiologie",
       "points": [
         "Bon usage des antibiotiques (antibiothérapie raisonnée)",
         "Travaux en réseau régional d'infectiologie"
@@ -45,6 +45,14 @@
       "domaine": "Médecine intensive-réanimation",
       "points": [
         "Optimisation et sécurisation des médicaments de soins critiques"
+      ]
+    },
+    {
+      "domaine": "Recherche clinique",
+      "points": [
+        "Encadrement et promotion de la recherche clinique",
+        "Membre de l'Entité Recherche AZUR",
+        "Investigateur d'étude clinique"
       ]
     }
   ],
