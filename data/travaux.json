@@ -1,74 +1,715 @@
 {
   "travaux": [
-    {"type": "article", "annee": 2025, "statut": "En cours de soumission", "titre": "Renewal and adjustment of prescriptions by hospital pharmacists: the role of the pharmacist in monitoring oral chemotherapy management", "auteurs": "J. Clausse, PY. Grosse, A. Cherkaoui, T. Kreitmann, B. Bertrand", "source": "", "liens": []},
-    {"type": "article", "annee": 2025, "statut": "En cours de soumission", "titre": "Proper use of medication in drug-using patients: creation of a tool to help manage drug-drug interactions (DDIs)", "auteurs": "MA. Luc, G. Hache, B. Bertrand, A. Leroyer, F. Mathias, G. Sicard", "source": "", "liens": []},
-    {"type": "article", "annee": 2023, "titre": "Proper use of inhalers integrated into personalized pharmaceutical plan in a pneumology unit", "auteurs": "M. Roux, PY. Grosse, MC. Dumon, S. Conde, N. Wereszczynski, B. Bertrand", "source": "Le Pharmacien Clinicien, 2023", "doi": "10.1016/j.phacli.2023.01.007", "liens": []},
-    {"type": "article", "annee": 2022, "titre": "Advocacy for Responsible Antibiotic Production and Use", "auteurs": "V. Mondain, N. Retur, B. Bertrand, F. Lieutier-Colas, P. Carenco, S. Diamantis", "source": "Antibiotics 2022; 11: 980", "doi": "10.3390/antibiotics11070980", "liens": []},
-    {"type": "article", "annee": 2022, "titre": "The Production of Antibiotics Must Be Reoriented: Repositioning Old Narrow-Spectrum Antibiotics, Developing New Microbiome-Sparing Antibiotics", "auteurs": "S. Diamantis, N. Retur, B. Bertrand, F. Lieutier, P. Carenco, V. Mondain and PROMISE Professional Community Network on Antimicrobial Resistance", "source": "Antibiotics 2022; 11: 924", "doi": "10.3390/antibiotics11070924", "liens": []},
-    {"type": "article", "annee": 2022, "titre": "Association between proton pump inhibitors and severe hematological toxicity in patients receiving pemetrexed-based anticancer treatment: The prospective IPPEM study", "auteurs": "F. Slimano, A. Le Bozec, A. Cransac, P. Foucher, F. Lesauvage, B. Delclaux, A. Dory, B. Mennecier, B. Bertrand, MC. Gubeno-Dumon, S. Dukic, C. Mongaret, O. Bouché, D. Hettler, M. Boulin, M. Dewolf, L. Kanagaratnam", "source": "Lung Cancer 2022; 166: 114-121", "doi": "10.1016/j.lungcan.2022.02.007", "liens": []},
-    {"type": "article", "annee": 2020, "titre": "Éthique et recherche biomédicale durant l'épidémie du COVID-19 : ne confondons pas vitesse et précipitation !", "auteurs": "B. Bertrand, B. Bertrand, B. Bertrand, PM. Bertrand", "source": "Annales Pharmaceutiques Françaises 2020; 78(5): 365-367", "doi": "10.1016/j.pharma.2020.05.004", "liens": []},
-    {"type": "article", "annee": 2019, "titre": "Pharmaceutical consultations in oncology: French Society for Oncology Pharmacy (SFPO) guidelines", "auteurs": "E. Petit-Jean, F. Correard, G. Maillan, F. de Crozals, B. Bertrand, V. Regnier, R. Chevrier, C. Streicher, I. Madelaine, B. Pourroy", "source": "European Journal of Oncology Pharmacy 2019; 2(2): 1-6", "doi": "10.1097/OP9.0000000000000011", "liens": []},
-    {"type": "article", "annee": 2010, "titre": "Structural characterization of in vitro metabolites of the new anticancer agent EAPB0503 by liquid chromatography-tandem mass spectrometry", "auteurs": "F. Lafaille, I. Solassol, C. Enjalbal, B. Bertrand, PE. Doulain, J. Vappiani, PA. Bonnet, C. Deleuze-Masquéfa, F.M.M. Bressolle", "source": "Drug Metabolism and Disposition 2010; 38(10): 1836-1847", "doi": "10.1124/dmd.110.034579", "liens": []},
-    {"type": "oral", "annee": 2025, "evenement": "Journées Nationales d'Actualité en Oncologie (SFPO)", "titre": "Renouvellement et Adaptation des Prescriptions (RAP) par les pharmaciens : regards croisés des 3 premiers « RAPpeurs » en oncologie", "auteurs": "", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1-2BG3j86zfU6ewIv3OahycUUU7Hqiw5N/view"}]},
-    {"type": "oral", "annee": 2025, "evenement": "31es journées du Cercle Grassois de Gynécologie-Obstétrique", "titre": "Inconvénients des nouvelles thérapeutiques dans le cancer du sein, prise en charge des effets secondaires", "auteurs": "", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1Xlrx33QybL0ZTm0CGadwSO1Ee_AoX9ff/view"}]},
-    {"type": "oral", "annee": 2024, "evenement": "Journées de l'ORPHEM", "titre": "Nouveau rôle du pharmacien clinicien en oncologie grâce à l'adaptation et au renouvellement des prescriptions de thérapies orales", "auteurs": "", "liens": []},
-    {"type": "oral", "annee": 2024, "evenement": "Journée des Structures de Réflexion Éthique PACA-Corse", "titre": "Soigner la maladie grave, et après ? Accompagnement pharmaceutique du patient de cancérologie", "auteurs": "", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1HKyRCbzdMxQ-uG5lNVJKu-OxDv8lmsR5/view"}]},
-    {"type": "oral", "annee": 2024, "evenement": "Journée INTERCLUD PACA Est", "titre": "Quoi de neuf en algo-pharmacologie ?", "auteurs": "K. Muller, B. Bertrand", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/16kKo4CX_K8hF2tKm89QRkPbEykzXQfqy/view"}]},
-    {"type": "oral", "annee": 2023, "evenement": "29es journées du Cercle Grassois de Gynécologie-Obstétrique", "titre": "Quand proposer du CBD aux patients ?", "auteurs": "", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1WM1Okd0SwvELJ6T9R2K1tiXhurYmG8Ln/view"}]},
-    {"type": "oral", "annee": 2023, "evenement": "Journées inter-régionales OMéDIT PACA Corse", "titre": "Codification des actes de pharmacie clinique", "auteurs": "", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/14tpEyjYA2zd0QBovR-bkLGkwGs4syJkY/view"}]},
-    {"type": "oral", "annee": 2021, "evenement": "Journées de l'ORPHEM", "titre": "Retour d'expériences sur les consultations pharmaceutiques de patients traités par chimiothérapies orales", "auteurs": "", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/18VL9Vdh07a4SaZuNxlHSyq9nsBepZ5mn/view"}]},
-    {"type": "oral", "annee": 2021, "evenement": "27es journées du Cercle Grassois de Gynécologie-Obstétrique", "titre": "Cancer du sein : quel inhibiteur des kinases dépendantes des cyclines 4 et 6 dans quelle situation ? Le point de vue des pharmaciens", "auteurs": "", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1JYrHMOX1fSwaIFYowbOm3QSkgoLLi4qD/view"}]},
-    {"type": "oral", "annee": 2019, "evenement": "Congrès de la SFPO", "titre": "Atelier DPC Pharmacie Clinique Oncologique : rôle du pharmacien en hôpital de jour de cancérologie", "auteurs": "", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1eCZHqaV1JAK4oHhXhgXCh8g0tOmLSNnP/view"}, {"label": "Vidéo", "url": "https://youtu.be/S8_9QZVC1eg"}]},
-    {"type": "oral", "annee": 2019, "evenement": "Congrès de la SFPO", "titre": "Retour sur les 2es Journées de Formation Pratique Junior SFPO sur les CAR-T cells, Saint-Louis AP-HP", "auteurs": "", "liens": [{"label": "Vidéo", "url": "https://youtu.be/0Uu5dY-5JUU"}]},
-    {"type": "oral", "annee": 2019, "evenement": "Journées de l'ORPHEM", "titre": "Pharmacie clinique : passer du temps avec nos patients dans un centre hospitalier, des outils et des organisations innovantes à notre aide", "auteurs": "", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1PgE-Jz6XFEdPOIxPbyxKV65TfCN8mEPg/view"}]},
-    {"type": "oral", "annee": 2017, "evenement": "Congrès de la SFPO", "titre": "Est-il possible de détecter le risque de non-adhérence thérapeutique lors des consultations pharmaceutiques d'initiation des chimiothérapies orales ?", "auteurs": "", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1hoIe0jM3MO7WVUN26aXkEwVcJCje37Ve/view"}]},
-    {"type": "poster", "annee": 2025, "evenement": "Journées Nationales d'Actualité en Oncologie (SFPO)", "titre": "Mise en place d'un protocole de renouvellement et d'adaptation des prescriptions pour les patients traités par thérapies orales en oncologie : quel bilan pour la première année ?", "auteurs": "J. Clausse, T. Kreitmann, A. Cherkaoui, B. Bertrand", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1E3DmVV5YWBscKl6u2jQmbzJewUhsqZww/view"}]},
-    {"type": "poster", "annee": 2025, "evenement": "Journées Nationales d'Actualité en Oncologie (SFPO)", "titre": "Renouvellement et Adaptation des Prescriptions (RAP) par les pharmaciens : regards croisés des 3 premiers « RAPpeurs » en oncologie", "auteurs": "B. Bertrand, V. Leclerc, A. Maire", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1zaHo_AbDAwrV4rqDUPqkTkZW0ACDidr8/view"}]},
-    {"type": "poster", "annee": 2025, "evenement": "Congrès Hopipharm (SYNPREFH)", "titre": "Vers une optimisation de la prise en charge médicamenteuse en gériatrie : analyse des problèmes identifiés grâce au bilan de médication et place du pharmacien clinicien", "auteurs": "J. Demri, S. Merati, E. Alles, B. Bertrand", "liens": []},
-    {"type": "poster", "annee": 2025, "evenement": "Congrès Hopipharm (SYNPREFH)", "titre": "Intérêt d'une offre globale de soins pharmaceutiques en pneumologie et place du pharmacien clinicien", "auteurs": "S. Merati, J. Demri, MC. Dumon, B. Bertrand", "liens": []},
-    {"type": "poster", "annee": 2024, "evenement": "Congrès de la SFPC", "titre": "Patients traités par cellules CAR-T : modélisation d'un parcours de soins pharmaceutiques à l'échelle d'un GHT associant les Centres Réseaux au Centre Qualifié", "auteurs": "B. Bertrand, J. Duquesne, R. Collomp, S. Ruitort", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1xy101A31ZQfwS4eGXdC4evzAwx6cgcgR/view"}]},
-    {"type": "poster", "annee": 2024, "evenement": "Congrès de la SFPC", "titre": "Couverture vaccinale antipneumococcique : valeur ajoutée d'un pharmacien clinicien en services de médecine", "auteurs": "L. Delpi, S. Conde, PY. Grosse, B. Bertrand", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1UP2NdzEgH7qPvwY8SxwgO-Mg6W5ePNiV/view"}]},
-    {"type": "poster", "annee": 2024, "evenement": "Congrès Hopipharm (SYNPREFH)", "titre": "Optimisation de la préparation de l'hydroxocobalamine (Cyanokit®) en contexte NOVI pédiatrique", "auteurs": "ML. Duchene, B. Bertrand, R. Collomp, D. Josse, T. Lanoux, N. Galiano", "liens": []},
-    {"type": "poster", "annee": 2023, "evenement": "Journées Nationales d'Actualité en Oncologie (SFPO)", "titre": "Patients traités par CAR-T cells : élaboration d'un parcours territorial de soins pharmaceutiques inter-établissements", "auteurs": "B. Bertrand, J. Duquesne, JB. Tinard, R. Collomp, S. Ruitort", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1IIVjuqnn6Dzih6OdVhWV3Em1vJYY5oLN/view"}]},
-    {"type": "poster", "annee": 2023, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Analyse rétrospective multicentrique de l'utilisation des dernières bêta-lactamines commercialisées à l'échelle d'un réseau régional d'infectiologie", "auteurs": "B. Bertrand, E. Deletie, JB. Tinard, M. Roux, V. Gomes, J. Bellegarde, N. Retur", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1BHnXmpTFbjZc2diGaVMQzJzmcXgSodkj/view"}]},
-    {"type": "poster", "annee": 2022, "evenement": "Congrès de la SFPC", "titre": "Promotion de la sécurisation et du bon usage des médicaments de soin critique en médecine intensive et réanimation : rôle du pharmacien clinicien dans l'optimisation de l'outil informatique", "auteurs": "B. Bertrand, PY. Grosse, M. Roux, S. Conde, PM. Bertrand, N. Wereszczynski", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1Y2JxqC-VomVkS3D66zoL2o5AFU6va2bO/view"}]},
-    {"type": "poster", "annee": 2022, "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)", "titre": "Adaptation des pratiques de prescription du pembrolizumab (Keytruda®) au regard des évolutions des indications dans le traitement du cancer bronchique non à petites cellules en première ligne", "auteurs": "MA. Luc, B. Bertrand, PY. Grosse, N. Wereszczynski", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1ISWU3_uX1gzRWeZ5L_TmVUYtE5oISgBc/view"}]},
-    {"type": "poster", "annee": 2021, "evenement": "Congrès de la SFPO", "titre": "Étude prospective de l'association entre les inhibiteurs de la pompe à protons et la survenue d'une toxicité hématologique sévère chez les patients traités par pemetrexed : étude IPPEM (NCT03537833)", "auteurs": "A. Le Bozec, M. Dewolf, A. Cransac, P. Foucher, F. Lesauvage, B. Delclaux, A. Dory, B. Mennecier, B. Bertrand, MC. Gubeno-Dumon, S. Dukic, C. Mongaret, O. Bouché, D. Hettler, M. Boulin, L. Kanagaratnam, F. Slimano", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1ASUyB7vM0vRsxIACLL2XGVulLFWSZy4X/view"}]},
-    {"type": "poster", "annee": 2021, "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)", "titre": "Anticoagulation des patients atteints de COVID-19 en réanimation : analyse des prescriptions sur un an au sein d'un centre hospitalier périphérique", "auteurs": "M. Roux, B. Bertrand, PY. Grosse, S. Conde, N. Wereszczynski", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1ImqH5VCx41JbEdVKLyScKGUQzQ8Jwp2R/view"}]},
-    {"type": "poster", "annee": 2021, "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)", "titre": "Prévention des évènements iatrogènes médicamenteux chez le sujet âgé vivant à domicile : priorisation des patients sous anticoagulants oraux (ACO)", "auteurs": "S. Conde, M. Roux, B. Bertrand, J. Roos, PY. Grosse, A. Lancon, F. Graceffa, D. Colinet, S. Champion, N. Wereszczynski, I. Lavalou-Thevenin, M. Fournet-Fayas", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1eWD-EDLx4LcGAva0YyN6bRuk8CATAsMG/view"}]},
-    {"type": "poster", "annee": 2020, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Justification d'une antibiothérapie de plus de sept jours : évaluation des pratiques professionnelles dans quatre établissements de santé d'un GHT", "auteurs": "H. Feyeux, B. Bertrand, E. Deletie, N. Retur, J. Bellegarde, S. Bettira, V. Mondain, C. Boronad, R. Collomp, F. Lieutier", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1u03eNT2U-jNFGXtKL6AoSLBgJzwfWtti/view"}]},
-    {"type": "poster", "annee": 2020, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Et si transparence et écotoxicité devenaient des nouveaux critères de prescription et d'achats des antibiotiques ?", "auteurs": "V. Mondain, N. Retur, PA. Fontaine, P. Carenco, K. Risso, B. Bertrand, F. Lieutier-Colas", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/12j7-iB56Jr3a92BUD8PGr78Cheri7LPP/view"}]},
-    {"type": "poster", "annee": 2020, "evenement": "Congrès Hopipharm (SYNPREFH)", "titre": "Comment adapter le référencement à l'hôpital des bronchodilatateurs inhalés afin d'optimiser la prise en charge du patient ?", "auteurs": "E. Drivet, B. Bertrand, T. Grisinger, PY. Grosse, S. Condé, M. Astolfi, J. Roos, N. Wereszczynski", "liens": []},
-    {"type": "poster", "annee": 2020, "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)", "titre": "Révision pluridisciplinaire d'ordonnances de sortie d'hospitalisation de patients pris en charge par une plateforme gérontologique : quel bilan après 15 mois d'activité ?", "auteurs": "S. Conde, E. Drivet, I. Thevenin-Lavalou, B. Bertrand, J. Roos, PY. Grosse, N. Wereszczynski, C. Soraya, A. Lancon, F. Graceffa, M. Fournet-Fayas", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/14nwY-p9zEMM9_rYUMIivIY3pCBbPld8j/view"}]},
-    {"type": "poster", "annee": 2019, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Intérêt du ceftazidime-avibactam pour la réduction de la consommation des carbapénèmes : analyse rétrospective des prescriptions de carbapénèmes en 2018 dans un centre hospitalier", "auteurs": "B. Bertrand, T. Catalot, PY. Grosse, N. Wereszczynski, PM. Bertrand", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/11f8IgnihTdP0PDMhSEVgoHoEMeSjwHFW/view"}]},
-    {"type": "poster", "annee": 2019, "evenement": "Congrès Hopipharm (SYNPREFH)", "titre": "Utilisation d'un outil informatique interfacé pour la conciliation médicamenteuse", "auteurs": "T. Catalot, PY. Grosse, S. Condé, N. Wereszczynski, B. Bertrand", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/11OpWo3ZN_Y2TRdo73PDjdpNXZXEVxuZ9/view"}]},
-    {"type": "poster", "annee": 2019, "evenement": "Congrès Hopipharm (SYNPREFH)", "titre": "État des lieux sur l'écrasement des médicaments dans un hôpital public", "auteurs": "S. Condé, T. Catalot, B. Bertrand, N. Wereszczynski, PY. Grosse, SJ. Gauthier, I. Thevenin", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1REyPSUuXqAu_65zwSblbgpnYX3-axDcK/view"}]},
-    {"type": "poster", "annee": 2019, "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)", "titre": "Développement et utilisation en routine d'un outil innovant d'assistance à l'analyse pharmaceutique", "auteurs": "T. Catalot, PY. Grosse, S. Conde, N. Wereszczynski, B. Bertrand", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/1ufc0hEsm-foEVo3b4xxc-ntrufP04Ave/view"}]},
-    {"type": "poster", "annee": 2019, "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)", "titre": "Intérêt d'un outil informatisé de priorisation des patients dans le processus de conciliation médicamenteuse", "auteurs": "T. Catalot, PY. Grosse, S. Conde, N. Wereszczynski, B. Bertrand", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/15aueoPeW5w2_A8jofQIUFZww5y0dapIe/view"}]},
-    {"type": "poster", "annee": 2018, "evenement": "ECOP 4, European Conference of Oncology Pharmacy (ESOP)", "titre": "Feedback from Oncolien® and Oncotuto® users after 19 months", "auteurs": "A. Toulemonde, B. Bertrand, JF. Tournamille, F. Slimano", "liens": [{"label": "PDF", "url": "https://drive.google.com/file/d/12f9eJRwW9CLXnrTQ0Zg4hxpbZ3CjJGpZ/view"}]},
-    {"type": "poster", "annee": 2018, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Tableau de bord des prescriptions 2.0, un outil automatisé et partagé, indispensable pour l'amélioration du bon usage des antibiotiques", "auteurs": "B. Bertrand, S. Condé, PY. Grosse, N. Wereszczynski", "liens": [{"label": "PDF", "url": "https://bertrandbenja.files.wordpress.com/2018/06/bertrand_jni2018_tableaudebord.pdf"}]},
-    {"type": "poster", "annee": 2018, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Politique institutionnelle de bon usage des antibiotiques. Ne pas oublier les anciennes molécules ! Exemple des fluoroquinolones", "auteurs": "N. Retur, F. Lieutier-Colas, B. Bertrand, C. Arlaut, V. Mondain, R. Collomp, PM. Roger", "liens": [{"label": "PDF", "url": "https://bertrandbenja.files.wordpress.com/2018/06/retur_jni2018.pdf"}]},
-    {"type": "poster", "annee": 2018, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Audit régional sur les missions et outils des pharmaciens dans le bon usage des antibiotiques : des indicateurs nationaux à la « vraie vie »", "auteurs": "R. Grégoire, B. Bertrand, N. Retur, R. Collomp, V. Mondain, PM. Roger, F. Lieutier-Colas", "liens": [{"label": "PDF", "url": "https://bertrandbenja.files.wordpress.com/2018/06/gregoire_jni2018.pdf"}]},
-    {"type": "poster", "annee": 2018, "evenement": "Congrès de la SFPC", "titre": "Impact de la conciliation médicamenteuse sur l'observance médicamenteuse des patients âgés", "auteurs": "A. Mendjel, PY. Grosse, N. Wereszczynski, PY. Dides, B. Bertrand", "liens": [{"label": "PDF", "url": "https://bertrandbenja.files.wordpress.com/2018/02/mendjel_sfpc18.pdf"}]},
-    {"type": "poster", "annee": 2017, "evenement": "Congrès de l'European Association of Hospital Pharmacists (EAHP)", "titre": "Monitoring key performance indicators on pharmaceutical validation: feedback over a million prescriptions in a general hospital", "auteurs": "J. Grimaux, PY. Grosse, N. Wereszczynski, B. Bertrand", "liens": []},
-    {"type": "poster", "annee": 2017, "evenement": "Congrès de la SFPO", "titre": "Mise en place de consultations pharmaceutiques pour les patients sous chimiothérapie : quel bilan à 1 an dans notre CH ?", "auteurs": "B. Bertrand, A. Mendjel, PY. Grosse, N. Wereszczynski", "liens": []},
-    {"type": "poster", "annee": 2017, "evenement": "Congrès de la SFPO", "titre": "Est-il possible de détecter le risque de non-adhérence thérapeutique lors des consultations pharmaceutiques d'initiation des chimiothérapies orales ?", "auteurs": "J. Grimaux, C. Streicher, E. Petit-Jean, J. Friedl, S. Chaib, B. Bertrand", "liens": []},
-    {"type": "poster", "annee": 2017, "evenement": "Congrès de la SFPO", "titre": "Évaluation de la tolérance au palbociclib dans une étude multicentrique", "auteurs": "C. Streicher, E. Petit-Jean, P. Coliat, C. Paulin, B. Bertrand, B. Verrière, M. Annereau", "liens": []},
-    {"type": "poster", "annee": 2017, "evenement": "Congrès de la SFPO", "titre": "Évaluation multicentrique de la toxicité hématologique du palbociclib en soins courants", "auteurs": "E. Petit-Jean, C. Streicher, B. Bertrand, P. Caroline, B. Verrière, M. Annereau, D. Prébay, P. Coliat", "liens": []},
-    {"type": "poster", "annee": 2017, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Quels outils pour poursuivre l'amélioration du bon usage des aminosides ?", "auteurs": "J. Grimaux, PY. Grosse, N. Wereszczynski, C. Etienne, B. Bertrand", "liens": []},
-    {"type": "poster", "annee": 2017, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Impact d'un infectiologue transversal sur la consommation antibiotique d'un service de chirurgie", "auteurs": "C. Etienne, S. Leotard, N. Negrin, F. Colomb, SA. Medjoubi, J. Grimaux, B. Bertrand", "liens": []},
-    {"type": "poster", "annee": 2017, "evenement": "Congrès Hopipharm (SYNPREFH)", "titre": "Développement et évaluation d'un outil informatique intégré au dossier patient pour la conciliation médicamenteuse", "auteurs": "J. Grimaux, PY. Grosse, N. Wereszczynski, PY. Dides, B. Bertrand", "liens": []},
-    {"type": "poster", "annee": 2017, "evenement": "Congrès Hopipharm (SYNPREFH)", "titre": "Identification des doses orales sèches solides par le reconditionnement, le surconditionnement et le surétiquetage : choix de la technique et bilan à une année d'activité", "auteurs": "S. Condé, B. Bertrand, PY. Grosse, N. Wereszczynski", "liens": []},
-    {"type": "poster", "annee": 2016, "evenement": "Congrès de la SFPC", "titre": "Sensibilisation au bon usage des carbapénèmes : audit régional des prescriptions dans sept établissements de santé", "auteurs": "D. Viard, B. Bertrand, M. Agullo, AC. Lombardo, J. Bousseta, F. Fafi, C. Labat, I. Falconi, N. Degand, V. Mondain, K. Risso, T. Fosse, PM. Roger, R. Ruimy, F. Lieutier-Colas", "liens": []},
-    {"type": "poster", "annee": 2016, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Ratio ceftriaxone / céfotaxime : un indicateur de bon usage des antibiotiques ?", "auteurs": "B. Bertrand, M. Warembourg, F. Lieutier-Colas, AC. Lombardo, M. Agullo, C. Labat, P. Faraco-Bonnier, S. Raetz, J. Roghi, PM. Roger, pour le ResO InfectiO PACA-Est", "liens": []},
-    {"type": "poster", "annee": 2016, "evenement": "ECCMID (ESCMID)", "titre": "A new software to help optimize regional antimicrobial stewardship policy? Results from a two-year survey of antibiotic consumption and antimicrobial resistance in five hospitals in South-Eastern France", "auteurs": "M. Warembourg, AC. Lombardo, V. Blanc, B. Bertrand, S. Léotard, C. Labat, M. Agullo, V. Mondain, S. Boussat, PM. Roger, R. Ruimy, F. Lieutier-Colas and the Regional Network ResO InfectiO PACA-Est", "liens": []},
-    {"type": "poster", "annee": 2016, "evenement": "ECCMID (ESCMID)", "titre": "Appropriate use of carbapenems: a regional audit in 7 hospitals", "auteurs": "D. Viard, F. Lieutier-Colas, B. Bertrand, M. Agullo, AC. Lombardo, J. Bousseta, C. Labat, I. Falconi, K. Risso, PM. Roger, R. Ruimy", "liens": []},
-    {"type": "poster", "annee": 2015, "evenement": "Congrès de la SFAR", "titre": "Mieux vivre la réanimation, 5 ans après : quel impact pour les soignants ?", "auteurs": "A. Sader, PM. Bertrand, S. Moschietto, J. Catineau, JP. Fosse, JC. Orban, N. Bèle, L. Grech, D. Tran, PE. Danin, B. Bertrand, J. Dellamonica et le RIRe", "liens": []},
-    {"type": "poster", "annee": 2015, "evenement": "RICAI", "titre": "Étude RECO-PAIRF : recueil observationnel des diagnostics et traitements des patients âgés, avec infection urinaire et signes respiratoires fébriles, durant l'hiver 2015 au CH de Grasse", "auteurs": "C. Arlaud, C. Etienne, S. Léotard, F. Louis, S. Gonfrier, B. Bertrand", "liens": []},
-    {"type": "poster", "annee": 2015, "evenement": "RICAI", "titre": "Infection à entérobactéries productrices de bêta-lactamases à spectre étendu (EBLSE) : quelle(s) bêta-lactamine(s) en alternative aux carbapénèmes au CH de Grasse ?", "auteurs": "S. Léotard, B. Bertrand, N. Négrin, C. Etienne", "liens": []},
-    {"type": "poster", "annee": 2015, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Mise en place d'un groupe de travail pharmaciens au sein d'un réseau régional d'infectiologie : harmonisation des pratiques et bon usage des antibiotiques", "auteurs": "B. Bertrand, F. Lieutier-Colas, D. Viard, M. Agullo, C. Deschamp, C. Labat, PM. Roger", "liens": []},
-    {"type": "poster", "annee": 2015, "evenement": "Journées Nationales d'Infectiologie (SPILF)", "titre": "Modalités d'administration des antibiotiques : enquête de pratique sur les bêta-lactamines en réanimation au sein d'un réseau régional de réanimateurs", "auteurs": "B. Bertrand, PM. Bertrand, N. Bele, L. Grech, PE. Danin, J. Dellamonica", "liens": []},
-    {"type": "poster", "annee": 2014, "evenement": "Congrès de la SFPC", "titre": "Pharmacien clinicien en réanimation : bilan et axes d'amélioration pour le bon usage des antibiotiques dans un CHG", "auteurs": "B. Bertrand, S. Leotard, N. Negrin, N. Wereszczynski, M. Tougouri", "liens": []},
-    {"type": "poster", "annee": 2014, "evenement": "Congrès de l'APHIF", "titre": "Évaluation d'un nouveau dispositif de transfert en système clos (Vialshield® Carefusion) pour la préparation de cytotoxiques dans les services de soins", "auteurs": "H. Comte, B. Bertrand, S. Conde, M. Agullo, PY. Grosse, J. Roos, C. Boronad, A. Fagot-Gandet, N. Wereszczynski", "liens": []}
+    {
+      "type": "article",
+      "annee": 2025,
+      "titre": "Renewal and adjustment of prescriptions by hospital pharmacists: the role of the pharmacist in monitoring oral chemotherapy management",
+      "auteurs": "J. Clausse, PY. Grosse, A. Cherkaoui, T. Kreitmann, B. Bertrand",
+      "statut": "En cours de soumission"
+    },
+    {
+      "type": "article",
+      "annee": 2025,
+      "titre": "Proper use of medication in drug-using patients: creation of a tool to help manage drug-drug interactions (DDIs)",
+      "auteurs": "MA. Luc, G. Hache, B. Bertrand, A. Leroyer, F. Mathias, G. Sicard",
+      "statut": "En cours de soumission"
+    },
+    {
+      "type": "article",
+      "annee": 2023,
+      "titre": "Proper use of inhalers integrated into personalized pharmaceutical plan in a pneumology unit",
+      "auteurs": "M. Roux, PY. Grosse, MC. Dumon, S. Conde, N. Wereszczynski, B. Bertrand",
+      "source": "Le Pharmacien Clinicien, 2023",
+      "doi": "10.1016/j.phacli.2023.01.007"
+    },
+    {
+      "type": "article",
+      "annee": 2022,
+      "titre": "Advocacy for Responsible Antibiotic Production and Use",
+      "auteurs": "V. Mondain, N. Retur, B. Bertrand, F. Lieutier-Colas, P. Carenco, S. Diamantis",
+      "source": "Antibiotics 2022; 11: 980",
+      "doi": "10.3390/antibiotics11070980"
+    },
+    {
+      "type": "article",
+      "annee": 2022,
+      "titre": "The Production of Antibiotics Must Be Reoriented: Repositioning Old Narrow-Spectrum Antibiotics, Developing New Microbiome-Sparing Antibiotics",
+      "auteurs": "S. Diamantis, N. Retur, B. Bertrand, F. Lieutier, P. Carenco, V. Mondain and PROMISE Professional Community Network on Antimicrobial Resistance",
+      "source": "Antibiotics 2022; 11: 924",
+      "doi": "10.3390/antibiotics11070924"
+    },
+    {
+      "type": "article",
+      "annee": 2022,
+      "titre": "Association between proton pump inhibitors and severe hematological toxicity in patients receiving pemetrexed-based anticancer treatment: The prospective IPPEM study",
+      "auteurs": "F. Slimano, A. Le Bozec, A. Cransac, P. Foucher, F. Lesauvage, B. Delclaux, A. Dory, B. Mennecier, B. Bertrand, MC. Gubeno-Dumon, S. Dukic, C. Mongaret, O. Bouché, D. Hettler, M. Boulin, M. Dewolf, L. Kanagaratnam",
+      "source": "Lung Cancer 2022; 166: 114-121",
+      "doi": "10.1016/j.lungcan.2022.02.007"
+    },
+    {
+      "type": "article",
+      "annee": 2020,
+      "titre": "Éthique et recherche biomédicale durant l'épidémie du COVID-19 : ne confondons pas vitesse et précipitation !",
+      "auteurs": "B. Bertrand, B. Bertrand, B. Bertrand, PM. Bertrand",
+      "source": "Annales Pharmaceutiques Françaises 2020; 78(5): 365-367",
+      "doi": "10.1016/j.pharma.2020.05.004"
+    },
+    {
+      "type": "article",
+      "annee": 2019,
+      "titre": "Pharmaceutical consultations in oncology: French Society for Oncology Pharmacy (SFPO) guidelines",
+      "auteurs": "E. Petit-Jean, F. Correard, G. Maillan, F. de Crozals, B. Bertrand, V. Regnier, R. Chevrier, C. Streicher, I. Madelaine, B. Pourroy",
+      "source": "European Journal of Oncology Pharmacy 2019; 2(2): 1-6",
+      "doi": "10.1097/OP9.0000000000000011"
+    },
+    {
+      "type": "article",
+      "annee": 2010,
+      "titre": "Structural characterization of in vitro metabolites of the new anticancer agent EAPB0503 by liquid chromatography-tandem mass spectrometry",
+      "auteurs": "F. Lafaille, I. Solassol, C. Enjalbal, B. Bertrand, PE. Doulain, J. Vappiani, PA. Bonnet, C. Deleuze-Masquéfa, F.M.M. Bressolle",
+      "source": "Drug Metabolism and Disposition 2010; 38(10): 1836-1847",
+      "doi": "10.1124/dmd.110.034579"
+    },
+    {
+      "type": "oral",
+      "annee": 2025,
+      "titre": "Renouvellement et Adaptation des Prescriptions (RAP) par les pharmaciens : regards croisés des 3 premiers « RAPpeurs » en oncologie",
+      "evenement": "Journées Nationales d'Actualité en Oncologie (SFPO)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1-2BG3j86zfU6ewIv3OahycUUU7Hqiw5N/view"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2025,
+      "titre": "Inconvénients des nouvelles thérapeutiques dans le cancer du sein, prise en charge des effets secondaires",
+      "evenement": "31es journées du Cercle Grassois de Gynécologie-Obstétrique",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1Xlrx33QybL0ZTm0CGadwSO1Ee_AoX9ff/view"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2024,
+      "titre": "Nouveau rôle du pharmacien clinicien en oncologie grâce à l'adaptation et au renouvellement des prescriptions de thérapies orales",
+      "evenement": "Journées de l'ORPHEM"
+    },
+    {
+      "type": "oral",
+      "annee": 2024,
+      "titre": "Soigner la maladie grave, et après ? Accompagnement pharmaceutique du patient de cancérologie",
+      "evenement": "Journée des Structures de Réflexion Éthique PACA-Corse",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1HKyRCbzdMxQ-uG5lNVJKu-OxDv8lmsR5/view"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2024,
+      "titre": "Quoi de neuf en algo-pharmacologie ?",
+      "auteurs": "K. Muller, B. Bertrand",
+      "evenement": "Journée INTERCLUD PACA Est",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/16kKo4CX_K8hF2tKm89QRkPbEykzXQfqy/view"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2023,
+      "titre": "Quand proposer du CBD aux patients ?",
+      "evenement": "29es journées du Cercle Grassois de Gynécologie-Obstétrique",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1WM1Okd0SwvELJ6T9R2K1tiXhurYmG8Ln/view"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2023,
+      "titre": "Codification des actes de pharmacie clinique",
+      "evenement": "Journées inter-régionales OMéDIT PACA Corse",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/14tpEyjYA2zd0QBovR-bkLGkwGs4syJkY/view"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2021,
+      "titre": "Retour d'expériences sur les consultations pharmaceutiques de patients traités par chimiothérapies orales",
+      "evenement": "Journées de l'ORPHEM",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/18VL9Vdh07a4SaZuNxlHSyq9nsBepZ5mn/view"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2021,
+      "titre": "Cancer du sein : quel inhibiteur des kinases dépendantes des cyclines 4 et 6 dans quelle situation ? Le point de vue des pharmaciens",
+      "evenement": "27es journées du Cercle Grassois de Gynécologie-Obstétrique",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1JYrHMOX1fSwaIFYowbOm3QSkgoLLi4qD/view"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2019,
+      "titre": "Atelier DPC Pharmacie Clinique Oncologique : rôle du pharmacien en hôpital de jour de cancérologie",
+      "evenement": "Congrès de la SFPO",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1eCZHqaV1JAK4oHhXhgXCh8g0tOmLSNnP/view"
+        },
+        {
+          "label": "Vidéo",
+          "url": "https://youtu.be/S8_9QZVC1eg"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2019,
+      "titre": "Retour sur les 2es Journées de Formation Pratique Junior SFPO sur les CAR-T cells, Saint-Louis AP-HP",
+      "evenement": "Congrès de la SFPO",
+      "liens": [
+        {
+          "label": "Vidéo",
+          "url": "https://youtu.be/0Uu5dY-5JUU"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2019,
+      "titre": "Pharmacie clinique : passer du temps avec nos patients dans un centre hospitalier, des outils et des organisations innovantes à notre aide",
+      "evenement": "Journées de l'ORPHEM",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1PgE-Jz6XFEdPOIxPbyxKV65TfCN8mEPg/view"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2017,
+      "titre": "Est-il possible de détecter le risque de non-adhérence thérapeutique lors des consultations pharmaceutiques d'initiation des chimiothérapies orales ?",
+      "evenement": "Congrès de la SFPO",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1hoIe0jM3MO7WVUN26aXkEwVcJCje37Ve/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2025,
+      "titre": "Mise en place d'un protocole de renouvellement et d'adaptation des prescriptions pour les patients traités par thérapies orales en oncologie : quel bilan pour la première année ?",
+      "auteurs": "J. Clausse, T. Kreitmann, A. Cherkaoui, B. Bertrand",
+      "evenement": "Journées Nationales d'Actualité en Oncologie (SFPO)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1E3DmVV5YWBscKl6u2jQmbzJewUhsqZww/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2025,
+      "titre": "Renouvellement et Adaptation des Prescriptions (RAP) par les pharmaciens : regards croisés des 3 premiers « RAPpeurs » en oncologie",
+      "auteurs": "B. Bertrand, V. Leclerc, A. Maire",
+      "evenement": "Journées Nationales d'Actualité en Oncologie (SFPO)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1zaHo_AbDAwrV4rqDUPqkTkZW0ACDidr8/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2025,
+      "titre": "Vers une optimisation de la prise en charge médicamenteuse en gériatrie : analyse des problèmes identifiés grâce au bilan de médication et place du pharmacien clinicien",
+      "auteurs": "J. Demri, S. Merati, E. Alles, B. Bertrand",
+      "evenement": "Congrès Hopipharm (SYNPREFH)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1NITIU_obHTEr2lqV3xDZ9y4qcMo7hRMf/view?usp=sharing"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2025,
+      "titre": "Intérêt d'une offre globale de soins pharmaceutiques en pneumologie et place du pharmacien clinicien",
+      "auteurs": "S. Merati, J. Demri, MC. Dumon, B. Bertrand",
+      "evenement": "Congrès Hopipharm (SYNPREFH)"
+    },
+    {
+      "type": "poster",
+      "annee": 2024,
+      "titre": "Patients traités par cellules CAR-T : modélisation d'un parcours de soins pharmaceutiques à l'échelle d'un GHT associant les Centres Réseaux au Centre Qualifié",
+      "auteurs": "B. Bertrand, J. Duquesne, R. Collomp, S. Ruitort",
+      "evenement": "Congrès de la SFPC",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1xy101A31ZQfwS4eGXdC4evzAwx6cgcgR/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2024,
+      "titre": "Couverture vaccinale antipneumococcique : valeur ajoutée d'un pharmacien clinicien en services de médecine",
+      "auteurs": "L. Delpi, S. Conde, PY. Grosse, B. Bertrand",
+      "evenement": "Congrès de la SFPC",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1UP2NdzEgH7qPvwY8SxwgO-Mg6W5ePNiV/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2024,
+      "titre": "Optimisation de la préparation de l'hydroxocobalamine (Cyanokit®) en contexte NOVI pédiatrique",
+      "auteurs": "ML. Duchene, B. Bertrand, R. Collomp, D. Josse, T. Lanoux, N. Galiano",
+      "evenement": "Congrès Hopipharm (SYNPREFH)"
+    },
+    {
+      "type": "poster",
+      "annee": 2023,
+      "titre": "Patients traités par CAR-T cells : élaboration d'un parcours territorial de soins pharmaceutiques inter-établissements",
+      "auteurs": "B. Bertrand, J. Duquesne, JB. Tinard, R. Collomp, S. Ruitort",
+      "evenement": "Journées Nationales d'Actualité en Oncologie (SFPO)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1IIVjuqnn6Dzih6OdVhWV3Em1vJYY5oLN/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2023,
+      "titre": "Analyse rétrospective multicentrique de l'utilisation des dernières bêta-lactamines commercialisées à l'échelle d'un réseau régional d'infectiologie",
+      "auteurs": "B. Bertrand, E. Deletie, JB. Tinard, M. Roux, V. Gomes, J. Bellegarde, N. Retur",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1BHnXmpTFbjZc2diGaVMQzJzmcXgSodkj/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2022,
+      "titre": "Promotion de la sécurisation et du bon usage des médicaments de soin critique en médecine intensive et réanimation : rôle du pharmacien clinicien dans l'optimisation de l'outil informatique",
+      "auteurs": "B. Bertrand, PY. Grosse, M. Roux, S. Conde, PM. Bertrand, N. Wereszczynski",
+      "evenement": "Congrès de la SFPC",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1Y2JxqC-VomVkS3D66zoL2o5AFU6va2bO/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2022,
+      "titre": "Adaptation des pratiques de prescription du pembrolizumab (Keytruda®) au regard des évolutions des indications dans le traitement du cancer bronchique non à petites cellules en première ligne",
+      "auteurs": "MA. Luc, B. Bertrand, PY. Grosse, N. Wereszczynski",
+      "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1ISWU3_uX1gzRWeZ5L_TmVUYtE5oISgBc/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2021,
+      "titre": "Étude prospective de l'association entre les inhibiteurs de la pompe à protons et la survenue d'une toxicité hématologique sévère chez les patients traités par pemetrexed : étude IPPEM (NCT03537833)",
+      "auteurs": "A. Le Bozec, M. Dewolf, A. Cransac, P. Foucher, F. Lesauvage, B. Delclaux, A. Dory, B. Mennecier, B. Bertrand, MC. Gubeno-Dumon, S. Dukic, C. Mongaret, O. Bouché, D. Hettler, M. Boulin, L. Kanagaratnam, F. Slimano",
+      "evenement": "Congrès de la SFPO",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1ASUyB7vM0vRsxIACLL2XGVulLFWSZy4X/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2021,
+      "titre": "Anticoagulation des patients atteints de COVID-19 en réanimation : analyse des prescriptions sur un an au sein d'un centre hospitalier périphérique",
+      "auteurs": "M. Roux, B. Bertrand, PY. Grosse, S. Conde, N. Wereszczynski",
+      "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1ImqH5VCx41JbEdVKLyScKGUQzQ8Jwp2R/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2021,
+      "titre": "Prévention des évènements iatrogènes médicamenteux chez le sujet âgé vivant à domicile : priorisation des patients sous anticoagulants oraux (ACO)",
+      "auteurs": "S. Conde, M. Roux, B. Bertrand, J. Roos, PY. Grosse, A. Lancon, F. Graceffa, D. Colinet, S. Champion, N. Wereszczynski, I. Lavalou-Thevenin, M. Fournet-Fayas",
+      "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1eWD-EDLx4LcGAva0YyN6bRuk8CATAsMG/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2020,
+      "titre": "Justification d'une antibiothérapie de plus de sept jours : évaluation des pratiques professionnelles dans quatre établissements de santé d'un GHT",
+      "auteurs": "H. Feyeux, B. Bertrand, E. Deletie, N. Retur, J. Bellegarde, S. Bettira, V. Mondain, C. Boronad, R. Collomp, F. Lieutier",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1u03eNT2U-jNFGXtKL6AoSLBgJzwfWtti/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2020,
+      "titre": "Et si transparence et écotoxicité devenaient des nouveaux critères de prescription et d'achats des antibiotiques ?",
+      "auteurs": "V. Mondain, N. Retur, PA. Fontaine, P. Carenco, K. Risso, B. Bertrand, F. Lieutier-Colas",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/12j7-iB56Jr3a92BUD8PGr78Cheri7LPP/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2020,
+      "titre": "Comment adapter le référencement à l'hôpital des bronchodilatateurs inhalés afin d'optimiser la prise en charge du patient ?",
+      "auteurs": "E. Drivet, B. Bertrand, T. Grisinger, PY. Grosse, S. Condé, M. Astolfi, J. Roos, N. Wereszczynski",
+      "evenement": "Congrès Hopipharm (SYNPREFH)"
+    },
+    {
+      "type": "poster",
+      "annee": 2020,
+      "titre": "Révision pluridisciplinaire d'ordonnances de sortie d'hospitalisation de patients pris en charge par une plateforme gérontologique : quel bilan après 15 mois d'activité ?",
+      "auteurs": "S. Conde, E. Drivet, I. Thevenin-Lavalou, B. Bertrand, J. Roos, PY. Grosse, N. Wereszczynski, C. Soraya, A. Lancon, F. Graceffa, M. Fournet-Fayas",
+      "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/14nwY-p9zEMM9_rYUMIivIY3pCBbPld8j/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2019,
+      "titre": "Intérêt du ceftazidime-avibactam pour la réduction de la consommation des carbapénèmes : analyse rétrospective des prescriptions de carbapénèmes en 2018 dans un centre hospitalier",
+      "auteurs": "B. Bertrand, T. Catalot, PY. Grosse, N. Wereszczynski, PM. Bertrand",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/11f8IgnihTdP0PDMhSEVgoHoEMeSjwHFW/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2019,
+      "titre": "Utilisation d'un outil informatique interfacé pour la conciliation médicamenteuse",
+      "auteurs": "T. Catalot, PY. Grosse, S. Condé, N. Wereszczynski, B. Bertrand",
+      "evenement": "Congrès Hopipharm (SYNPREFH)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/11OpWo3ZN_Y2TRdo73PDjdpNXZXEVxuZ9/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2019,
+      "titre": "État des lieux sur l'écrasement des médicaments dans un hôpital public",
+      "auteurs": "S. Condé, T. Catalot, B. Bertrand, N. Wereszczynski, PY. Grosse, SJ. Gauthier, I. Thevenin",
+      "evenement": "Congrès Hopipharm (SYNPREFH)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1REyPSUuXqAu_65zwSblbgpnYX3-axDcK/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2019,
+      "titre": "Développement et utilisation en routine d'un outil innovant d'assistance à l'analyse pharmaceutique",
+      "auteurs": "T. Catalot, PY. Grosse, S. Conde, N. Wereszczynski, B. Bertrand",
+      "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1ufc0hEsm-foEVo3b4xxc-ntrufP04Ave/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2019,
+      "titre": "Intérêt d'un outil informatisé de priorisation des patients dans le processus de conciliation médicamenteuse",
+      "auteurs": "T. Catalot, PY. Grosse, S. Conde, N. Wereszczynski, B. Bertrand",
+      "evenement": "Congrès Convergence Santé Hôpital (SNPHPU)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/15aueoPeW5w2_A8jofQIUFZww5y0dapIe/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2018,
+      "titre": "Feedback from Oncolien® and Oncotuto® users after 19 months",
+      "auteurs": "A. Toulemonde, B. Bertrand, JF. Tournamille, F. Slimano",
+      "evenement": "ECOP 4, European Conference of Oncology Pharmacy (ESOP)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/12f9eJRwW9CLXnrTQ0Zg4hxpbZ3CjJGpZ/view"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2018,
+      "titre": "Tableau de bord des prescriptions 2.0, un outil automatisé et partagé, indispensable pour l'amélioration du bon usage des antibiotiques",
+      "auteurs": "B. Bertrand, S. Condé, PY. Grosse, N. Wereszczynski",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://bertrandbenja.files.wordpress.com/2018/06/bertrand_jni2018_tableaudebord.pdf"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2018,
+      "titre": "Politique institutionnelle de bon usage des antibiotiques. Ne pas oublier les anciennes molécules ! Exemple des fluoroquinolones",
+      "auteurs": "N. Retur, F. Lieutier-Colas, B. Bertrand, C. Arlaut, V. Mondain, R. Collomp, PM. Roger",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://bertrandbenja.files.wordpress.com/2018/06/retur_jni2018.pdf"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2018,
+      "titre": "Audit régional sur les missions et outils des pharmaciens dans le bon usage des antibiotiques : des indicateurs nationaux à la « vraie vie »",
+      "auteurs": "R. Grégoire, B. Bertrand, N. Retur, R. Collomp, V. Mondain, PM. Roger, F. Lieutier-Colas",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://bertrandbenja.files.wordpress.com/2018/06/gregoire_jni2018.pdf"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2018,
+      "titre": "Impact de la conciliation médicamenteuse sur l'observance médicamenteuse des patients âgés",
+      "auteurs": "A. Mendjel, PY. Grosse, N. Wereszczynski, PY. Dides, B. Bertrand",
+      "evenement": "Congrès de la SFPC",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://bertrandbenja.files.wordpress.com/2018/02/mendjel_sfpc18.pdf"
+        }
+      ]
+    },
+    {
+      "type": "poster",
+      "annee": 2017,
+      "titre": "Monitoring key performance indicators on pharmaceutical validation: feedback over a million prescriptions in a general hospital",
+      "auteurs": "J. Grimaux, PY. Grosse, N. Wereszczynski, B. Bertrand",
+      "evenement": "Congrès de l'European Association of Hospital Pharmacists (EAHP)"
+    },
+    {
+      "type": "poster",
+      "annee": 2017,
+      "titre": "Mise en place de consultations pharmaceutiques pour les patients sous chimiothérapie : quel bilan à 1 an dans notre CH ?",
+      "auteurs": "B. Bertrand, A. Mendjel, PY. Grosse, N. Wereszczynski",
+      "evenement": "Congrès de la SFPO"
+    },
+    {
+      "type": "poster",
+      "annee": 2017,
+      "titre": "Est-il possible de détecter le risque de non-adhérence thérapeutique lors des consultations pharmaceutiques d'initiation des chimiothérapies orales ?",
+      "auteurs": "J. Grimaux, C. Streicher, E. Petit-Jean, J. Friedl, S. Chaib, B. Bertrand",
+      "evenement": "Congrès de la SFPO"
+    },
+    {
+      "type": "poster",
+      "annee": 2017,
+      "titre": "Évaluation de la tolérance au palbociclib dans une étude multicentrique",
+      "auteurs": "C. Streicher, E. Petit-Jean, P. Coliat, C. Paulin, B. Bertrand, B. Verrière, M. Annereau",
+      "evenement": "Congrès de la SFPO"
+    },
+    {
+      "type": "poster",
+      "annee": 2017,
+      "titre": "Évaluation multicentrique de la toxicité hématologique du palbociclib en soins courants",
+      "auteurs": "E. Petit-Jean, C. Streicher, B. Bertrand, P. Caroline, B. Verrière, M. Annereau, D. Prébay, P. Coliat",
+      "evenement": "Congrès de la SFPO"
+    },
+    {
+      "type": "poster",
+      "annee": 2017,
+      "titre": "Quels outils pour poursuivre l'amélioration du bon usage des aminosides ?",
+      "auteurs": "J. Grimaux, PY. Grosse, N. Wereszczynski, C. Etienne, B. Bertrand",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)"
+    },
+    {
+      "type": "poster",
+      "annee": 2017,
+      "titre": "Impact d'un infectiologue transversal sur la consommation antibiotique d'un service de chirurgie",
+      "auteurs": "C. Etienne, S. Leotard, N. Negrin, F. Colomb, SA. Medjoubi, J. Grimaux, B. Bertrand",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)"
+    },
+    {
+      "type": "poster",
+      "annee": 2017,
+      "titre": "Développement et évaluation d'un outil informatique intégré au dossier patient pour la conciliation médicamenteuse",
+      "auteurs": "J. Grimaux, PY. Grosse, N. Wereszczynski, PY. Dides, B. Bertrand",
+      "evenement": "Congrès Hopipharm (SYNPREFH)"
+    },
+    {
+      "type": "poster",
+      "annee": 2017,
+      "titre": "Identification des doses orales sèches solides par le reconditionnement, le surconditionnement et le surétiquetage : choix de la technique et bilan à une année d'activité",
+      "auteurs": "S. Condé, B. Bertrand, PY. Grosse, N. Wereszczynski",
+      "evenement": "Congrès Hopipharm (SYNPREFH)"
+    },
+    {
+      "type": "poster",
+      "annee": 2016,
+      "titre": "Sensibilisation au bon usage des carbapénèmes : audit régional des prescriptions dans sept établissements de santé",
+      "auteurs": "D. Viard, B. Bertrand, M. Agullo, AC. Lombardo, J. Bousseta, F. Fafi, C. Labat, I. Falconi, N. Degand, V. Mondain, K. Risso, T. Fosse, PM. Roger, R. Ruimy, F. Lieutier-Colas",
+      "evenement": "Congrès de la SFPC"
+    },
+    {
+      "type": "poster",
+      "annee": 2016,
+      "titre": "Ratio ceftriaxone / céfotaxime : un indicateur de bon usage des antibiotiques ?",
+      "auteurs": "B. Bertrand, M. Warembourg, F. Lieutier-Colas, AC. Lombardo, M. Agullo, C. Labat, P. Faraco-Bonnier, S. Raetz, J. Roghi, PM. Roger, pour le ResO InfectiO PACA-Est",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)"
+    },
+    {
+      "type": "poster",
+      "annee": 2016,
+      "titre": "A new software to help optimize regional antimicrobial stewardship policy? Results from a two-year survey of antibiotic consumption and antimicrobial resistance in five hospitals in South-Eastern France",
+      "auteurs": "M. Warembourg, AC. Lombardo, V. Blanc, B. Bertrand, S. Léotard, C. Labat, M. Agullo, V. Mondain, S. Boussat, PM. Roger, R. Ruimy, F. Lieutier-Colas and the Regional Network ResO InfectiO PACA-Est",
+      "evenement": "ECCMID (ESCMID)"
+    },
+    {
+      "type": "poster",
+      "annee": 2016,
+      "titre": "Appropriate use of carbapenems: a regional audit in 7 hospitals",
+      "auteurs": "D. Viard, F. Lieutier-Colas, B. Bertrand, M. Agullo, AC. Lombardo, J. Bousseta, C. Labat, I. Falconi, K. Risso, PM. Roger, R. Ruimy",
+      "evenement": "ECCMID (ESCMID)"
+    },
+    {
+      "type": "poster",
+      "annee": 2015,
+      "titre": "Mieux vivre la réanimation, 5 ans après : quel impact pour les soignants ?",
+      "auteurs": "A. Sader, PM. Bertrand, S. Moschietto, J. Catineau, JP. Fosse, JC. Orban, N. Bèle, L. Grech, D. Tran, PE. Danin, B. Bertrand, J. Dellamonica et le RIRe",
+      "evenement": "Congrès de la SFAR"
+    },
+    {
+      "type": "poster",
+      "annee": 2015,
+      "titre": "Étude RECO-PAIRF : recueil observationnel des diagnostics et traitements des patients âgés, avec infection urinaire et signes respiratoires fébriles, durant l'hiver 2015 au CH de Grasse",
+      "auteurs": "C. Arlaud, C. Etienne, S. Léotard, F. Louis, S. Gonfrier, B. Bertrand",
+      "evenement": "RICAI"
+    },
+    {
+      "type": "poster",
+      "annee": 2015,
+      "titre": "Infection à entérobactéries productrices de bêta-lactamases à spectre étendu (EBLSE) : quelle(s) bêta-lactamine(s) en alternative aux carbapénèmes au CH de Grasse ?",
+      "auteurs": "S. Léotard, B. Bertrand, N. Négrin, C. Etienne",
+      "evenement": "RICAI"
+    },
+    {
+      "type": "poster",
+      "annee": 2015,
+      "titre": "Mise en place d'un groupe de travail pharmaciens au sein d'un réseau régional d'infectiologie : harmonisation des pratiques et bon usage des antibiotiques",
+      "auteurs": "B. Bertrand, F. Lieutier-Colas, D. Viard, M. Agullo, C. Deschamp, C. Labat, PM. Roger",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)"
+    },
+    {
+      "type": "poster",
+      "annee": 2015,
+      "titre": "Modalités d'administration des antibiotiques : enquête de pratique sur les bêta-lactamines en réanimation au sein d'un réseau régional de réanimateurs",
+      "auteurs": "B. Bertrand, PM. Bertrand, N. Bele, L. Grech, PE. Danin, J. Dellamonica",
+      "evenement": "Journées Nationales d'Infectiologie (SPILF)"
+    },
+    {
+      "type": "poster",
+      "annee": 2014,
+      "titre": "Pharmacien clinicien en réanimation : bilan et axes d'amélioration pour le bon usage des antibiotiques dans un CHG",
+      "auteurs": "B. Bertrand, S. Leotard, N. Negrin, N. Wereszczynski, M. Tougouri",
+      "evenement": "Congrès de la SFPC"
+    },
+    {
+      "type": "poster",
+      "annee": 2014,
+      "titre": "Évaluation d'un nouveau dispositif de transfert en système clos (Vialshield® Carefusion) pour la préparation de cytotoxiques dans les services de soins",
+      "auteurs": "H. Comte, B. Bertrand, S. Conde, M. Agullo, PY. Grosse, J. Roos, C. Boronad, A. Fagot-Gandet, N. Wereszczynski",
+      "evenement": "Congrès de l'APHIF"
+    }
   ]
 }
