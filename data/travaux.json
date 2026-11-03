@@ -710,6 +710,27 @@
       "titre": "Évaluation d'un nouveau dispositif de transfert en système clos (Vialshield® Carefusion) pour la préparation de cytotoxiques dans les services de soins",
       "auteurs": "H. Comte, B. Bertrand, S. Conde, M. Agullo, PY. Grosse, J. Roos, C. Boronad, A. Fagot-Gandet, N. Wereszczynski",
       "evenement": "Congrès de l'APHIF"
-    }
+    },
+    {
+      "type": "poster",
+      "annee": 2026,
+      "titre": "PRISME",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1PN4S_5WeyCVJLEMJdQyHkeKw3mIjXUj8/view?usp=sharing"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "titre": "RAP Biennale"
+    },
+    {
+      "type": "poster",
+      "annee": 2026,
+      "titre": "SFPC CEPPIM Marina"
+    },
+    {}
   ]
 }
