@@ -724,13 +724,37 @@
     },
     {
       "type": "oral",
-      "titre": "RAP Biennale"
+      "annee": 2026,
+      "titre": "Optimisation du parcours des patients traités par thérapies orales : implication du pharmacien dans le renouvellement et l’adaptation des prescriptions",
+      "auteurs": "B. Bertrand",
+      "evenement": "1èe Biennal Monégasque de Cancérologie"
     },
     {
-      "type": "poster",
+      "type": "oral",
       "annee": 2026,
-      "titre": "SFPC CEPPIM Marina"
+      "titre": "Prévention et gestion des effets indésirables des nouveaux traitements du cancer du sein",
+      "auteurs": "B. Bertrand",
+      "evenement": "32e Journées du Cercle Grassois de Gynécologie Obstétrique"
     },
-    {}
+    {
+      "type": "oral",
+      "annee": 2026,
+      "titre": "Pourquoi les traitements du cancer peuvent interagir avec l'alimentation, la phytothérapie, les compléments alimentaires et les autres médicaments ?",
+      "auteurs": "B. Bertrand",
+      "evenement": "Webconférence Patients en Réseau",
+      "liens": [
+        {
+          "label": "PDF",
+          "url": "https://drive.google.com/file/d/1YE30gVdoh3J84Qci8ZG1QadHBPJdgaTX/view?usp=sharing"
+        }
+      ]
+    },
+    {
+      "type": "oral",
+      "annee": 2026,
+      "titre": "Thérapies par voie orale et suivi thérapeutique pharmacologique : prescriptions par le Pharmacien Clinicien",
+      "auteurs": "B. Bertrand",
+      "evenement": "Atelier du GPCO"
+    }
   ]
 }
