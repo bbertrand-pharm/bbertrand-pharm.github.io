@@ -211,7 +211,8 @@ input[type=range]{width:100%;accent-color:var(--blue);height:32px}
 .caution b{color:var(--sun)}
 .others{font-size:15px;color:var(--muted);border-left:3px solid var(--blue);padding:4px 0 4px 12px}
 .rdv{grid-column:1 / -1;display:flex;align-items:center;gap:12px;margin:8px 0 4px;color:#fff;background:#0063CB;text-decoration:none;border-radius:8px;padding:12px 14px;min-height:56px;box-shadow:0 4px 14px rgba(0,99,203,.35);transition:background .15s, transform .08s}
-.pro > .rdv{grid-column:1 / -1}
+.pro > .rdv,.pro > .rdv-alt{grid-column:1 / -1}
+.rdv-alt{font-size:14px;font-weight:700;color:#0063CB;margin:0 0 6px 2px}
 .rdv-t b{white-space:nowrap}
 .rdv:hover{background:#004F9E;color:#fff}
 .rdv:active{transform:translateY(1px)}
@@ -994,11 +995,12 @@ function resultHTML(){
         <h4>${p.t}</h4>
         <p>${p.d}</p>
         <p class="pcount">${yes} vaccin${yes>1?"s":""} sur ${p.items.length} de votre liste</p>
-        ${DOCTOLIB[p.id] ? `<a class="rdv" href="${DOCTOLIB[p.id]}" target="_blank" rel="noopener"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg><span class="rdv-t"><b>Prendre rendez-vous</b><small>en ligne sur Doctolib</small></span><span class="rdv-arrow" aria-hidden="true">→</span></a>` : ""}
+        ${DOCTOLIB[p.id] ? `<a class="rdv" href="https://www.doctolib.fr/" target="_blank" rel="noopener"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg><span class="rdv-t"><b>Rendez-vous avec mon soignant</b><small>sur Doctolib, depuis mon compte</small></span><span class="rdv-arrow" aria-hidden="true">→</span></a>
+        <a class="rdv-alt" href="${DOCTOLIB[p.id]}" target="_blank" rel="noopener">Pas encore de ${p.id === "pharma" ? "pharmacien" : (p.id === "med" ? "médecin" : "infirmier")} ? En trouver un sur Doctolib ↗</a>` : ""}
         <ul class="plist">${p.items.map(i => `<li class="${i.v}"><span class="mk" aria-hidden="true">${i.v==="no" ? "✕" : "✓"}</span><span><b>${i.name}</b>${i.v==="no" ? ` : <span class="sr">non</span>${i.why}` : (i.v==="cond" ? ` : ${i.why}` : "")}</span></li>`).join("")}</ul>
       </div>`;}).join("")}</div>
       <p class="others">D'autres professionnels, comme les médecins spécialistes et les sages-femmes, ou certaines structures, comme les centres de vaccination, peuvent aussi vous vacciner. N'hésitez pas à vous renseigner auprès de votre équipe médicale.</p>
-      <p class="others">Tous les professionnels ne proposent pas de rendez-vous en ligne : vous pouvez aussi appeler ou passer directement à la pharmacie ou au cabinet. Après une prise de rendez-vous sur Doctolib, vous pouvez partager votre fiche de synthèse avec le soignant depuis votre compte (rubrique des documents).</p>`;
+      <p class="others">Une fois connecté à votre compte Doctolib, vous retrouvez vos soignants dans votre historique de rendez-vous. Après la prise de rendez-vous, partagez-leur votre fiche de synthèse depuis vos documents. Tous les professionnels ne proposent pas de rendez-vous en ligne : vous pouvez aussi appeler ou passer directement à la pharmacie ou au cabinet.</p>`;
     const tips = [];
     if(S.age >= 11 && R.some(r => r.id==="flu" && r.status==="todo")) tips.push("<b>Grippe :</b> depuis juillet 2026, le vaccin se délivre sur prescription. Dès 11 ans, le pharmacien ou l'infirmier la rédige sur place.");
     tips.push("<b>Le jour J :</b> apportez votre carnet de santé ou ouvrez le carnet de vaccination de Mon espace santé. Plusieurs vaccins peuvent souvent être faits le même jour.");
@@ -1063,6 +1065,7 @@ function ficheHTML(){
       <h5>Vaccinations à jour</h5>${tbl(D.ok, "ok")}
       <h5>Vaccinations à faire</h5>${tbl(D.todo, "")}
       ${D.discuss.length ? `<h5>À discuter avec un professionnel</h5>${tbl(D.discuss, "")}` : ""}
+      <p style="margin:4px 0 0"><a href="https://www.doctolib.fr/" target="_blank" rel="noopener" style="display:block;text-align:center;background:#0063CB;color:#fff;font-weight:700;text-decoration:none;border-radius:6px;padding:8px">Prendre rendez-vous et partager cette fiche sur Doctolib →</a></p>
       <div class="sh-foot">${D.todo.concat(D.discuss).some(r => r.doubt) ? "* Statut incertain déclaré par le patient : la vaccination est recommandée dans le doute.<br>" : ""}
         Fiche établie à partir des déclarations du patient, non vérifiées. Certaines situations particulières (maladies rares ou traitements spécifiques, activités professionnelles, voyages) ne sont pas couvertes par cet outil. Recommandations élaborées à partir du calendrier vaccinal mis à jour en 2026. Site d'information : les vaccins doivent être prescrits par un professionnel de santé ; aucune information fournie ne remplace l'avis d'un professionnel.</div>
     </div>
@@ -1131,6 +1134,18 @@ function buildPDF(){
     section("Vaccinations à jour"); table(D.ok, true);
     section("Vaccinations à faire"); table(D.todo, false);
     if(D.discuss.length){ section("À discuter avec un professionnel"); table(D.discuss, false); }
+    y += 4;
+    { const bh = 11;
+      if(draw){
+        doc.setFillColor(0,99,203); doc.roundedRect(M, y, CW, bh, 2, 2, "F");
+        doc.setTextColor(255,255,255); doc.setFont("helvetica","bold"); doc.setFontSize(10.5);
+        doc.text(pdfSafe("Prendre rendez-vous et partager cette fiche sur Doctolib  >"), W/2, y + 7.2, {align:"center"});
+        doc.link(M, y, CW, bh, {url:"https://www.doctolib.fr/"});
+      }
+      y += bh + 2;
+      if(draw){ doc.setTextColor(80,80,80); doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.text(pdfSafe("Connectez-vous, prenez rendez-vous avec votre soignant, puis ajoutez ce fichier à vos documents et partagez-le avec lui."), W/2, y + 2.5, {align:"center"}); }
+      y += 7;
+    }
     y += 3;
     const foot = (D.todo.concat(D.discuss).some(r => r.doubt) ? "* Statut incertain déclaré par le patient : la vaccination est recommandée dans le doute. " : "") +
       "Fiche établie à partir des déclarations du patient, non vérifiées. Certaines situations particulières (maladies rares ou traitements spécifiques, activités professionnelles, voyages) ne sont pas couvertes par cet outil. Recommandations élaborées à partir du calendrier vaccinal mis à jour en 2026 (ministère chargé de la Santé). Site d'information : les vaccins doivent être prescrits par un professionnel de santé ; aucune information fournie ne remplace l'avis d'un professionnel de santé.";
