@@ -183,6 +183,8 @@ input[type=range]{width:100%;accent-color:var(--blue);height:32px}
 .vrow{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .vcard h3{color:var(--ink);font-size:19px;font-weight:800}
 .vcard .benefit{font-size:15px;color:var(--muted);line-height:1.4}
+.vcard .entourage{display:flex;gap:8px;align-items:flex-start;font-size:15px;font-weight:700;color:var(--blue);background:var(--tint);border-radius:4px;padding:8px 10px;line-height:1.35}
+.vcard .entourage svg{flex:none;margin-top:1px}
 .vcard .how,.vcard .when{font-size:16px;display:flex;gap:10px;align-items:baseline}
 .vcard .when{font-weight:700;color:var(--c)}
 .vcard .lbl{flex:none;width:64px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -661,6 +663,36 @@ const BENEFIT = {
 };
 function benefitOf(r){ return BENEFIT[r.id] || r.dis || ""; }
 
+// Protection de l'entourage, quand elle compte vraiment
+function entourageOf(r, s){
+  const l = k => (s.life || []).includes(k);
+  const out = [];
+  if(r.id === "flu" || r.id === "covid"){
+    if(l("prosante")) out.push("vos patients, souvent fragiles");
+    if(l("fragile")) out.push("votre proche fragile");
+    if(l("ehpad")) out.push("les autres résidents");
+    if(r.id === "flu" && l("bebe")) out.push("le bébé, qui ne peut pas être vacciné contre la grippe avant 6 mois");
+  }
+  if(r.id === "ror"){
+    if(l("bebe")) out.push("la future maman (la rubéole est dangereuse pour le fœtus) et le bébé (la rougeole est grave chez le nourrisson)");
+    if(l("fragile")) out.push("votre proche fragile, qui ne peut souvent pas recevoir ce vaccin");
+    if(l("prosante")) out.push("vos patients");
+    if(l("petiteenfance")) out.push("les jeunes enfants dont vous vous occupez");
+  }
+  if(r.id === "vzv"){
+    if(l("fragile")) out.push("votre proche fragile, chez qui la varicelle peut être très grave");
+    if(l("bebe")) out.push("la future maman et son bébé");
+    if(l("prosante")) out.push("vos patients");
+    if(l("petiteenfance")) out.push("les jeunes enfants dont vous vous occupez");
+  }
+  if((r.id === "dtp" || r.id === "coq5") && l("bebe")) out.push("le bébé, pour qui la coqueluche peut être mortelle");
+  if(r.id === "hepb" && l("prosante")) out.push("vos patients");
+  if(!out.length) return "";
+  const sep = out.some(t => /[,(]/.test(t)) ? " ; " : ", ";
+  const txt = out.length === 1 ? out[0] : out.slice(0, -1).join(sep) + (sep === " ; " ? " ; ainsi que " : ", ainsi que ") + out[out.length - 1];
+  return "Ce vaccin protège aussi " + txt + ".";
+}
+
 // Période à laquelle faire le vaccin manquant
 function periodOf(r, s){
   if(r.status === "ok") return "";
@@ -680,7 +712,7 @@ function periodOf(r, s){
   return "À prévoir";
 }
 
-if(typeof module !== "undefined") module.exports = {vaccineQuestions, computeResults, whoCanVaccinate, seasonInfo, periodOf, benefitOf};
+if(typeof module !== "undefined") module.exports = {vaccineQuestions, computeResults, whoCanVaccinate, seasonInfo, periodOf, benefitOf, entourageOf};
 // ====================== RULES-END ======================
 </script>
 
@@ -720,7 +752,7 @@ const CONDS = [
 ];
 const LIFE = [
   {k:"ehpad", t:"Vit en EHPAD ou en long séjour", adult:true},
-  {k:"bebe", t:"Vit avec un bébé de moins de 6 mois", s:"ou un bébé est attendu dans le foyer"},
+  {k:"bebe", t:"Vit avec un bébé de moins de 6 mois", s:"ou avec une femme enceinte"},
   {k:"fragile", t:"Vit avec une personne fragile", s:"immunité affaiblie, maladie grave"},
   {k:"prosante", t:"Travaille dans la santé ou le médico-social", adult:true},
   {k:"petiteenfance", t:"Travaille avec de jeunes enfants", s:"crèche, assistante maternelle", adult:true}
@@ -917,6 +949,7 @@ function resultHTML(){
     return `<article class="vcard ${r.status}" style="--d:${d.toFixed(2)}s">
       <div class="vrow"><h3>${r.name}</h3><span class="stamp">${g.stamp}</span></div>
       <p class="benefit">${benefitOf(r)}</p>
+      ${entourageOf(r, S) ? `<p class="entourage"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.5"/><path d="M2.5 20c1-3.5 3-5 5.5-5s4.5 1.5 5.5 5M14 15.5c2.5-.5 5 .8 6.5 4.5"/></svg><span>${entourageOf(r, S)}</span></p>` : ""}
       <p class="how"><span class="lbl">Schéma</span>${r.how}</p>
       ${when ? `<p class="when"><span class="lbl">Quand</span>${when}</p>` : ""}
       ${r.why ? `<p class="why">${r.why}</p>` : ""}
