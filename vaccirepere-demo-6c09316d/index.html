@@ -82,6 +82,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .syr-fill{position:absolute;inset:0 auto 0 0;background:repeating-linear-gradient(90deg,var(--blue) 0 calc(10% - 2px),transparent calc(10% - 2px) 10%);opacity:.9;transition:width .5s ease}
 .syr-tip{width:14px;height:8px;background:var(--blue);border-radius:0 2px 2px 0}
 .syr-needle{width:26px;height:2px;background:var(--muted)}
+.prog{display:flex;flex-direction:column;gap:6px}
+.pbar{height:8px;border-radius:999px;background:var(--tint);overflow:hidden}
+.pfill{height:100%;border-radius:999px;background:var(--blue);transition:width .4s ease}
 .step-count{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:4px}
 
 /* ---- screens ---- */
@@ -115,6 +118,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .facts{display:flex;flex-wrap:wrap;gap:8px}
 .fact{background:var(--tint);color:var(--blue);font-weight:700;border:none;border-radius:4px;padding:6px 12px;font-size:15px}
 .cta{background:var(--blue);color:#fff;border:none;border-radius:4px;padding:18px 22px;font-family:var(--font-display);font-weight:800;font-size:21px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:background .15s}
+.start-box{display:flex;flex-direction:column;gap:12px;background:var(--tint);border-radius:8px;padding:18px}
+.invite{font-size:17px;font-weight:700;color:var(--blue);line-height:1.35}
+.cta-big{font-size:23px;padding:22px 24px;min-height:68px;box-shadow:0 6px 18px color-mix(in srgb,var(--blue) 30%,transparent)}
 .cta:hover{background:#1212FF}.cta:active{transform:translateY(1px)}
 .cta[disabled]{opacity:.35;cursor:not-allowed;box-shadow:none}
 .fine{font-size:14px;color:var(--muted)}
@@ -747,9 +753,8 @@ function progress(){
   const f = flow(); const i = f.indexOf(S.step);
   const total = Math.max(f.length - 1, 1);
   const pct = Math.min(100, Math.round((Math.max(i,0)) / total * 100));
-  return `<div aria-hidden="true">
-    <div class="syringe"><div class="syr-plunger"></div><div class="syr-rod" style="width:${Math.max(6, 60 - pct*0.54)}px"></div>
-      <div class="syr-barrel"><div class="syr-fill" style="width:${pct}%"></div></div><div class="syr-tip"></div><div class="syr-needle"></div></div>
+  return `<div class="prog">
+    <div class="pbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-label="Progression du questionnaire"><div class="pfill" style="width:${Math.max(pct,4)}%"></div></div>
     <div class="step-count">Question ${i+1} sur ${total} environ</div></div>`;
 }
 
@@ -773,7 +778,10 @@ function render(){
       <h1>Quels vaccins <em>pour moi</em>&nbsp;?</h1>
       <p class="sub">Répondez à quelques questions : votre âge, votre santé, les vaccins déjà faits. Vous saurez ensuite quels vaccins faire et qui peut vous vacciner.</p>
       <p class="facts-line"><span>Adultes, dès 18 ans</span><span>2 minutes</span><span>Anonyme</span><span>Rien n'est enregistré</span></p>
-      <button class="cta" id="start" type="button">C'est parti <span aria-hidden="true">→</span></button>
+      <div class="start-box">
+        <p class="invite">Prenez 2 minutes pour remplir le questionnaire : c'est simple, et vous saurez tout de suite où vous en êtes.</p>
+        <button class="cta cta-big" id="start" type="button">Démarrer le questionnaire <span aria-hidden="true">→</span></button>
+      </div>
       <div class="hero-foot">
         <p class="source">Recommandations élaborées à partir du <a href="https://sante.gouv.fr/prevention-en-sante/preserver-sa-sante/vaccination/calendrier-vaccinal">calendrier vaccinal mis à jour en 2026</a> (ministère chargé de la Santé).</p>
         <p class="mention-light"><b>Mention légale.</b> Ce site est un site d'information. Les vaccins doivent être prescrits par un professionnel de santé (médecin, sage-femme, pharmacien ou infirmier habilité). Aucune information fournie ici ne remplace l'avis d'un professionnel de santé.</p>
@@ -841,7 +849,7 @@ function render(){
     </section>`;
   }
   else if(st === "life"){
-    const list = LIFE.filter(x => S.who !== "enfant" || !x.adult);
+    const list = LIFE.filter(x => (S.who !== "enfant" || !x.adult) && (x.k !== "ehpad" || S.age >= 65));
     h = top(true) + progress() + `<section class="screen">
       <h2 class="q">${S.who==="moi" ? "Et dans votre quotidien&nbsp;?" : "Et dans son quotidien&nbsp;?"}</h2>
       <p class="sub">Votre entourage et votre métier comptent aussi : on se vaccine parfois pour protéger les autres.</p>
@@ -1129,6 +1137,7 @@ function bind(){
     $("agerange").oninput = e => { S.age = +e.target.value; show(); };
     $("next").onclick = () => {
       if(!(S.age >= 18 && S.age <= 49)){ S.preg = null; S.pregStage = null; }
+      if(S.age < 65) S.life = S.life.filter(k => k !== "ehpad");
       S.answers = {}; advance(); };
   }
   if(st === "preg") app.querySelectorAll(".opt").forEach(b => b.onclick = () => { S.preg = b.dataset.v; if(S.preg!=="yes") S.pregStage = null; advance(); });
