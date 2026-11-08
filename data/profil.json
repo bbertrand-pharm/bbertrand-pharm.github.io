@@ -8,6 +8,7 @@
     "Responsable de l'Unité de Recherche Clinique",
     "Soins pharmaceutiques en oncologie, avec le renouvellement et l'adaptation des prescriptions (RAP)",
     "Coordination interprofessionnelle, lien Ville - Hôpital et innovation en santé",
+    "Intelligence artificielle en santé : expertise, évaluation et choix des outils, études cliniques",
     "Ethique et Recherche, protection des patients"
   ],
   "contact": {
@@ -24,6 +25,14 @@
         "Télésurveillance des patients",
         "Coordination de l'hôpital de jour des thérapies orales et des soins de support",
         "Renouvellement et adaptation des prescriptions en coopération avec les oncologues"
+      ]
+    },
+    {
+      "domaine": "Intelligence artificielle et santé",
+      "points": [
+        "Expertise des outils d'IA appliqués à la pharmacie clinique et des LADP",
+        "Évaluation et aide au choix des outils d'IA pour l'hôpital",
+        "Conception et conduite d'études cliniques pour évaluer les outils d'IA en santé"
       ]
     },
     {
