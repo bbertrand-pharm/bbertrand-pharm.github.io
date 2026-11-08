@@ -179,6 +179,10 @@ input[type=range]{width:100%;accent-color:var(--blue);height:32px}
 .section-title .cnt{margin-left:auto;font-size:14px;color:var(--muted);font-weight:700}
 .section-title .dot{width:9px;height:9px;border-radius:50%;background:var(--c, var(--blue))}
 .cards{display:flex;flex-direction:column;gap:10px}
+.upcoming{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.upcoming li{display:flex;gap:14px;align-items:center;background:var(--card);border-radius:6px;padding:10px 14px;font-size:15px;line-height:1.35}
+.u-age{flex:none;width:56px;text-align:center;font-family:var(--font-display);font-weight:800;font-size:24px;color:var(--blue);line-height:1}
+.u-age small{display:block;font-size:12px;font-weight:700;color:var(--muted)}
 .vcard{position:relative;background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:4px;padding:14px 16px;display:flex;flex-direction:column;gap:7px}
 .vrow{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .vcard h3{color:var(--ink);font-size:19px;font-weight:800}
@@ -537,7 +541,7 @@ function computeResults(s, now){
     else if(F.preg) add({id:"ror", name:"ROR", dis:"Rougeole, oreillons, rubéole", status:"later", live:true, doubt:doubt("ror"), how:"Après l'accouchement : ce vaccin n'est pas fait pendant la grossesse. "+nd});
     else if(F.immuno) add({id:"ror", name:"ROR", dis:"Rougeole, oreillons, rubéole", status:"discuss", live:true, doubt:doubt("ror"), how:"Vaccin vivant : contre-indiqué si l'immunité est affaiblie. À voir avec votre médecin."});
     else if(F.pregMaybe) add({id:"ror", name:"ROR", dis:"Rougeole, oreillons, rubéole", status:"discuss", live:true, doubt:doubt("ror"), how:"À faire une fois la grossesse écartée (test). "+nd});
-    else add({id:"ror", name:"ROR", dis:"Rougeole, oreillons, rubéole", status:"todo", live:true, doubt:doubt("ror"), how:nd,
+    else add({id:"ror", name:"ROR", dis:"Rougeole, oreillons, rubéole", status:"todo", live:true, doubt:doubt("ror"), how:nd + (A <= 46 ? " Si vous avez déjà reçu une dose, une seule suffit." : ""), when: A <= 46 ? "Dès que possible (au moins 1 mois après une dose précédente)" : undefined,
       why: (F.l("prosante")||F.l("petiteenfance")) ? "L'immunité contre la rougeole devient exigée pour les professionnels de santé et de la petite enfance." : ""});
   }
   // HPV
@@ -545,7 +549,7 @@ function computeResults(s, now){
     const sch = A <= 14 ? "2 doses espacées de 5 à 13 mois." : "3 doses (au départ, à 2 mois et à 6 mois). Rattrapage jusqu'à 26 ans.";
     if(a.hpv === "yes") add({id:"hpv", name:"Papillomavirus (HPV)", dis:"Prévention de cancers", status:"ok", how:"Schéma complet."});
     else if(F.preg) add({id:"hpv", name:"Papillomavirus (HPV)", dis:"Prévention de cancers", status:"later", doubt:doubt("hpv"), how:"Après la grossesse. "+sch});
-    else add({id:"hpv", name:"Papillomavirus (HPV)", dis:"Prévention de cancers", status:"todo", doubt:doubt("hpv"), how: a.hpv==="no" ? sch+" Si des doses ont déjà été faites, on complète sans recommencer." : sch});
+    else add({id:"hpv", name:"Papillomavirus (HPV)", dis:"Prévention de cancers", status:"todo", doubt:doubt("hpv"), how: a.hpv==="no" ? sch+" Si des doses ont déjà été faites, on complète sans recommencer." : sch, when: A === 26 ? "Dès que possible (rattrapage jusqu'à 26 ans révolus)" : "Dès que possible, en respectant l'intervalle avec une dose déjà faite"});
   }
   // Méningocoques
   if(A <= 24){
@@ -558,7 +562,7 @@ function computeResults(s, now){
     const risk = F.c("rein") || F.c("foie") || F.immuno || F.l("prosante");
     if(a.hepb === "yes") add({id:"hepb", name:"Hépatite B", dis:"Foie", status:"ok", how: F.l("prosante") ? "Pensez au contrôle des anticorps avec la médecine du travail." : "Vacciné(e)."});
     else if(risk) add({id:"hepb", name:"Hépatite B", dis:"Foie", status:"todo", doubt:doubt("hepb"),
-      how:"3 doses (au départ, à 1 mois, à 6 mois).",
+      how:"3 doses (au départ, à 1 mois, à 6 mois). Si des doses ont déjà été faites, on complète sans recommencer.",
       why: F.l("prosante") ? "Obligatoire pour les professionnels de santé." : "Recommandé en cas de maladie du rein ou du foie, ou d'immunité affaiblie."});
     else add({id:"hepb", name:"Hépatite B", dis:"Foie", status:"discuss", doubt:doubt("hepb"),
       how:"3 doses (au départ, à 1 mois, à 6 mois) si vous êtes exposé(e).",
@@ -609,7 +613,7 @@ function computeResults(s, now){
   if(A >= 65 || (A >= 18 && F.immuno)){
     const why = A >= 65 ? "Recommandé à partir de 65 ans, même après un zona." : "Recommandé dès 18 ans en cas d'immunité affaiblie.";
     if(a.zona === "yes") add({id:"zona", name:"Zona", dis:"Shingrix", status:"ok", how:"Protection complète."});
-    else if(a.zona === "one") add({id:"zona", name:"Zona", dis:"Shingrix", status:"todo", how:"2ᵉ dose à faire (au moins 2 mois après la 1ʳᵉ).", why});
+    else if(a.zona === "one") add({id:"zona", name:"Zona", dis:"Shingrix", status:"todo", how:"2ᵉ dose à faire (au moins 2 mois après la 1ʳᵉ).", why, when:"2 mois au moins après la 1ʳᵉ dose"});
     else add({id:"zona", name:"Zona", dis:"Shingrix", status:"todo", doubt:doubt("zona"), how:"2 doses de Shingrix espacées de 2 mois.", why});
   }
   // VRS adulte
@@ -723,6 +727,26 @@ function entourageOf(r, s){
   return "Ce vaccin protège aussi " + txt + ".";
 }
 
+// Prochains rendez-vous vaccinaux liés à l'âge (rien n'est recommandé avant l'heure)
+function upcomingOf(s, now){
+  const F = flags(s), A = s.age, U = [];
+  if(A < 11) return U;
+  const d = dtpPlan(s);
+  const res = computeResults(s, now);
+  const has = id => res.some(r => r.id === id);
+  const dtpDue = res.some(r => r.id === "dtp" && r.status !== "ok");
+  if(d && d.next && !dtpDue && !F.preg) U.push({age:d.next, name: d.next === 25 ? "DTP-coqueluche" : "DTP", text: d.next === 25 ? "Rappel avec la coqueluche (dTcaP)." : (d.next > 65 ? "Rappel dTP (tous les 10 ans après 65 ans)." : "Rappel dTP.")});
+  if(A < 65 && !has("flu")) U.push({age:65, name:"Grippe et Covid-19", text:"Un vaccin chaque automne."});
+  if(A < 65 && !has("pneumo")) U.push({age:65, name:"Pneumocoque", text:"Une seule dose."});
+  if(A < 65 && !has("zona")) U.push({age:65, name:"Zona", text:"2 doses, même après un zona."});
+  if(!has("rsv")){
+    if(A < 65 && F.riskRsv) U.push({age:65, name:"VRS", text:"Une dose, en raison de votre maladie du cœur ou des poumons."});
+    else if(A < 75) U.push({age:75, name:"VRS", text:"Une dose (dès 65 ans en cas de maladie du cœur ou des poumons)."});
+  }
+  if(A < 80 && !F.immuno && !F.l("ehpad")) U.push({age:80, name:"Covid-19", text:"Une dose en plus chaque printemps."});
+  return U.sort((x, y) => x.age - y.age);
+}
+
 // Période à laquelle faire le vaccin manquant
 function periodOf(r, s){
   if(r.status === "ok") return "";
@@ -742,7 +766,7 @@ function periodOf(r, s){
   return "À prévoir";
 }
 
-if(typeof module !== "undefined") module.exports = {vaccineQuestions, computeResults, whoCanVaccinate, seasonInfo, periodOf, benefitOf, entourageOf};
+if(typeof module !== "undefined") module.exports = {vaccineQuestions, computeResults, whoCanVaccinate, seasonInfo, periodOf, benefitOf, entourageOf, upcomingOf};
 // ====================== RULES-END ======================
 </script>
 
@@ -997,6 +1021,9 @@ function resultHTML(){
     </div>`;
   head += `<p class="caution" role="note"><b>Attention :</b> certaines situations particulières (maladies rares ou traitements spécifiques, activités professionnelles, voyages) ne sont pas couvertes par cet outil. Parlez-en à votre équipe médicale.</p>`;
   if(!todo) head += `<div class="cheer">Bien joué&nbsp;! Gardez votre carnet à jour et revenez à chaque anniversaire de rappel.</div>`;
+  const up = upcomingOf(S, NOW);
+  const renderUp = () => up.length ? `<h3 class="section-title"><span class="dot" style="background:var(--muted)"></span>Vos prochains rendez-vous<span class="cnt">${up.length}</span></h3>
+    <ol class="upcoming">${up.map(u => `<li><span class="u-age">${u.age}<small>ans</small></span><span><b>${u.name}</b><br>${u.text}</span></li>`).join("")}</ol>` : "";
   groups.forEach(g => {
     const list = R.filter(r => r.status === g.st);
     if(!list.length) return;
@@ -1004,6 +1031,7 @@ function resultHTML(){
   });
 
   // where
+  head += renderUp();
   const pros = whoCanVaccinate(S, R);
   const needNames = R.filter(r => r.status !== "ok").map(r => r.name);
   if(needNames.length){
@@ -1087,6 +1115,7 @@ function ficheHTML(){
       <h5>Vaccinations à faire</h5>${tbl(D.todo, "")}
       ${D.discuss.length ? `<h5>À discuter avec un professionnel</h5>${tbl(D.discuss, "")}` : ""}
       <p style="margin:4px 0 0"><a href="https://www.doctolib.fr/" target="_blank" rel="noopener" style="display:block;text-align:center;background:#0063CB;color:#fff;font-weight:700;text-decoration:none;border-radius:6px;padding:8px">Prendre rendez-vous et partager cette fiche sur Doctolib →</a></p>
+      ${upcomingOf(S, NOW).length ? `<h5>Prochains rendez-vous</h5><p>${upcomingOf(S, NOW).map(u => `<b>${u.age} ans</b> : ${esc(u.name)}`).join(" · ")}</p>` : ""}
       <div class="sh-foot">${D.todo.concat(D.discuss).some(r => r.doubt) ? "* Statut incertain déclaré par le patient : la vaccination est recommandée dans le doute.<br>" : ""}
         Fiche établie à partir des déclarations du patient, non vérifiées. Certaines situations particulières (maladies rares ou traitements spécifiques, activités professionnelles, voyages) ne sont pas couvertes par cet outil. Recommandations élaborées à partir du calendrier vaccinal mis à jour en 2026. Site d'information : les vaccins doivent être prescrits par un professionnel de santé ; aucune information fournie ne remplace l'avis d'un professionnel.</div>
     </div>
