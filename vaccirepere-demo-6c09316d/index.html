@@ -360,17 +360,11 @@ function vaccineQuestions(s, now){
   }
 
   // ----- 11 ans et plus -----
-  // DTP / coqueluche
+  // DTP / coqueluche : règles de rattrapage du calendrier (rappels à âge fixe, tolérance de 25 ans avant 65 ans, de 15 ans ensuite)
   if(!F.preg){
-    const ms = [11,25,45,65,75,85,95,105];
-    const M = ms.filter(x => x <= A).pop();
-    let sub = "Le dernier rappel est noté dans le carnet de santé ou de vaccination.";
-    if(M===11) sub = "Rappel prévu entre 11 et 13 ans (avec la coqueluche).";
-    if(M===25) sub = "Le rappel de 25 ans protège aussi contre la coqueluche. Un rappel fait peu avant 25 ans compte.";
-    if(M===45) sub = "Rappel prévu à 45 ans (avec la coqueluche).";
-    if(M>=65) sub = "Après 65 ans, un rappel tous les 10 ans.";
-    Q.push({id:"dtp", vac:"DTP-coqueluche", dis:"Diphtérie, tétanos, polio, coqueluche",
-      q:`${P.avez} eu un rappel diphtérie-tétanos-polio depuis l'âge de ${M} ans ?`, sub, opts:yn()});
+    const d = dtpPlan(s);
+    Q.push({id:"dtp", vac: d.coq ? "DTP-coqueluche" : "DTP", dis: d.coq ? "Diphtérie, tétanos, polio, coqueluche" : "Diphtérie, tétanos, poliomyélite",
+      q: d.q, sub: d.sub, opts:yn()});
     if(F.l("bebe") && a.dtp === "yes") Q.push({id:"coq5", vac:"Coqueluche", dis:"Protéger le bébé",
       q:`${P.avez} reçu un vaccin contre la coqueluche il y a moins de 5 ans ?`,
       sub:"La coqueluche est très grave pour les nourrissons : l'entourage se protège pour les protéger.", opts:yn()});
@@ -433,6 +427,25 @@ function vaccineQuestions(s, now){
   return Q;
 }
 
+function dtpPlan(s){
+  const A = s.age, life = s.life || [];
+  const pro = life.includes("prosante") || life.includes("petiteenfance") || life.includes("bebe");
+  const ms = [25,45,65,75,85,95,105];
+  const next = ms.find(x => x > A);
+  const P = pron(s);
+  if(A <= 24) return {mode:"ado", coq:true, next:25,
+    q:`${P.avez} eu le rappel diphtérie-tétanos-polio-coqueluche prévu entre 11 et 13 ans ?`,
+    sub:"Il est noté dans le carnet de santé. Prochain rappel à 25 ans."};
+  if(A <= 39) return {mode:"25", coq:true, next:45,
+    q:`${P.avez} eu le rappel de 25 ans (diphtérie, tétanos, polio et coqueluche) ?`,
+    sub:"Un rappel fait peu avant ou après 25 ans compte. Sans ce rappel, un rattrapage avec la coqueluche est possible jusqu'à 39 ans."};
+  if(A <= 64) return {mode:"tol25", coq:pro, next,
+    q:`Votre dernier rappel diphtérie-tétanos-polio date-t-il de moins de 25 ans ?`.replace("Votre dernier", s.who === "moi" ? "Votre dernier" : "Le dernier"),
+    sub:`Les rappels se font à 25, 45 et 65 ans. Si le dernier date de moins de 25 ans, le prochain se fera à ${next} ans.`};
+  return {mode:"tol15", coq:pro, next,
+    q:`Votre dernier rappel diphtérie-tétanos-polio date-t-il de moins de 15 ans ?`.replace("Votre dernier", s.who === "moi" ? "Votre dernier" : "Le dernier"),
+    sub:`Après 65 ans, les rappels se font tous les 10 ans (75, 85, 95 ans). Si le dernier date de moins de 15 ans, le prochain se fera à ${next} ans.`};
+}
 function covidDelay(s, F){
   return (s.age >= 80 || F.immuno || F.l("ehpad")) ? 3 : 6;
 }
@@ -493,14 +506,19 @@ function computeResults(s, now){
   }
 
   // ===== 11 ans et plus =====
-  // DTP-coqueluche
+  // DTP (+ coqueluche selon l'âge et le métier)
   if(!F.preg){
-    const ms = [11,25,45,65,75,85,95,105];
-    const M = ms.filter(x => x <= A).pop(), next = ms.find(x => x > A);
-    if(a.dtp === "yes") add({id:"dtp", name:"DTP-coqueluche", dis:"Diphtérie, tétanos, polio, coqueluche", status:"ok", how:`Prochain rappel à ${next} ans.`});
-    else add({id:"dtp", name:"DTP-coqueluche", dis:"Diphtérie, tétanos, polio, coqueluche", status:"todo", doubt:doubt("dtp"),
-      how: A <= 13 ? "Rappel dTcaP : c'est le bon âge (11–13 ans)." : "1 rappel dTcaP (diphtérie, tétanos, coqueluche, polio).",
-      why: "Ensuite, rappels à âge fixe : 25, 45 et 65 ans, puis tous les 10 ans."});
+    const d = dtpPlan(s);
+    const name = d.coq ? "DTP-coqueluche" : "DTP";
+    const dis = d.coq ? "Diphtérie, tétanos, polio, coqueluche" : "Diphtérie, tétanos, poliomyélite";
+    const vac = d.coq ? "dTcaP (diphtérie, tétanos, coqueluche, polio)" : "dTP (diphtérie, tétanos, polio)";
+    if(a.dtp === "yes") add({id:"dtp", name: (d.mode === "ado" || d.mode === "25") ? name : "DTP", dis: (d.mode === "ado" || d.mode === "25") ? dis : "Diphtérie, tétanos, poliomyélite", status:"ok", how:`Prochain rappel à ${d.next} ans${d.coq && d.next <= 65 && (F.l("prosante")||F.l("petiteenfance")) ? ", avec la coqueluche (métier)" : ""}.`, coq:d.coq});
+    else add({id:"dtp", name, dis, status:"todo", doubt:doubt("dtp"), coq:d.coq,
+      how: d.mode === "ado" ? "1 rappel de rattrapage dTcaP (diphtérie, tétanos, coqueluche, polio)." :
+           d.mode === "25" ? "1 rappel dTcaP : rattrapage du rappel de 25 ans, avec la coqueluche (possible jusqu'à 39 ans)." :
+           `1 rappel ${vac} dès que possible.`,
+      why: d.mode === "ado" || d.mode === "25" ? `Ensuite, rappels à 45 et 65 ans, puis tous les 10 ans.` :
+           `Ensuite, on reprend le calendrier : prochain rappel au rendez-vous fixe suivant (${d.next === 45 ? "45 ou 65 ans" : "âge fixe suivant"}), selon le professionnel.`});
     if(F.l("bebe") && a.dtp === "yes"){
       if(a.coq5 === "yes") add({id:"coq5", name:"Coqueluche", dis:"Entourage du bébé", status:"ok", how:"Vous protégez bien le bébé."});
       else add({id:"coq5", name:"Coqueluche", dis:"Entourage du bébé", status:"todo", doubt:doubt("coq5"), how:"1 rappel dTcaP si la maman n'a pas été vaccinée pendant sa grossesse.", why:"Vaccin à faire au plus tôt, idéalement avant l'arrivée du bébé."});
@@ -670,7 +688,10 @@ const BENEFIT = {
   beyfortus: "Protège votre bébé de la bronchiolite à VRS, première cause d'hospitalisation des nourrissons en hiver.",
   carnet: "Les vaccins du nourrisson le protègent dès ses premiers mois contre 11 maladies graves : coqueluche, méningites, rougeole, hépatite B…"
 };
-function benefitOf(r){ return BENEFIT[r.id] || r.dis || ""; }
+function benefitOf(r){
+  if(r.id === "dtp" && r.coq === false) return "Protège contre le tétanos (infection grave après une plaie souillée), la diphtérie et la poliomyélite.";
+  return BENEFIT[r.id] || r.dis || "";
+}
 
 // Protection de l'entourage, quand elle compte vraiment
 function entourageOf(r, s){
@@ -694,7 +715,7 @@ function entourageOf(r, s){
     if(l("prosante")) out.push("vos patients");
     if(l("petiteenfance")) out.push("les jeunes enfants dont vous vous occupez");
   }
-  if((r.id === "dtp" || r.id === "coq5") && l("bebe")) out.push("le bébé, pour qui la coqueluche peut être mortelle");
+  if(((r.id === "dtp" && r.coq) || r.id === "coq5") && l("bebe")) out.push("le bébé, pour qui la coqueluche peut être mortelle");
   if(r.id === "hepb" && l("prosante")) out.push("vos patients");
   if(!out.length) return "";
   const sep = out.some(t => /[,(]/.test(t)) ? " ; " : ", ";
