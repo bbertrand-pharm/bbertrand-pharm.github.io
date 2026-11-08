@@ -208,6 +208,8 @@ input[type=range]{width:100%;accent-color:var(--blue);height:32px}
 .caution{font-size:15px;line-height:1.4;background:color-mix(in srgb,var(--sun) 10%,var(--paper));border:1px solid color-mix(in srgb,var(--sun) 45%,transparent);border-left:4px solid var(--sun);border-radius:4px;padding:10px 12px}
 .caution b{color:var(--sun)}
 .others{font-size:15px;color:var(--muted);border-left:3px solid var(--blue);padding:4px 0 4px 12px}
+.rdv{display:inline-flex;align-items:center;gap:6px;justify-self:start;margin-top:6px;font-size:14px;font-weight:700;color:#fff;background:var(--blue);text-decoration:none;border-radius:4px;padding:8px 12px}
+.rdv:hover{background:#1212FF;color:#fff}
 .plist{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:14px}
 .plist li{display:flex;gap:8px;align-items:flex-start;line-height:1.3}
 .plist .mk{flex:none;width:20px;height:20px;border-radius:3px;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;background:var(--leaf);margin-top:1px}
@@ -724,6 +726,11 @@ const LIFE = [
   {k:"petiteenfance", t:"Travaille avec de jeunes enfants", s:"crèche, assistante maternelle", adult:true}
 ];
 
+const DOCTOLIB = {
+  pharma: "https://www.doctolib.fr/pharmacie",
+  med: "https://www.doctolib.fr/medecin-generaliste",
+  inf: "https://www.doctolib.fr/infirmier"
+};
 let S = fresh();
 function fresh(){ return {step:"welcome", who:null, age:null, preg:null, pregStage:null, conds:[], life:[], answers:{}, hist:[]}; }
 const NOW = new Date();
@@ -946,9 +953,11 @@ function resultHTML(){
         <h4>${p.t}</h4>
         <p>${p.d}</p>
         <p class="pcount">${yes} vaccin${yes>1?"s":""} sur ${p.items.length} de votre liste</p>
+        ${DOCTOLIB[p.id] ? `<a class="rdv" href="${DOCTOLIB[p.id]}" target="_blank" rel="noopener">Prendre rendez-vous sur Doctolib <span aria-hidden="true">↗</span></a>` : ""}
         <ul class="plist">${p.items.map(i => `<li class="${i.v}"><span class="mk" aria-hidden="true">${i.v==="no" ? "✕" : "✓"}</span><span><b>${i.name}</b>${i.v==="no" ? ` : <span class="sr">non</span>${i.why}` : (i.v==="cond" ? ` : ${i.why}` : "")}</span></li>`).join("")}</ul>
       </div>`;}).join("")}</div>
-      <p class="others">D'autres professionnels, comme les médecins spécialistes et les sages-femmes, ou certaines structures, comme les centres de vaccination, peuvent aussi vous vacciner. N'hésitez pas à vous renseigner auprès de votre équipe médicale.</p>`;
+      <p class="others">D'autres professionnels, comme les médecins spécialistes et les sages-femmes, ou certaines structures, comme les centres de vaccination, peuvent aussi vous vacciner. N'hésitez pas à vous renseigner auprès de votre équipe médicale.</p>
+      <p class="others">Tous les professionnels ne proposent pas de rendez-vous en ligne : vous pouvez aussi appeler ou passer directement à la pharmacie ou au cabinet. Après une prise de rendez-vous sur Doctolib, vous pouvez partager votre fiche de synthèse avec le soignant depuis votre compte (rubrique des documents).</p>`;
     const tips = [];
     if(S.age >= 11 && R.some(r => r.id==="flu" && r.status==="todo")) tips.push("<b>Grippe :</b> depuis juillet 2026, le vaccin se délivre sur prescription. Dès 11 ans, le pharmacien ou l'infirmier la rédige sur place.");
     tips.push("<b>Le jour J :</b> apportez votre carnet de santé ou ouvrez le carnet de vaccination de Mon espace santé. Plusieurs vaccins peuvent souvent être faits le même jour.");
@@ -1028,6 +1037,7 @@ function ficheHTML(){
       <p class="sub">Téléchargez d'abord la fiche sur votre téléphone, puis choisissez :</p>
       <ol>
         <li><b>La ranger dans Mon espace santé</b> (votre dossier médical partagé) : ouvrez l'application Mon espace santé, touchez « Ajouter un document », puis choisissez le fichier « fiche-vaccins » dans vos téléchargements. Les professionnels que vous avez autorisés pourront la consulter. <a href="https://www.monespacesante.fr/">monespacesante.fr</a></li>
+        <li><b>La partager sur Doctolib</b> si vous y avez pris rendez-vous : ajoutez le fichier à vos documents dans votre compte Doctolib et partagez-le avec le soignant concerné.</li>
         <li><b>La montrer</b> à votre médecin, votre pharmacien, votre infirmier ou votre sage-femme le jour du rendez-vous.</li>
       </ol>
       <p class="warn">Vous gardez la main : la fiche n'est envoyée nulle part sans vous. Ce site n'enregistre et ne transmet aucune donnée.</p>
