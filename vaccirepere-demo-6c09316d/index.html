@@ -210,8 +210,16 @@ input[type=range]{width:100%;accent-color:var(--blue);height:32px}
 .caution{font-size:15px;line-height:1.4;background:color-mix(in srgb,var(--sun) 10%,var(--paper));border:1px solid color-mix(in srgb,var(--sun) 45%,transparent);border-left:4px solid var(--sun);border-radius:4px;padding:10px 12px}
 .caution b{color:var(--sun)}
 .others{font-size:15px;color:var(--muted);border-left:3px solid var(--blue);padding:4px 0 4px 12px}
-.rdv{display:inline-flex;align-items:center;gap:6px;justify-self:start;margin-top:6px;font-size:14px;font-weight:700;color:#fff;background:var(--blue);text-decoration:none;border-radius:4px;padding:8px 12px}
-.rdv:hover{background:#1212FF;color:#fff}
+.rdv{grid-column:1 / -1;display:flex;align-items:center;gap:12px;margin:8px 0 4px;color:#fff;background:#0063CB;text-decoration:none;border-radius:8px;padding:12px 14px;min-height:56px;box-shadow:0 4px 14px rgba(0,99,203,.35);transition:background .15s, transform .08s}
+.pro > .rdv{grid-column:1 / -1}
+.rdv-t b{white-space:nowrap}
+.rdv:hover{background:#004F9E;color:#fff}
+.rdv:active{transform:translateY(1px)}
+.rdv svg{flex:none}
+.rdv-t{display:flex;flex-direction:column;line-height:1.15}
+.rdv-t b{font-size:17px;font-weight:800}
+.rdv-t small{font-size:14px;opacity:.92}
+.rdv-arrow{margin-left:auto;font-size:22px;font-weight:700}
 .plist{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:14px}
 .plist li{display:flex;gap:8px;align-items:flex-start;line-height:1.3}
 .plist .mk{flex:none;width:20px;height:20px;border-radius:3px;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;background:var(--leaf);margin-top:1px}
@@ -986,7 +994,7 @@ function resultHTML(){
         <h4>${p.t}</h4>
         <p>${p.d}</p>
         <p class="pcount">${yes} vaccin${yes>1?"s":""} sur ${p.items.length} de votre liste</p>
-        ${DOCTOLIB[p.id] ? `<a class="rdv" href="${DOCTOLIB[p.id]}" target="_blank" rel="noopener">Prendre rendez-vous sur Doctolib <span aria-hidden="true">↗</span></a>` : ""}
+        ${DOCTOLIB[p.id] ? `<a class="rdv" href="${DOCTOLIB[p.id]}" target="_blank" rel="noopener"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M9 15l2 2 4-4"/></svg><span class="rdv-t"><b>Prendre rendez-vous</b><small>en ligne sur Doctolib</small></span><span class="rdv-arrow" aria-hidden="true">→</span></a>` : ""}
         <ul class="plist">${p.items.map(i => `<li class="${i.v}"><span class="mk" aria-hidden="true">${i.v==="no" ? "✕" : "✓"}</span><span><b>${i.name}</b>${i.v==="no" ? ` : <span class="sr">non</span>${i.why}` : (i.v==="cond" ? ` : ${i.why}` : "")}</span></li>`).join("")}</ul>
       </div>`;}).join("")}</div>
       <p class="others">D'autres professionnels, comme les médecins spécialistes et les sages-femmes, ou certaines structures, comme les centres de vaccination, peuvent aussi vous vacciner. N'hésitez pas à vous renseigner auprès de votre équipe médicale.</p>
