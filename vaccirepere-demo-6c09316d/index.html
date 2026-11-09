@@ -398,7 +398,7 @@ function vaccineQuestions(s, now){
     q: s.who==="moi" ? "Avez-vous été vacciné(e) contre l'hépatite B ?" : "Votre proche a-t-il été vacciné contre l'hépatite B ?",
     sub:"Souvent fait dans l'enfance (vaccin du nourrisson) ou au collège. Vérifiez le carnet de santé.", opts:yn()});
   // Varicelle
-  if(A <= 49 || F.l("prosante") || F.l("petiteenfance") || F.l("fragile")) Q.push({id:"vzv", group:"Maladies de l'enfance", vac:"Varicelle", dis:"Maladie ou vaccin",
+  if((A <= 49 && s.sex !== "homme") || F.l("prosante") || F.l("petiteenfance") || F.l("fragile")) Q.push({id:"vzv", group:"Maladies de l'enfance", vac:"Varicelle", dis:"Maladie ou vaccin",
     q: s.who==="moi" ? "Avez-vous déjà eu la varicelle ou le vaccin contre la varicelle ?" : "Votre proche a-t-il déjà eu la varicelle ou le vaccin ?",
     sub:"La plupart des adultes l'ont eue enfant. Sans antécédent, le vaccin peut être recommandé.", opts:yn()});
   // Grippe
@@ -569,7 +569,7 @@ function computeResults(s, now){
       why:"Recommandé chez l'adulte dans certaines situations : plusieurs partenaires sexuels, proche porteur du virus, voyages fréquents ou longs dans des pays à risque, usage de drogues, soins réguliers… Parlez-en à un professionnel."});
   }
   // Varicelle
-  if(A <= 49 || F.l("prosante") || F.l("petiteenfance") || F.l("fragile")){
+  if((A <= 49 && s.sex !== "homme") || F.l("prosante") || F.l("petiteenfance") || F.l("fragile")){
     const target = F.l("prosante") || F.l("petiteenfance") || F.l("fragile");
     if(a.vzv === "yes") add({id:"vzv", name:"Varicelle", dis:"Immunité", status:"ok", how:"Déjà eue ou vaccin fait : vous êtes protégé(e)."});
     else if(F.preg) add({id:"vzv", name:"Varicelle", dis:"Immunité", status:"later", live:true, doubt:doubt("vzv"), how:"Après l'accouchement : 2 doses espacées de 1 à 2 mois selon le vaccin (vaccin contre-indiqué pendant la grossesse).", when:"Après l'accouchement"});
@@ -818,15 +818,15 @@ const DOCTOLIB = {
   inf: "https://www.doctolib.fr/infirmier"
 };
 let S = fresh();
-function fresh(){ return {step:"welcome", who:null, age:null, preg:null, pregStage:null, conds:[], life:[], answers:{}, hist:[]}; }
+function fresh(){ return {step:"welcome", who:null, sex:null, age:null, preg:null, pregStage:null, conds:[], life:[], answers:{}, hist:[]}; }
 const NOW = new Date();
 const app = document.getElementById("app");
 
 // ---------- flow ----------
 function flow(){
-  const steps = ["who","age"];
+  const steps = ["who","sex","age"];
   if(S.age === null) return steps;
-  if(S.age >= 18 && S.age <= 49) steps.push("preg");
+  if(S.sex !== "homme" && S.age >= 18 && S.age <= 49) steps.push("preg");
   if(S.preg === "yes") steps.push("pregStage");
   steps.push("conds");
   if(S.age >= 11) steps.push("life");
@@ -844,7 +844,7 @@ function back(){ S.step = S.hist.pop() || "welcome"; render(); window.scrollTo({
 
 function progress(){
   const f = flow(); const i = f.indexOf(S.step);
-  const total = Math.max(f.length - 1, 1);
+  const total = S.age === null ? 10 : Math.max(f.length - 1, 1);
   const pct = Math.min(100, Math.round((Math.max(i,0)) / total * 100));
   return `<div class="prog">
     <div class="pbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" aria-label="Progression du questionnaire"><div class="pfill" style="width:${Math.max(pct,4)}%"></div></div>
@@ -887,6 +887,16 @@ function render(){
       <div class="opts">
         ${optBtn("moi","Pour moi","", ICONS.me, "", S.who==="moi")}
         ${optBtn("proche","Pour un proche adulte","", ICONS.other, "un parent, un conjoint…", S.who==="proche")}
+      </div></section>`;
+  }
+  else if(st === "sex"){
+    h = top(true) + progress() + `<section class="screen">
+      <h2 class="q">${S.who==="moi" ? "Vous êtes&nbsp;:" : "Votre proche est&nbsp;:"}</h2>
+      <p class="sub">Cette réponse permet de ne poser les questions sur la grossesse qu'aux personnes concernées.</p>
+      <div class="opts">
+        ${optBtn("femme","Une femme","", ICONS.me, "", S.sex==="femme")}
+        ${optBtn("homme","Un homme","", ICONS.me, "", S.sex==="homme")}
+        ${optBtn("nr","Je préfère ne pas répondre","", ICONS.unsure, "", S.sex==="nr")}
       </div></section>`;
   }
   else if(st === "age"){
@@ -961,7 +971,7 @@ function render(){
     h = top(true) + progress() + `<section class="screen">
       ${q.group ? `<p class="kicker">${q.group}</p>` : ""}
       <div class="visa"><span style="color:var(--blue)">${ICONS.vial}</span><div><div class="vname">${q.vac}</div><div class="vdis">${q.dis}</div></div></div>
-      <h2 class="q">${q.q.replace(/ \?$/,"&nbsp;?")}</h2>
+      <h2 class="q">${gx(q.q).replace(/ \?$/,"&nbsp;?")}</h2>
       ${q.sub ? `<p class="sub">${q.sub}</p>` : ""}
       <div class="opts">${q.opts.map(o => optBtn(o.v, o.label, o.cls, ICONS[o.cls]||"", o.small||"", cur===o.v)).join("")}</div>
       <p class="fine">Pas de carnet sous la main ? Choisissez « Je ne sais pas » : dans le doute, on vaccine. Une dose de plus ne pose pas de problème.</p>
@@ -977,6 +987,7 @@ function render(){
   bind();
 }
 
+function gx(t){ return String(t).replace(/\(e\)/g, S.sex === "femme" ? "e" : (S.sex === "homme" ? "" : "(e)")); }
 function chip(k, t, s, on){
   return `<button class="chip" type="button" data-k="${k}" aria-pressed="${on?'true':'false'}"><span class="box">${on?'✓':''}</span><span><b>${t}</b>${s?`<small>${s}</small>`:''}</span></button>`;
 }
@@ -998,15 +1009,15 @@ function resultHTML(){
     const g = groups.find(x => x.st === r.status);
     if(r.status === "ok") return `<article class="vcard ok" style="--d:${d.toFixed(2)}s">
       <div class="vrow"><h3>${r.name}</h3><span class="stamp">${g.stamp}</span></div>
-      <p class="how small">${r.how}</p></article>`;
+      <p class="how small">${gx(r.how)}</p></article>`;
     const when = periodOf(r, S);
     return `<article class="vcard ${r.status}" style="--d:${d.toFixed(2)}s">
       <div class="vrow"><h3>${r.name}</h3><span class="stamp">${g.stamp}</span></div>
       <p class="benefit">${benefitOf(r)}</p>
       ${entourageOf(r, S) ? `<p class="entourage"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.5"/><path d="M2.5 20c1-3.5 3-5 5.5-5s4.5 1.5 5.5 5M14 15.5c2.5-.5 5 .8 6.5 4.5"/></svg><span>${entourageOf(r, S)}</span></p>` : ""}
-      <p class="how"><span class="lbl">Schéma</span>${r.how}</p>
+      <p class="how"><span class="lbl">Schéma</span>${gx(r.how)}</p>
       ${when ? `<p class="when"><span class="lbl">Quand</span>${when}</p>` : ""}
-      ${r.why ? `<p class="why">${r.why}</p>` : ""}
+      ${r.why ? `<p class="why">${gx(r.why)}</p>` : ""}
       ${r.doubt ? `<span class="doubt">Dans le doute, on vaccine</span>` : ""}
     </article>`;
   };
@@ -1083,7 +1094,7 @@ function ficheData(){
   const condLabels = S.conds.includes("unsure") ? ["Ne sait pas (à préciser avec un professionnel)"] :
     S.conds.includes("none") ? [] : S.conds.map(k => (CONDS.find(c => c.k === k)||{}).t).filter(Boolean);
   const lifeLabels = S.life.filter(k => k !== "none").map(k => (LIFE.find(c => c.k === k)||{}).t).filter(Boolean);
-  let profil = (S.who==="moi" ? "Patient" : (S.who==="enfant" ? "Enfant" : "Proche")) + " · " + (S.age === 0 ? "moins d'1 an" : S.age + " ans");
+  let profil = (S.who==="moi" ? "Patient" : "Proche") + (S.sex === "femme" ? " · femme" : (S.sex === "homme" ? " · homme" : "")) + " · " + S.age + " ans";
   if(S.preg === "yes"){ const st = {lt20:"moins de 20 SA","20_31":"20 à 31 SA","32_36":"32 à 36 SA","37p":"37 SA ou plus"}[S.pregStage]; profil += " · enceinte (" + st + ")"; }
   if(S.preg === "maybe") profil += " · grossesse possible";
   const row = r => ({name:r.name, how:r.how, when:periodOf(r, S), doubt:r.doubt, st:r.status});
@@ -1241,6 +1252,8 @@ function bind(){
   $("back") && ($("back").onclick = back);
   $("start") && ($("start").onclick = () => go("who"));
   const st = S.step;
+  if(st === "sex") app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+    S.sex = b.dataset.v; if(S.sex === "homme"){ S.preg = null; S.pregStage = null; } advance(); });
   if(st === "who") app.querySelectorAll(".opt").forEach(b => b.onclick = () => {
     if(S.who !== b.dataset.v){ S.age = null; S.preg = null; S.pregStage = null; S.life = []; S.answers = {}; }
     S.who = b.dataset.v; advance(); });
@@ -1252,7 +1265,7 @@ function bind(){
     $("plus").onclick = () => { S.age = Math.min(max, S.age+1); show(); };
     $("agerange").oninput = e => { S.age = +e.target.value; show(); };
     $("next").onclick = () => {
-      if(!(S.age >= 18 && S.age <= 49)){ S.preg = null; S.pregStage = null; }
+      if(!(S.sex !== "homme" && S.age >= 18 && S.age <= 49)){ S.preg = null; S.pregStage = null; }
       if(S.age < 65) S.life = S.life.filter(k => k !== "ehpad");
       S.answers = {}; advance(); };
   }
