@@ -46,7 +46,7 @@
     const cCode = col('code produit');
     const idx = {
       exercice: col('exercice'), uf: col('uf'), ufLib: col('libelle'), code: cCode, lib: col('libelle', cCode + 1),
-      compte: col('compte de stock'), q: col('periodes/quantite'), v: col('periodes/valeur'), de: col('de la periode'), a: col('a la periode')
+      compte: col('compte de stock'), lieu: col('lieu de stockage'), q: col('periodes/quantite'), v: col('periodes/valeur'), de: col('de la periode'), a: col('a la periode')
     };
     if (idx.q < 0) idx.q = col('annuel/quantite');
     if (idx.uf < 0 || idx.compte < 0) return {lignes: [], erreur: 'ce n\u2019est pas une extraction \u00ab Analyse_conso \u00bb (colonnes UF ou compte de stock absentes)'};
@@ -58,15 +58,22 @@
       if (!Number.isFinite(code) || !Number.isFinite(parseInt(r[idx.uf], 10))) continue;
       exercice = exercice || r[idx.exercice];
       ufLib = ufLib || r[idx.ufLib];
-      lignes.push({uf: parseInt(r[idx.uf], 10), code, libelle: String(r[idx.lib] || '').trim(), compte: String(r[idx.compte] || '').trim(),
+      lignes.push({uf: parseInt(r[idx.uf], 10), code, libelle: String(r[idx.lib] || '').trim(), compte: String(r[idx.compte] || '').trim(), lieu: idx.lieu >= 0 ? String(r[idx.lieu] || '').trim() : undefined,
         q: +r[idx.q] || 0, v: Math.round((+r[idx.v] || 0) * 100) / 100});
     }
     return {lignes, exercice: exercice ? +exercice : null, ufLib: ufLib ? String(ufLib).trim() : null};
   };
 
   /* ---------- Classements ---------- */
-  E.famille = (compte) => {
-    if (compte === 'H942110') return 'Solutés';
+  /* Solutés = poches et flacons de perfusion du compte H942110 (code « O » de la colonne « Lieu de stockage ») ;
+     les ampoules et la nutrition parentérale de ce compte restent en médicaments. */
+  const POCHES = /\b(POCHE|FLAC|FLACON|VIAFLO|VERSABLE)\b/i;
+  const NUTRITION = /(OLIMEL|INTRALIPID|SMOFLIPID|KABIVEN|CLINIMIX|CLINOMEL|NUMETA|NUTRIFLEX|OMEGAVEN|NUTRYELT|CERNEVIT|SOLUVIT|VITALIPID)/i;
+  E.famille = (compte, lieu, libelle) => {
+    if (compte === 'H942110') {
+      const poche = lieu !== undefined && lieu !== '' ? lieu === 'O' : POCHES.test(libelle || '');
+      return poche && !NUTRITION.test(libelle || '') ? 'Solutés' : 'Médicaments';
+    }
     if (compte.startsWith('H9421')) return 'Médicaments';
     if (compte.startsWith('H9422')) return 'DMS';
     return 'Autres';
@@ -131,7 +138,7 @@
   /* Lignes classées par famille (compte de stock) et financement (listes hors GHS / LPPR). */
   E.lignes = (d) => {
     const hg = new Set(d.ref.horsGHS), lp = new Set(d.ref.lppr), ufs = new Set(E.serviceUFs(d));
-    return d.conso.filter((l) => ufs.has(l.uf)).map((l) => ({...l, famille: E.famille(l.compte), fin: hg.has(l.code) ? 'Hors GHS' : (lp.has(l.code) ? 'LPPR' : 'Intra-GHS')}));
+    return d.conso.filter((l) => ufs.has(l.uf)).map((l) => ({...l, famille: E.famille(l.compte, l.lieu, l.libelle), fin: hg.has(l.code) ? 'Hors GHS' : (lp.has(l.code) ? 'LPPR' : 'Intra-GHS')}));
   };
 
   /* ---------- Publication GitHub (API Contents) ---------- */
@@ -457,7 +464,7 @@
     root.append(el('details', {class: 'eff-method'}, el('summary', {text: 'Méthode'}), el('ul', {},
       el('li', {text: 'Source : extractions « Analyse_conso » du logiciel de gestion, une par UF, valorisées au PMP de la dernière balance définitive ; les retours sont déduits.'}),
       el('li', {text: `Annualisation : montant de la période × 12 / ${p.mois}.`}),
-      el('li', {text: 'Familles selon le compte de stock : H942110 = solutés et électrolytes, autres H9421… = médicaments, H9422… = DMS.'}),
+      el('li', {text: 'Familles selon le compte de stock : solutés = poches et flacons de perfusion du compte H942110 (hors nutrition parentérale) ; autres produits des comptes H9421… = médicaments (ampoules d’électrolytes et nutrition parentérale comprises) ; H9422… = DMS.'}),
       el('li', {text: 'Financement : produit inscrit sur la liste des médicaments hors GHS ou des DMS LPPR = remboursé en sus ; sinon intra-GHS.'}),
       el('li', {text: 'Mise à jour : ' + new Date(d.genere).toLocaleDateString('fr-FR', {day: 'numeric', month: 'long', year: 'numeric'}) + '.'}))));
   };
