@@ -22,11 +22,3 @@ Site statique (une page `index.html`) dont tout le contenu est dans deux fichier
 
 Pour un nouveau poster : Travaux › « Add an entry » › type Poster, année, titre, auteurs, congrès, lien PDF (Google Drive par exemple).
 L'ordre de saisie n'a pas d'importance : le site trie par année et propose filtres et recherche.
-
-## Outil « Le pharmacien clinicien au service de l'efficience » (`efficience/`)
-
-- `efficience/` : page d'accueil listant les tableaux de bord des services.
-- `efficience/service.html?s=<identifiant>` : tableau de bord d'un service, protégé par le mot de passe du service.
-- `efficience/admin.html` : administration (référentiels, services et regroupements d'UF, dépôt des extractions, aperçu, publication).
-
-Les données publiées dans `efficience/data/` sont chiffrées dans le navigateur (AES-GCM 256, clé dérivée du mot de passe par PBKDF2) : une par service, plus la configuration de l'administrateur. Aucun fichier Excel ni aucune donnée en clair n'est déposé dans le dépôt. La publication depuis la page d'administration utilise un jeton GitHub « fine-grained » limité à ce dépôt (Contents : read and write), à ressaisir à chaque fois.
