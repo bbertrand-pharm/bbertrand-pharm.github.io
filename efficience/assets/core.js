@@ -187,7 +187,9 @@
       const s = (f) => Math.round(sum(rows.filter(f), (l) => l.v) * F);
       const o = {med: s((l) => isIntra(l) && l.famille === 'Médicaments'), sol: s((l) => isIntra(l) && l.famille === 'Solutés'),
         dms: s((l) => isIntra(l) && l.famille === 'DMS'), autres: s((l) => isIntra(l) && l.famille === 'Autres'), sus: s((l) => !isIntra(l))};
-      o.total = o.med + o.sol + o.dms + o.autres + o.sus;
+      o.total = s(() => true);
+      o.fam = {};
+      for (const f of ['Médicaments', 'Solutés', 'DMS', 'Autres']) o.fam[f] = {total: s((l) => l.famille === f), sus: s((l) => l.famille === f && !isIntra(l))};
       return o;
     };
     const ufs = [];
@@ -206,7 +208,7 @@
             glob: share(T(null, mine), T(null, intraG)), eur: Math.round(T(null, mine) * F)};
         });
       }
-      return {code: g.code, ufs: g.ufs, nom: g.ufs.length === 1 ? g.ufs[0].nom : g.code + ' — ' + g.ufs.map((u) => u.uf).join(', '), cles, ...bloc(rows)};
+      return {code: g.code, ufs: g.ufs, nom: g.ufs.length === 1 ? g.ufs[0].nom : g.ufs.map((u) => u.nom).join(', '), cles, ...bloc(rows)};
     });
     const top = (perim, fam) => {
       const rows = L.filter((l) => isIntra(l) && l.famille === fam && (perim === '*' || regs.find((g) => g.code === perim).ufs.some((u) => u.uf === l.uf)));
@@ -224,8 +226,26 @@
           classe: prev / t < 0.8 ? 'A' : (prev / t < 0.95 ? 'B' : 'C')};
       });
     };
+    /* Références d'un regroupement par coût décroissant : famille ('*' = toutes), avec ou sans les produits remboursés en sus. */
+    const produits = (code, fam, avecSus) => {
+      const g = regs.find((x) => x.code === code);
+      const rows = L.filter((l) => g.ufs.some((u) => u.uf === l.uf) && (fam === '*' || l.famille === fam) && (avecSus || isIntra(l)));
+      const m = new Map();
+      for (const l of rows) {
+        const p = m.get(l.code) || {code: l.code, libelle: l.libelle, famille: l.famille, fin: l.fin, q: 0, v: 0, ufs: new Set()};
+        p.q += l.q; p.v += l.v; p.ufs.add(l.uf); m.set(l.code, p);
+      }
+      const prods = [...m.values()].filter((p) => p.v !== 0 || p.q !== 0).sort((a, b) => b.v - a.v || b.q - a.q);
+      const t = sum(prods.filter((p) => p.v > 0), (p) => p.v);
+      let cum = 0;
+      return prods.map((p, i) => {
+        if (p.v > 0) cum += p.v;
+        return {rang: i + 1, code: p.code, libelle: p.libelle, famille: p.famille, fin: p.fin, ufs: [...p.ufs].sort().join(', '),
+          q: Math.round(p.q * F), v: Math.round(p.v * F), vr: p.v * F, cumul: t ? Math.round(cum / t * 1000) / 10 : null};
+      });
+    };
     return {F, total: Math.round(tot), intra: Math.round(intra), sus: Math.round(tot - intra), partIntra: tot ? Math.round(intra / tot * 1000) / 10 : null,
-      refs: new Set(L.map((l) => l.code)).size, regs: regs.sort((a, b) => b.total - a.total), ufs, top};
+      refs: new Set(L.map((l) => l.code)).size, regs, ufs, top, produits};
   };
 
   /* ---------- Chiffrement (AES-GCM 256, clé dérivée PBKDF2-SHA256) ---------- */
@@ -261,7 +281,7 @@
     for (const [k, v] of Object.entries(attrs || {})) {
       if (k === 'class') n.className = v; else if (k === 'text') n.textContent = v; else if (k.startsWith('on')) n.addEventListener(k.slice(2), v); else if (v != null) n.setAttribute(k, v);
     }
-    for (const k of kids.flat()) if (k != null) n.append(k.nodeType ? k : document.createTextNode(String(k)));
+    for (const k of kids.flat(Infinity)) if (k != null) n.append(k.nodeType ? k : document.createTextNode(String(k)));
     return n;
   };
   E.el = el;
@@ -320,76 +340,71 @@
   E.renderDashboard = (root, d) => {
     const c = E.compute(d);
     const p = d.periode;
+    const multi = c.regs.length > 1;
+    const anchor = (g) => 'reg-' + E.slug(g.code);
     root.replaceChildren();
-    const finMois = E.MOIS[p.mois - 1];
     root.append(
       el('header', {class: 'eff-head'},
         el('p', {class: 'eff-kicker', text: E.TITRE}),
         el('h1', {text: d.service}),
-        el('p', {class: 'eff-sub', text: `Exercice ${p.exercice} · consommations arrêtées de janvier à ${finMois} (${p.mois} mois), extrapolées sur 12 mois · valorisation au PMP`}),
+        el('p', {class: 'eff-sub', text: `Exercice ${p.exercice} · consommations arrêtées de janvier à ${E.MOIS[p.mois - 1]} (${p.mois} mois), extrapolées sur 12 mois · valorisation au PMP`}),
         el('p', {class: 'eff-lead'}, 'Sur une année, le service consommerait ', el('b', {text: E.eur(c.total)}), ' de produits pharmaceutiques, dont ',
-          el('b', {text: E.pct(c.partIntra)}), ' à la charge de l’hôpital (intra-GHS).', c.regs.length > 1 ? [' Premier poste : ', el('b', {text: c.regs[0].nom}), '.'] : null)),
-      el('section', {class: 'eff-tiles'},
-        [['Coût annualisé total', E.eur(c.total)], ['À la charge de l’hôpital (intra-GHS)', E.eur(c.intra)], ['Remboursé en sus (hors GHS + LPPR)', E.eur(c.sus)], ['Références consommées', E.num(c.refs)]]
-          .map(([l, v]) => el('div', {class: 'eff-card'}, el('div', {class: 'eff-tl', text: l}), el('div', {class: 'eff-tv', text: v}))))
-    );
+          el('b', {text: E.pct(c.partIntra)}), ' à la charge de l’hôpital (intra-GHS) et ', el('b', {text: E.eur(c.sus)}), ' remboursés en sus du séjour.'),
+        multi ? el('nav', {class: 'eff-nav', 'aria-label': 'Regroupements'}, c.regs.map((g) => el('a', {href: '#' + anchor(g)}, el('b', {text: g.code}), ' ', E.eur(g.total))),
+          el('a', {href: '#synthese-regroupements', text: 'Synthèse'})) : null));
 
-    root.append(el('section', {id: 'couts'}, el('h2', {text: 'Coûts annualisés par ' + (c.regs.length > 1 ? 'regroupement' : 'UF')}),
-      el('p', {class: 'eff-note', text: 'Médicaments, solutés et DMS à la charge de l’hôpital, et produits remboursés en sus du GHS (pris en charge par l’Assurance maladie).'}),
-      stackedBars(c.regs.length > 1 ? c.regs : c.ufs.map((u) => ({...u, nom: u.uf + ' — ' + u.nom})))));
+    c.regs.forEach((g, gi) => {
+      const sec = el('section', {class: 'eff-reg', id: anchor(g)});
+      const titre = g.ufs.length === 1 ? `${g.code} — ${g.ufs[0].nom}` : `${g.code} — regroupement de ${g.ufs.length} UF`;
+      sec.append(el('h2', {class: 'eff-reg-h', text: titre}),
+        el('p', {class: 'eff-note'}, g.ufs.map((u, i) => [i ? ' · ' : '', el('span', {class: u.recue ? null : 'eff-off', text: `${u.uf} ${u.nom}` + (u.recue ? '' : ' (non transmise)')})])));
 
-    const avecCles = c.regs.filter((g) => g.cles);
-    if (avecCles.length) {
-      const host = el('div');
-      const sel = el('select', {class: 'eff-select', 'aria-label': 'Regroupement'}, avecCles.map((g) => el('option', {value: g.code, text: g.nom})));
-      const show = () => {
-        const g = avecCles.find((x) => x.code === sel.value);
-        const manquantes = g.cles.filter((r) => !r.recue).map((r) => r.uf);
-        const vides = g.cles.filter((r) => r.recue && !r.eur).map((r) => r.uf);
-        host.replaceChildren(table([
-          {key: 'uf', label: 'UF'}, {key: 'nom', label: 'Service'}, {key: 'med', label: 'Médicaments', n: 1, fmt: E.pct}, {key: 'sol', label: 'Solutés', n: 1, fmt: E.pct},
-          {key: 'dms', label: 'DMS', n: 1, fmt: E.pct}, {key: 'glob', label: 'Global', n: 1, fmt: E.pct}, {key: 'eur', label: 'Montant annualisé', n: 1, fmt: E.eur}
-        ], g.cles.map((r) => ({...r, _muted: !r.recue})), {uf: 'Total', med: '100 %', sol: '100 %', dms: '100 %', glob: '100 %', eur: E.eur(sum(g.cles, (r) => r.eur))}),
-        (manquantes.length || vides.length) ? el('p', {class: 'eff-warn'}, [
-          vides.length ? `UF sans consommation imputée sur la période : ${vides.join(', ')}. ` : '',
-          manquantes.length ? `Extraction non transmise : ${manquantes.join(', ')}. ` : '',
-          'Une UF approvisionnée sur le stock d’une autre apparaît à 0 % : pour le stock partagé, une clé fondée sur l’activité (journées, séjours, passages) peut être plus juste.'
-        ].join('')) : null);
+      /* 1. Coût global par type de produit */
+      const famTile = (f, label, susLabel) => el('div', {class: 'eff-card'}, el('div', {class: 'eff-tl', text: label}), el('div', {class: 'eff-tv', text: E.eur(g.fam[f].total)}),
+        el('div', {class: 'eff-small', text: g.fam[f].sus ? `dont ${E.eur(g.fam[f].sus)} ${susLabel}` : 'entièrement à la charge de l’hôpital'}));
+      sec.append(el('h3', {text: '1. Coût global annualisé par type de produit'}),
+        el('div', {class: 'eff-tiles'},
+          el('div', {class: 'eff-card eff-card-main'}, el('div', {class: 'eff-tl', text: 'Coût global annualisé'}), el('div', {class: 'eff-tv', text: E.eur(g.total)}),
+            el('div', {class: 'eff-small', text: `${E.eur(g.total - g.sus)} à la charge de l’hôpital · ${E.eur(g.sus)} remboursés en sus`})),
+          famTile('Médicaments', 'Médicaments', 'hors GHS'), famTile('Solutés', 'Solutés', 'remboursés en sus'), famTile('DMS', 'Dispositifs médicaux stériles', 'LPPR')),
+        el('div', {class: 'eff-syn-bar', role: 'img', 'aria-label': 'Répartition du coût par type de produit'},
+          SERIES.map(([k, label], j) => g.total && g[k] > 0 ? el('i', {style: `width:${g[k] / g.total * 100}%;background:${COLORS[j]}`, title: label + ' : ' + E.eur(g[k])}) : null)),
+        el('div', {class: 'eff-leg'}, SERIES.map(([k, label], j) => el('span', {}, el('i', {style: 'background:' + COLORS[j]}), `${label} ${E.pct(g.total ? Math.round(g[k] / g.total * 1000) / 10 : null)}`))));
+
+      /* 2. Références par coût décroissant */
+      const selF = el('select', {class: 'eff-select', 'aria-label': 'Type de produit'}, [['*', 'Tous les produits'], ['Médicaments', 'Médicaments'], ['Solutés', 'Solutés'], ['DMS', 'DMS']].map(([v, l]) => el('option', {value: v, text: l})));
+      const chk = el('input', {type: 'checkbox', checked: ''});
+      const info = el('p', {class: 'eff-small'}), host = el('div'), more = el('button', {class: 'eff-btn ghost', type: 'button'});
+      let all = false;
+      const N = 25;
+      const showRefs = () => {
+        const rows = c.produits(g.code, selF.value, chk.checked);
+        const tot = Math.round(sum(rows, (r) => r.vr));
+        info.textContent = rows.length ? `${rows.length} références · ${E.eur(tot)} par an` : '';
+        host.replaceChildren(rows.length ? table([
+          {key: 'rang', label: 'Rang', n: 1}, {key: 'libelle', label: 'Référence'}, {key: 'code', label: 'Code'},
+          selF.value === '*' ? {key: 'famille', label: 'Type'} : null,
+          chk.checked ? {key: 'fin', label: 'Financement', fmt: (v) => (v === 'Intra-GHS' ? 'Intra-GHS' : v + ' (en sus)')} : null,
+          g.ufs.length > 1 ? {key: 'ufs', label: 'UF'} : null,
+          {key: 'q', label: 'Quantité / an', n: 1, fmt: E.num}, {key: 'v', label: 'Coût / an', n: 1, fmt: E.eur}, {key: 'cumul', label: '% cumulé', n: 1, fmt: E.pct}
+        ].filter(Boolean), (all ? rows : rows.slice(0, N)).map((r) => ({...r, _muted: r.fin !== 'Intra-GHS'}))) : el('p', {class: 'eff-small', text: 'Aucune référence pour ce choix.'}));
+        more.hidden = rows.length <= N;
+        more.textContent = all ? 'Afficher les 25 premières seulement' : `Afficher les ${rows.length} références`;
       };
-      sel.addEventListener('change', show);
-      root.append(el('section', {id: 'cles'}, el('h2', {text: 'Clés de répartition des UF regroupées'}),
-        el('p', {class: 'eff-note', text: 'Part de chaque UF dans la consommation intra-GHS de son regroupement, par famille. Les produits remboursés en sus, rattachés au patient, sont exclus.'}),
-        avecCles.length > 1 ? el('div', {class: 'eff-ctl'}, sel) : null, host));
-      show();
-    }
+      selF.addEventListener('change', showRefs); chk.addEventListener('change', showRefs);
+      more.addEventListener('click', () => { all = !all; showRefs(); });
+      sec.append(el('h3', {text: '2. Références par coût global décroissant'}),
+        el('div', {class: 'eff-ctl'}, selF, el('label', {class: 'eff-check'}, chk, 'Inclure les références remboursées en sus du séjour (hors GHS, LPPR)')),
+        info, host, el('div', {class: 'eff-row'}, more));
+      showRefs();
 
-    const ufRows = c.ufs.map((u) => ({...u, _muted: !u.recue, nom: u.nom + (u.recue ? '' : ' (non transmise)')}));
-    root.append(el('section', {id: 'detail-uf'}, el('h2', {text: 'Détail par UF'}), el('p', {class: 'eff-note', text: 'Montants annualisés.'}),
-      table([
-        {key: 'uf', label: 'UF'}, {key: 'nom', label: 'Service'}, c.regs.length > 1 ? {key: 'reg', label: 'Regroupement'} : null,
-        {key: 'med', label: 'Médicaments', n: 1, fmt: E.eur}, {key: 'sol', label: 'Solutés', n: 1, fmt: E.eur}, {key: 'dms', label: 'DMS', n: 1, fmt: E.eur},
-        {key: 'sus', label: 'Hors GHS / LPPR', n: 1, fmt: E.eur}, {key: 'total', label: 'Total', n: 1, fmt: E.eur}
-      ].filter(Boolean), ufRows, {uf: 'Total', med: E.eur(sum(c.ufs, (u) => u.med)), sol: E.eur(sum(c.ufs, (u) => u.sol)), dms: E.eur(sum(c.ufs, (u) => u.dms)), sus: E.eur(sum(c.ufs, (u) => u.sus)), total: E.eur(c.total)})));
-
-    const hostTop = el('div');
-    const selP = el('select', {class: 'eff-select', 'aria-label': 'Périmètre'}, el('option', {value: '*', text: 'Tout le service'}), c.regs.length > 1 ? c.regs.map((g) => el('option', {value: g.code, text: g.nom})) : null);
-    const selF = el('select', {class: 'eff-select', 'aria-label': 'Famille'}, E.FAMILLES.map((f) => el('option', {value: f, text: f})));
-    const showTop = () => {
-      const rows = c.top(selP.value, selF.value);
-      hostTop.replaceChildren(rows.length ? table([
-        {key: 'rang', label: 'Rang', n: 1}, {key: 'libelle', label: 'Produit'}, {key: 'q', label: 'Quantité / an', n: 1, fmt: E.num}, {key: 'v', label: 'Coût / an', n: 1, fmt: E.eur},
-        {key: 'cumul', label: '% cumulé', n: 1, fmt: E.pct}, {key: 'classe', label: 'Classe'}
-      ], rows.slice(0, 20)) : el('p', {class: 'eff-note', text: 'Aucune consommation intra-GHS pour ce choix.'}),
-      rows.length ? el('p', {class: 'eff-note', text: `${rows.filter((r) => r.classe === 'A').length} produits de classe A sur ${rows.length} références ; les 20 premiers sont affichés.`}) : null);
-    };
-    selP.addEventListener('change', showTop); selF.addEventListener('change', showTop);
-    root.append(el('section', {id: 'efficience'}, el('h2', {text: 'Produits à plus fort impact budgétaire'}),
-      el('p', {class: 'eff-note', text: 'Produits intra-GHS classés par coût annualisé. Classe A : les produits qui cumulent les premiers 80 % de la dépense, cibles prioritaires des actions de pharmacie clinique (relais per os, alternatives, bon usage, conditionnements).'}),
-      el('div', {class: 'eff-ctl'}, c.regs.length > 1 ? selP : null, selF), hostTop));
-    showTop();
-
-    root.append(el('section', {id: 'dotations'}, el('h2', {text: 'Dotations du service'}),
-      el('p', {class: 'eff-note', text: 'Ce volet comparera la dotation du service à 15 jours de consommation, arrondie au conditionnement. Il sera ajouté avec l’état des dotations.'})));
+      /* 3. Dotation */
+      sec.append(el('h3', {text: '3. Adéquation de la dotation aux consommations annualisées'}),
+        el('div', {class: 'eff-card eff-pending'},
+          el('p', {text: 'Ce volet comparera, référence par référence, la dotation de ' + (g.ufs.length === 1 ? 'l’UF' : 'ce regroupement') + ' à environ 15 jours de consommation annualisée, arrondie au conditionnement, pour proposer les ajustements : à augmenter, à réduire, sans consommation, hors dotation.'}),
+          el('p', {class: 'eff-small', text: 'En attente de l’état des dotations (code produit, quantité en dotation, unités par conditionnement).'})));
+      root.append(sec);
+    });
 
     if (c.regs.length > 1) {
       const intraTot = sum(c.regs, (g) => g.med + g.sol + g.dms + g.autres);
@@ -418,6 +433,16 @@
         ], c.regs.map((g) => ({...g, nb: g.ufs.length, pIntra: part(g.med + g.sol + g.dms + g.autres, intraTot)})),
         {code: 'Total', nb: c.ufs.length, med: E.eur(sum(c.regs, (g) => g.med)), sol: E.eur(sum(c.regs, (g) => g.sol)), dms: E.eur(sum(c.regs, (g) => g.dms)), sus: E.eur(c.sus), total: E.eur(c.total), pIntra: '100 %'}))));
     }
+
+    const synSec = root.querySelector('#synthese-regroupements');
+    if (synSec) c.regs.filter((g) => g.cles).forEach((g) => {
+      synSec.append(el('h3', {text: `Clés de répartition par type de produit — ${g.code}`}),
+        el('p', {class: 'eff-note', text: 'Part de chaque UF dans la consommation intra-GHS du regroupement. Une UF approvisionnée sur le stock d’une autre apparaît à 0 % : pour le stock partagé, une clé fondée sur l’activité (journées, séjours, passages) peut être plus juste.'}),
+        table([
+          {key: 'uf', label: 'UF'}, {key: 'nom', label: 'Service'}, {key: 'med', label: 'Médicaments', n: 1, fmt: E.pct}, {key: 'sol', label: 'Solutés', n: 1, fmt: E.pct},
+          {key: 'dms', label: 'DMS', n: 1, fmt: E.pct}, {key: 'glob', label: 'Global', n: 1, fmt: E.pct}, {key: 'eur', label: 'Intra-GHS / an', n: 1, fmt: E.eur}
+        ], g.cles.map((r) => ({...r, _muted: !r.recue, nom: r.nom + (r.recue ? '' : ' (non transmise)')})), {uf: 'Total', med: '100 %', sol: '100 %', dms: '100 %', glob: '100 %', eur: E.eur(sum(g.cles, (r) => r.eur))}));
+    });
 
     root.append(el('details', {class: 'eff-method'}, el('summary', {text: 'Méthode'}), el('ul', {},
       el('li', {text: 'Source : extractions « Analyse_conso » du logiciel de gestion, une par UF, valorisées au PMP de la dernière balance définitive ; les retours sont déduits.'}),

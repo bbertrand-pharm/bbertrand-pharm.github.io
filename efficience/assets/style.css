@@ -73,3 +73,16 @@ textarea.eff-input { font-family: ui-monospace, Menlo, monospace; font-size: .85
 .eff-syn-list li.muted { color: var(--muted); }
 .eff-syn-list .n { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .eff-syn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 14px; align-items: start; }
+.eff-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.eff-nav a { text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 6px 14px; font-size: .88rem; font-variant-numeric: tabular-nums; }
+.eff-nav a:hover { border-color: var(--accent); }
+.eff-nav a b { color: var(--accent); }
+.eff-reg { display: flex; flex-direction: column; gap: 6px; border-top: 3px solid var(--accent); padding-top: 18px; scroll-margin-top: 12px; }
+.eff-reg-h { font-size: 1.5rem; }
+.eff-reg h3, #synthese-regroupements h3 { font-family: var(--display); font-weight: 600; font-size: 1.08rem; margin: 18px 0 8px; }
+.eff-off { color: var(--muted); }
+.eff-check { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; }
+.eff-check input { width: 16px; height: 16px; accent-color: var(--accent); }
+.eff-card-main { border-color: var(--accent); }
+.eff-pending { border-style: dashed; }
+.eff-pending p { margin: 0 0 6px; }
