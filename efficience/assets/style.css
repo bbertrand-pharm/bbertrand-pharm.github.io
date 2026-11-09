@@ -64,3 +64,12 @@ textarea.eff-input { font-family: ui-monospace, Menlo, monospace; font-size: .85
 .eff-field { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; color: var(--muted); }
 .eff-small { font-size: .82rem; color: var(--muted); }
 @media print { .eff-ctl, .eff-foot, .eff-noprint { display: none !important; } body { background: #fff; } .eff-wrap { padding: 0; } }
+.eff-syn-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.eff-syn-h b { font-family: var(--display); font-size: 1.15rem; }
+.eff-syn-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--line); margin: 10px 0 12px; }
+.eff-syn-bar i { display: block; height: 100%; }
+.eff-syn-list { list-style: none; margin: 0; padding: 0; font-size: .88rem; }
+.eff-syn-list li { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-top: 1px solid var(--line); }
+.eff-syn-list li.muted { color: var(--muted); }
+.eff-syn-list .n { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.eff-syn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 14px; align-items: start; }

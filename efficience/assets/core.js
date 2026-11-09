@@ -391,6 +391,34 @@
     root.append(el('section', {id: 'dotations'}, el('h2', {text: 'Dotations du service'}),
       el('p', {class: 'eff-note', text: 'Ce volet comparera la dotation du service à 15 jours de consommation, arrondie au conditionnement. Il sera ajouté avec l’état des dotations.'})));
 
+    if (c.regs.length > 1) {
+      const intraTot = sum(c.regs, (g) => g.med + g.sol + g.dms + g.autres);
+      const part = (v, t) => (t ? Math.round(v / t * 1000) / 10 : null);
+      const cards = c.regs.map((g) => {
+        const gi = g.med + g.sol + g.dms + g.autres;
+        const ufs = c.ufs.filter((u) => u.reg === g.code);
+        return el('div', {class: 'eff-card eff-syn'},
+          el('div', {class: 'eff-syn-h'}, el('b', {text: g.code}), el('span', {class: 'eff-pill', text: E.pct(part(g.total, c.total)) + ' du service'})),
+          el('div', {class: 'eff-tv', text: E.eur(g.total)}),
+          el('p', {class: 'eff-small', text: `dont ${E.eur(gi)} à la charge de l’hôpital et ${E.eur(g.sus)} remboursés en sus`}),
+          el('div', {class: 'eff-syn-bar', role: 'img', 'aria-label': 'Répartition par famille'},
+            SERIES.map(([k, label], j) => g.total && g[k] > 0 ? el('i', {style: `width:${g[k] / g.total * 100}%;background:${COLORS[j]}`, title: label + ' : ' + E.eur(g[k])}) : null)),
+          el('ul', {class: 'eff-syn-list'}, ufs.map((u) => el('li', {class: u.recue ? null : 'muted'},
+            el('span', {text: `${u.uf} · ${u.nom}`}),
+            el('span', {class: 'n', text: ufs.length > 1 ? (u.recue ? `${E.eur(u.med + u.sol + u.dms + u.autres)} · ${E.pct(part(u.med + u.sol + u.dms + u.autres, gi))}` : 'non transmise') : (u.recue ? E.eur(u.total) : 'non transmise')})))),
+          ufs.length > 1 ? el('p', {class: 'eff-small', text: 'Montant intra-GHS annualisé de l’UF et sa part dans le regroupement (clé globale).'}) : null);
+      });
+      root.append(el('section', {id: 'synthese-regroupements'}, el('h2', {text: 'Synthèse des regroupements'}),
+        el('p', {class: 'eff-note', text: `${c.regs.length} regroupements, ${c.ufs.length} UF. Montants annualisés ; chaque carte rappelle les UF regroupées sous un même code et leur poids.`}),
+        el('div', {class: 'eff-syn-grid'}, cards),
+        el('div', {style: 'margin-top:14px'}, table([
+          {key: 'code', label: 'Regroupement'}, {key: 'nb', label: 'UF', n: 1}, {key: 'med', label: 'Médicaments', n: 1, fmt: E.eur}, {key: 'sol', label: 'Solutés', n: 1, fmt: E.eur},
+          {key: 'dms', label: 'DMS', n: 1, fmt: E.eur}, {key: 'sus', label: 'Hors GHS / LPPR', n: 1, fmt: E.eur}, {key: 'total', label: 'Total', n: 1, fmt: E.eur},
+          {key: 'pIntra', label: 'Part de l’intra-GHS', n: 1, fmt: E.pct}
+        ], c.regs.map((g) => ({...g, nb: g.ufs.length, pIntra: part(g.med + g.sol + g.dms + g.autres, intraTot)})),
+        {code: 'Total', nb: c.ufs.length, med: E.eur(sum(c.regs, (g) => g.med)), sol: E.eur(sum(c.regs, (g) => g.sol)), dms: E.eur(sum(c.regs, (g) => g.dms)), sus: E.eur(c.sus), total: E.eur(c.total), pIntra: '100 %'}))));
+    }
+
     root.append(el('details', {class: 'eff-method'}, el('summary', {text: 'Méthode'}), el('ul', {},
       el('li', {text: 'Source : extractions « Analyse_conso » du logiciel de gestion, une par UF, valorisées au PMP de la dernière balance définitive ; les retours sont déduits.'}),
       el('li', {text: `Annualisation : montant de la période × 12 / ${p.mois}.`}),
