@@ -102,7 +102,7 @@
       ref: {horsGHS: (ref.horsGHS || []).map((r) => r.code), lppr: (ref.lppr || []).map((r) => r.code)},
       conso: (prev.conso || []).filter((l) => ufs.has(l.uf)),
       recues: (prev.recues || []).filter((u) => ufs.has(u)),
-      fichiers, github
+      fichiers, github, pistes: prev.pistes || {}
     };
   };
   E.serviceUFs = (d) => d.regroupements.flatMap((g) => g.ufs.map((u) => u.uf));
@@ -399,6 +399,14 @@
         el('div', {class: 'eff-ctl'}, selF, el('label', {class: 'eff-check'}, chk, 'Inclure les références remboursées en sus du séjour (hors GHS, LPPR)')),
         info, host, el('div', {class: 'eff-row'}, more));
       showRefs();
+      const pistes = (d.pistes || {})[g.code] || [];
+      if (pistes.length) sec.append(el('aside', {class: 'eff-notepad', 'aria-label': 'Pistes d’efficience'},
+        el('p', {class: 'eff-notepad-h', text: 'Pistes d’efficience'}),
+        el('p', {class: 'eff-notepad-sub', text: 'Idées à discuter avec l’équipe médicale et soignante, sans diminuer la qualité de la prise en charge. Montants et gains estimés à partir des consommations annualisées.'}),
+        el('ul', {}, pistes.map((x) => el('li', {},
+          el('b', {text: x.titre}), ' — ', x.texte,
+          x.gain ? el('span', {class: 'eff-notepad-gain', text: 'Gain estimé : ' + x.gain}) : null,
+          (x.sources || []).length ? el('span', {class: 'eff-notepad-src'}, 'Sources : ', x.sources.map((s, i) => [i ? ' · ' : '', el('a', {href: s.url, target: '_blank', rel: 'noopener', text: s.label})])) : null)))));
 
       /* 3. Dotation */
       sec.append(el('h3', {text: '3. Adéquation de la dotation aux consommations annualisées'}),

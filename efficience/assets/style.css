@@ -86,3 +86,15 @@ textarea.eff-input { font-family: ui-monospace, Menlo, monospace; font-size: .85
 .eff-card-main { border-color: var(--accent); }
 .eff-pending { border-style: dashed; }
 .eff-pending p { margin: 0 0 6px; }
+.eff-notepad { position: relative; margin-top: 14px; background-color: #fff8d9; color: #3b3320; border: 1px solid #ecd98f; border-radius: 4px 4px 12px 4px; padding: 16px 20px 16px 46px;
+  background-image: linear-gradient(to right, transparent 32px, rgba(214,88,88,.45) 32px, rgba(214,88,88,.45) 34px, transparent 34px), repeating-linear-gradient(to bottom, transparent 0, transparent 25px, rgba(120,140,190,.22) 25px, rgba(120,140,190,.22) 26px);
+  box-shadow: 0 2px 6px rgba(0,0,0,.06); line-height: 26px; }
+.eff-notepad-h { margin: 0; font-family: var(--display); font-weight: 600; font-size: 1.05rem; }
+.eff-notepad-sub { margin: 0 0 4px; font-size: .82rem; color: #6d6248; }
+.eff-notepad ul { margin: 0; padding-left: 18px; }
+.eff-notepad li { margin: 0 0 6px; font-size: .92rem; }
+.eff-notepad a { color: #6a4f0a; }
+.eff-notepad-gain { display: block; font-size: .84rem; color: #1d6b4e; font-weight: 500; }
+.eff-notepad-src { display: block; font-size: .78rem; color: #6d6248; }
+@media (prefers-color-scheme: dark) { .eff-notepad { background-color: #2d2a1c; color: #ece3c4; border-color: #4a4325; } .eff-notepad-sub, .eff-notepad-src { color: #b9ad8a; } .eff-notepad a { color: #e6c86e; } .eff-notepad-gain { color: #6cc59c; } }
+@media print { .eff-notepad { box-shadow: none; } }
