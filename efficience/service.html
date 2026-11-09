@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tableau de bord du service — Pharmacie clinique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<main class="eff-wrap">
+  <form class="eff-lock" id="lock">
+    <p class="eff-kicker">Le pharmacien clinicien au service de l’efficience</p>
+    <h1 id="svc-name">Tableau de bord du service</h1>
+    <p class="eff-small">Ces données sont réservées au service. Saisissez le mot de passe transmis par la pharmacie.</p>
+    <label class="eff-field">Mot de passe<input class="eff-input" type="password" id="pwd" autocomplete="current-password" required></label>
+    <button class="eff-btn" type="submit" id="go">Ouvrir</button>
+    <p class="eff-err" id="err" role="alert"></p>
+    <p class="eff-small"><a href="./">Retour à l’accueil</a></p>
+  </form>
+
+  <div id="app" hidden class="eff-steps">
+    <p class="eff-warn" id="draft" hidden>Aperçu : les extractions déposées ne sont pas encore publiées. Le tableau de bord ci-dessous les intègre déjà ; cliquez sur « Publier » pour le mettre à jour pour tous.</p>
+    <div id="dash" class="eff-steps"></div>
+    <div id="empty" hidden class="eff-card"><p class="eff-kicker">Le pharmacien clinicien au service de l’efficience</p><h1 id="empty-name"></h1><p>Aucune consommation n’a encore été déposée pour ce service. Déposez les extractions ci-dessous.</p></div>
+
+    <details class="eff-step eff-noprint" id="maj">
+      <summary><b>Mettre à jour les données du service</b></summary>
+      <p class="eff-note">Déposez les extractions « Analyse_conso » des UF du service (un fichier par UF, plusieurs à la fois). Une UF déposée remplace ses données précédentes ; les fichiers d’autres services sont refusés. Les fichiers sont lus dans ce navigateur et seules les données chiffrées sont publiées.</p>
+      <div class="eff-row">
+        <label class="eff-field">Exercice<input class="eff-input" type="number" id="p-ex" min="2020" max="2100" style="width:110px"></label>
+        <label class="eff-field">Consommations arrêtées jusqu’à fin<select class="eff-select" id="p-mois"></select></label>
+        <label class="eff-field">Extractions<input type="file" id="files" accept=".xlsx,.xls" multiple></label>
+      </div>
+      <div id="msgs" class="eff-small" role="status" style="margin-top:10px"></div>
+      <div id="uf-status" style="margin-top:14px"></div>
+      <div class="eff-row">
+        <button class="eff-btn" type="button" id="publish">Publier</button>
+        <button class="eff-btn ghost" type="button" id="cancel">Annuler les modifications</button>
+      </div>
+      <div id="pub-log" class="eff-small" role="status"></div>
+    </details>
+
+    <footer class="eff-foot">Données confidentielles, réservées au service. <a href="./">Accueil</a> · <a href="#" id="print">Imprimer</a></footer>
+  </div>
+</main>
+<script src="assets/xlsx.full.min.js"></script>
+<script src="assets/core.js"></script>
+<script>
+(async function () {
+  'use strict';
+  const $ = (id) => document.getElementById(id), el = EFF.el;
+  const id = new URLSearchParams(location.search).get('s') || '';
+  let PWD = null, PUBLISHED = null, D = null, dirty = false;
+
+  let manifest = null;
+  try { manifest = await (await fetch('data/manifest.json?t=' + Date.now(), {cache: 'no-store'})).json(); } catch (e) {}
+  const entry = manifest && /^[a-z0-9-]{1,40}$/.test(id) ? (manifest.services || []).find((s) => s.id === id) : null;
+  if (!entry) { $('err').textContent = 'Service introuvable. Vérifiez le lien reçu.'; $('go').disabled = true; return; }
+  $('svc-name').textContent = entry.nom; document.title = entry.nom + ' — Pharmacie clinique';
+
+  $('lock').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    $('err').textContent = ''; $('go').disabled = true; $('go').textContent = 'Déchiffrement…';
+    try {
+      const env = await (await fetch('data/' + id + '.enc.json?t=' + Date.now(), {cache: 'no-store'})).json();
+      try { PUBLISHED = await EFF.decrypt(env, $('pwd').value); } catch (e) { throw new Error('Mot de passe incorrect.'); }
+      PWD = $('pwd').value;
+      D = structuredClone(PUBLISHED);
+      $('lock').hidden = true; $('app').hidden = false;
+      $('maj').open = !D.conso.length;
+      render();
+    } catch (e) { $('err').textContent = e.message || 'Impossible de charger les données.'; $('go').disabled = false; $('go').textContent = 'Ouvrir'; }
+  });
+
+  $('p-mois').append(...EFF.MOIS.map((m, i) => el('option', {value: i + 1, text: m + ' (' + (i + 1) + ' mois)'})));
+  const setDirty = (v) => { dirty = v; $('draft').hidden = !v; };
+  $('p-ex').addEventListener('change', () => { D.periode.exercice = +$('p-ex').value; setDirty(true); render(); });
+  $('p-mois').addEventListener('change', () => { D.periode.mois = +$('p-mois').value; setDirty(true); render(); });
+  $('files').addEventListener('change', async (ev) => {
+    const files = [...ev.target.files]; if (!files.length) return;
+    const results = [];
+    for (const f of files) {
+      try { results.push({name: f.name, r: EFF.parseConso(await EFF.readWorkbook(f))}); }
+      catch (e) { results.push({name: f.name, r: {lignes: [], erreur: 'lecture impossible'}}); }
+    }
+    const msgs = EFF.ingest(D, results);
+    $('msgs').replaceChildren(...msgs.map((m) => el('div', {class: m.ok ? 'eff-ok' : 'eff-err', text: m.t})));
+    ev.target.value = '';
+    if (msgs.some((m) => m.ok)) setDirty(true);
+    render();
+  });
+  $('cancel').addEventListener('click', () => { D = structuredClone(PUBLISHED); $('msgs').replaceChildren(); setDirty(false); render(); });
+  $('print').addEventListener('click', (e) => { e.preventDefault(); print(); });
+
+  $('publish').addEventListener('click', async () => {
+    $('pub-log').replaceChildren();
+    if (!dirty) { $('pub-log').append(el('div', {text: 'Aucune modification à publier.'})); return; }
+    if (!D.github || !D.github.token) { $('pub-log').append(el('div', {class: 'eff-err', text: 'Publication non configurée pour ce service : contactez l’administrateur.'})); return; }
+    $('publish').disabled = true; $('publish').textContent = 'Publication…';
+    try {
+      await EFF.publishService(D, PWD);
+      PUBLISHED = structuredClone(D); setDirty(false);
+      $('pub-log').append(el('div', {class: 'eff-ok', text: 'Publié. Le tableau de bord est à jour pour tous d’ici une à deux minutes.'}));
+    } catch (e) {
+      $('pub-log').append(el('div', {class: 'eff-err', text: 'Échec de la publication : ' + EFF.ghError(e)}));
+    } finally { $('publish').disabled = false; $('publish').textContent = 'Publier'; }
+  });
+  window.addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+  function render() {
+    $('p-ex').value = D.periode.exercice; $('p-mois').value = D.periode.mois;
+    const has = D.conso.length > 0;
+    $('empty').hidden = has; $('empty-name').textContent = D.service;
+    if (has) EFF.renderDashboard($('dash'), D); else $('dash').replaceChildren();
+    const rows = D.regroupements.flatMap((g) => g.ufs.map((u) => ({u, g, f: D.fichiers[u.uf]})));
+    $('uf-status').replaceChildren(el('div', {class: 'eff-tw'}, el('table', {class: 'eff-table'},
+      el('thead', {}, el('tr', {}, ['UF', 'Service', 'Regroupement', 'Dernière extraction', 'Déposée le', 'Lignes'].map((h, i) => el('th', {class: i === 5 ? 'n' : null, text: h})))),
+      el('tbody', {}, rows.map(({u, g, f}) => el('tr', {class: f ? null : 'muted'}, el('td', {text: u.uf}), el('td', {text: u.nom}), el('td', {text: g.code}),
+        el('td', {text: f ? f.fichier : 'Non transmise'}), el('td', {text: f ? new Date(f.date).toLocaleDateString('fr-FR') : '—'}), el('td', {class: 'n', text: f ? EFF.num(f.lignes) : '—'})))))));
+  }
+})();
+</script>
+</body>
+</html>
