@@ -164,6 +164,8 @@
     return n > 0 ? n : 1;
   };
   E.JOURS_DOTATION = 15;
+  E.COUV_MAX = 30; E.COUV_MIN = 10;
+  E.alerteCouv = (r) => (r.couv == null ? null : (r.couv > E.COUV_MAX ? 'sur' : (r.couv < E.COUV_MIN ? 'sous' : null)));
   E.STATUTS = ['À augmenter', 'À réduire', 'Sans consommation', 'Hors dotation', 'Adaptée'];
 
   /* Lignes classées par famille  /* Lignes classées par famille (compte de stock) et financement (listes hors GHS / LPPR). */
@@ -303,7 +305,7 @@
         else statut = dot < cible ? 'À augmenter' : 'À réduire';
         const p = pu.get(code);
         return {code, libelle, rangement: rangement || '', famille: famille || (c && c.famille) || '', dot, qAn: Math.round(qAn), besoin: Math.round(besoin * 10) / 10, cond, cible,
-          ecart: dot == null ? cible : cible - dot, statut, pu: p == null ? null : p, valDot: p != null && dot != null ? dot * p : null, valCible: p != null ? cible * p : null};
+          ecart: dot == null ? cible : cible - dot, statut, couv: dot != null && qAn > 0 ? Math.round(dot / (qAn / 365) * 10) / 10 : null, pu: p == null ? null : p, valDot: p != null && dot != null ? dot * p : null, valCible: p != null ? cible * p : null};
       };
       const inDot = new Set();
       for (const x of src) { inDot.add(x.code); rows.push(mk(x.code, x.libelle || (conso.get(x.code) || {}).libelle, x.rangement, x.dotation)); }
@@ -490,26 +492,35 @@
           el('div', {class: 'eff-tiles eff-tiles-dot'},
             [['À augmenter', 'warn'], ['À réduire', 'info'], ['Sans consommation', 'bad'], ['Hors dotation', ''], ['Adaptée', 'ok']].map(([s, k]) => el('div', {class: 'eff-card eff-st-' + (k || 'none')}, el('div', {class: 'eff-tl', text: s}), el('div', {class: 'eff-tv', text: E.num(cnt(s))})))),
           el('p', {class: 'eff-small'}, 'Valeur de la dotation : ', el('b', {text: E.eur(dt.valActuelle)}), ' aujourd’hui → ', el('b', {text: E.eur(dt.valProposee)}), ' avec les ajustements proposés (références sans consommation retirées)' + (dt.sansPrix ? ` ; ${dt.sansPrix} références sans prix connu non valorisées.` : '.')));
-        const selS = el('select', {class: 'eff-select', 'aria-label': 'Statut'}, el('option', {value: 'actions', text: 'Ajustements proposés'}), el('option', {value: '*', text: 'Toutes les références'}), E.STATUTS.map((s) => el('option', {value: s, text: s})));
+        const nSur = dt.rows.filter((r) => E.alerteCouv(r) === 'sur').length, nSous = dt.rows.filter((r) => E.alerteCouv(r) === 'sous').length;
+        sec.append(el('div', {class: 'eff-couv'},
+          el('div', {class: 'eff-couv-item eff-couv-sur'}, el('b', {text: E.num(nSur)}), ` références dont la dotation couvre plus d’un mois (> ${E.COUV_MAX} jours) de consommation moyenne`),
+          el('div', {class: 'eff-couv-item eff-couv-sous'}, el('b', {text: E.num(nSous)}), ` références dont la dotation couvre moins de ${E.COUV_MIN} jours de consommation moyenne`)));
+        const selS = el('select', {class: 'eff-select', 'aria-label': 'Statut'}, el('option', {value: 'actions', text: 'Ajustements proposés'}), el('option', {value: '*', text: 'Toutes les références'}),
+          el('option', {value: 'sur', text: `Plus d’un mois de stock (> ${E.COUV_MAX} j)`}), el('option', {value: 'sous', text: `Moins de ${E.COUV_MIN} jours de stock`}), E.STATUTS.map((s) => el('option', {value: s, text: s})));
         const hostD = el('div'), infoD = el('p', {class: 'eff-small'}), moreD = el('button', {class: 'eff-btn ghost', type: 'button'});
         let allD = false;
         moreD.addEventListener('click', () => { allD = !allD; showD(); });
         const ordre = (s) => E.STATUTS.indexOf(s);
         const showD = () => {
-          const rows = dt.rows.filter((r) => selS.value === '*' || (selS.value === 'actions' ? r.statut !== 'Adaptée' : r.statut === selS.value))
-            .sort((a, b) => ordre(a.statut) - ordre(b.statut) || Math.abs(b.ecart * (b.pu || 0)) - Math.abs(a.ecart * (a.pu || 0)) || b.qAn - a.qAn);
+          const v = selS.value;
+          const rows = dt.rows.filter((r) => v === '*' || (v === 'actions' ? r.statut !== 'Adaptée' : (v === 'sur' || v === 'sous' ? E.alerteCouv(r) === v : r.statut === v)))
+            .sort(v === 'sur' ? (a, b) => b.couv - a.couv : v === 'sous' ? (a, b) => a.couv - b.couv :
+              (a, b) => ordre(a.statut) - ordre(b.statut) || Math.abs(b.ecart * (b.pu || 0)) - Math.abs(a.ecart * (a.pu || 0)) || b.qAn - a.qAn);
           infoD.textContent = `${rows.length} références`;
           hostD.replaceChildren(rows.length ? table([
             {key: 'libelle', label: 'Référence'}, {key: 'rangement', label: 'Rangement'},
             {key: 'dot', label: 'Dotation actuelle', n: 1, fmt: (v) => (v == null ? '—' : E.num(v))}, {key: 'qAn', label: 'Conso / an', n: 1, fmt: E.num},
             {key: 'besoin', label: 'Besoin 15 j', n: 1, fmt: (v) => new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 1}).format(v)},
+            {key: 'couv', label: 'Couverture actuelle', n: 1, fmt: (v) => (v == null ? '—' : (v >= 100 ? E.num(v) : new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 1}).format(v)) + ' j')},
             {key: 'cond', label: 'Cond.', n: 1}, {key: 'cible', label: 'Dotation proposée', n: 1, fmt: E.num},
             {key: 'ecart', label: 'Écart', n: 1, fmt: (v) => (v > 0 ? '+' : '') + E.num(v)}, {key: 'statut', label: 'Statut', fmt: (v) => v}
           ], (allD ? rows : rows.slice(0, 25)).map((r) => ({...r, _muted: r.statut === 'Adaptée'}))) : el('p', {class: 'eff-small', text: 'Aucune référence pour ce choix.'}));
           moreD.hidden = rows.length <= 25; moreD.textContent = allD ? 'Afficher les 25 premières seulement' : `Afficher les ${rows.length} références`;
-          hostD.querySelectorAll('tbody tr').forEach((tr, i) => { const td = tr.lastElementChild; if (td) td.className = 'eff-st eff-st-' + ({'À augmenter': 'warn', 'À réduire': 'info', 'Sans consommation': 'bad', 'Hors dotation': 'none', 'Adaptée': 'ok'})[rows[i].statut]; });
+          hostD.querySelectorAll('tbody tr').forEach((tr, i) => { const al = E.alerteCouv(rows[i]); if (al) tr.classList.add('eff-row-' + al); const td = tr.lastElementChild; if (td) td.className = 'eff-st eff-st-' + ({'À augmenter': 'warn', 'À réduire': 'info', 'Sans consommation': 'bad', 'Hors dotation': 'none', 'Adaptée': 'ok'})[rows[i].statut]; });
         };
         selS.addEventListener('change', () => { allD = false; showD(); });
+        sec.querySelectorAll('.eff-couv-item').forEach((it) => { it.addEventListener('click', () => { selS.value = it.classList.contains('eff-couv-sur') ? 'sur' : 'sous'; allD = false; showD(); }); });
         sec.append(el('div', {class: 'eff-ctl'}, selS), infoD, hostD, el('div', {class: 'eff-row'}, moreD),
           el('p', {class: 'eff-small', text: 'À relire avec l’équipe avant toute modification : un produit d’urgence ou à rotation lente peut rester en dotation même sans consommation récente ; « Hors dotation » = référence consommée au moins une fois par quinzaine en moyenne mais absente de la dotation (à ajouter ou à laisser en délivrance nominative).'}));
         showD();
