@@ -531,11 +531,11 @@
             .sort(v === 'sur' ? (a, b) => b.couv - a.couv : v === 'sous' ? (a, b) => a.couv - b.couv :
               (a, b) => ordre(a.statut) - ordre(b.statut) || Math.abs(b.ecart * (b.pu || 0)) - Math.abs(a.ecart * (a.pu || 0)) || b.qAn - a.qAn);
           infoD.textContent = `${rows.length} références`;
+          hostD.classList.add('eff-dot-table');
           hostD.replaceChildren(rows.length ? table([
             {key: 'libelle', label: 'Référence'}, {key: 'rangement', label: 'Rangement'},
             {key: 'dot', label: 'Dotation actuelle', n: 1, fmt: (v) => (v == null ? '—' : E.num(v))}, {key: 'qAn', label: 'Conso / an', n: 1, fmt: E.num},
-            {key: 'besoin', label: 'Besoin 15 j', n: 1, fmt: (v) => new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 1}).format(v)},
-            {key: 'couv', label: 'Couverture actuelle', n: 1, fmt: (v) => (v == null ? '—' : (v >= 100 ? E.num(v) : new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 1}).format(v)) + ' j')},
+            {key: 'couv', label: 'Couver­ture', n: 1, fmt: (v) => (v == null ? '—' : (v >= 100 ? E.num(v) : new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 1}).format(v)) + ' j')},
             {key: 'cond', label: 'Cond.', n: 1}, {key: 'cible', label: 'Dotation proposée', n: 1, fmt: E.num},
             {key: 'ecart', label: 'Écart', n: 1, fmt: (v) => (v > 0 ? '+' : '') + E.num(v)}, {key: 'statut', label: 'Statut', fmt: (v) => v},
             {key: 'decidee', label: 'Dotation décidée', n: 1, render: (r) => {

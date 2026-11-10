@@ -125,3 +125,9 @@ td.eff-st-warn { color: #9a5b1e; } td.eff-st-info { color: #3a5683; } td.eff-st-
 .eff-dec { width: 78px; font: inherit; font-size: .9rem; text-align: right; padding: 5px 7px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); font-variant-numeric: tabular-nums; }
 .eff-dec:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
 .eff-pre { font-style: italic; color: var(--accent); }
+.eff-dot-table .eff-table { font-size: .84rem; }
+.eff-dot-table .eff-table th { white-space: normal; line-height: 1.25; padding: 8px 8px; vertical-align: bottom; }
+.eff-dot-table .eff-table td { padding: 7px 8px; }
+.eff-dot-table .eff-table td[data-k=libelle] { min-width: 170px; }
+.eff-dot-table .eff-table td[data-k=rangement] { max-width: 120px; font-size: .78rem; color: var(--muted); }
+.eff-dot-table .eff-dec { width: 64px; }
