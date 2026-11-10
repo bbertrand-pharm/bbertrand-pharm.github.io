@@ -74,11 +74,19 @@
       const poche = lieu !== undefined && lieu !== '' ? lieu === 'O' : POCHES.test(libelle || '');
       return poche && !NUTRITION.test(libelle || '') ? 'Solutés' : 'Médicaments';
     }
-    if (compte.startsWith('H9421')) return 'Médicaments';
+    if (compte.startsWith('H9421')) return lieu === 'L' ? 'Stupéfiants' : 'Médicaments';
     if (compte.startsWith('H9422')) return 'DMS';
     return 'Autres';
   };
-  E.FAMILLES = ['Médicaments', 'Solutés', 'DMS'];
+  E.FAMILLES = ['Médicaments', 'Solutés', 'Stupéfiants', 'DMS'];
+  /* Famille d'une référence de dotation jamais consommée : rangement, puis code (2xxxxx = DMS). */
+  E.familleDotation = (x) => {
+    const r = String(x.rangement || '').toUpperCase(), lib = String(x.libelle || '').toUpperCase();
+    if (/STUP/.test(r)) return 'Stupéfiants';
+    if (x.code >= 200000) return 'DMS';
+    if (/NACL|GLUCOSE|BIONOLYTE|SOLUTE|GROS VOLUME|MANNITOL|BICARBONATE/.test(r) && /POCHE|FLAC/.test(lib) && !NUTRITION.test(lib)) return 'Solutés';
+    return 'Médicaments';
+  };
 
   /* Regroupements saisis sous la forme « 1751e = 1751, 1753, 1754 » (une ligne par regroupement). */
   E.parseRegroupements = (txt) => {
@@ -226,10 +234,10 @@
     const bloc = (rows) => {
       const s = (f) => Math.round(sum(rows.filter(f), (l) => l.v) * F);
       const o = {med: s((l) => isIntra(l) && l.famille === 'Médicaments'), sol: s((l) => isIntra(l) && l.famille === 'Solutés'),
-        dms: s((l) => isIntra(l) && l.famille === 'DMS'), autres: s((l) => isIntra(l) && l.famille === 'Autres'), sus: s((l) => !isIntra(l))};
+        stu: s((l) => isIntra(l) && l.famille === 'Stupéfiants'), dms: s((l) => isIntra(l) && l.famille === 'DMS'), autres: s((l) => isIntra(l) && l.famille === 'Autres'), sus: s((l) => !isIntra(l))};
       o.total = s(() => true);
       o.fam = {};
-      for (const f of ['Médicaments', 'Solutés', 'DMS', 'Autres']) o.fam[f] = {total: s((l) => l.famille === f), sus: s((l) => l.famille === f && !isIntra(l))};
+      for (const f of ['Médicaments', 'Solutés', 'Stupéfiants', 'DMS', 'Autres']) o.fam[f] = {total: s((l) => l.famille === f), sus: s((l) => l.famille === f && !isIntra(l))};
       return o;
     };
     const ufs = [];
@@ -244,7 +252,7 @@
         cles = g.ufs.map((u) => {
           const mine = intraG.filter((l) => l.uf === u.uf);
           return {uf: u.uf, nom: u.nom, recue: u.recue, med: share(T('Médicaments', mine), T('Médicaments', intraG)),
-            sol: share(T('Solutés', mine), T('Solutés', intraG)), dms: share(T('DMS', mine), T('DMS', intraG)),
+            sol: share(T('Solutés', mine), T('Solutés', intraG)), stu: share(T('Stupéfiants', mine), T('Stupéfiants', intraG)), dms: share(T('DMS', mine), T('DMS', intraG)),
             glob: share(T(null, mine), T(null, intraG)), eur: Math.round(T(null, mine) * F)};
         });
       }
@@ -304,7 +312,7 @@
         else if (Math.abs(dot - cible) <= Math.max(cond, 0.2 * cible)) statut = 'Adaptée';
         else statut = dot < cible ? 'À augmenter' : 'À réduire';
         const p = pu.get(code);
-        return {code, libelle, rangement: rangement || '', famille: famille || (c && c.famille) || '', dot, qAn: Math.round(qAn), besoin: Math.round(besoin * 10) / 10, cond, cible,
+        return {code, libelle, rangement: rangement || '', famille: famille || (c && c.famille) || E.familleDotation({code, rangement, libelle}), dot, qAn: Math.round(qAn), besoin: Math.round(besoin * 10) / 10, cond, cible,
           ecart: dot == null ? cible : cible - dot, statut, couv: dot != null && qAn > 0 ? Math.round(dot / (qAn / 365) * 10) / 10 : null, pu: p == null ? null : p, valDot: p != null && dot != null ? dot * p : null, valCible: p != null ? cible * p : null};
       };
       const inDot = new Set();
@@ -355,13 +363,13 @@
     return n;
   };
   E.el = el;
-  const COLORS = ['var(--c1)', 'var(--c2)', 'var(--c3)', 'var(--c4)'];
-  const SERIES = [['med', 'Médicaments intra-GHS'], ['sol', 'Solutés'], ['dms', 'DMS intra-GHS'], ['sus', 'Hors GHS / LPPR']];
+  const COLORS = ['var(--c1)', 'var(--c2)', 'var(--c5)', 'var(--c3)', 'var(--c4)'];
+  const SERIES = [['med', 'Médicaments intra-GHS'], ['sol', 'Solutés'], ['stu', 'Stupéfiants'], ['dms', 'DMS intra-GHS'], ['sus', 'Hors GHS / LPPR']];
 
   const table = (cols, rows, total) => {
     const t = el('table', {class: 'eff-table'},
       el('thead', {}, el('tr', {}, cols.map((c) => el('th', {class: c.n ? 'n' : null, text: c.label})))),
-      el('tbody', {}, rows.map((r) => el('tr', {class: r._muted ? 'muted' : null}, cols.map((c) => el('td', {class: c.n ? 'n' : null, text: c.fmt ? c.fmt(r[c.key], r) : (r[c.key] == null ? '—' : r[c.key])}))))));
+      el('tbody', {}, rows.map((r) => el('tr', {class: r._muted ? 'muted' : null}, cols.map((c) => c.render ? el('td', {class: c.n ? 'n' : null, 'data-k': c.key}, c.render(r)) : el('td', {class: c.n ? 'n' : null, 'data-k': c.key, text: c.fmt ? c.fmt(r[c.key], r) : (r[c.key] == null ? '—' : r[c.key])}))))));
     if (total) t.append(el('tfoot', {}, el('tr', {}, cols.map((c) => el('td', {class: c.n ? 'n' : null, text: total[c.key] == null ? '' : total[c.key]})))));
     return el('div', {class: 'eff-tw'}, t);
   };
@@ -407,7 +415,8 @@
     return el('div', {}, wrap, leg);
   };
 
-  E.renderDashboard = (root, d) => {
+  E.renderDashboard = (root, d, opts) => {
+    opts = opts || {};
     const c = E.compute(d);
     const p = d.periode;
     const multi = c.regs.length > 1;
@@ -438,13 +447,13 @@
         el('div', {class: 'eff-tiles'},
           el('div', {class: 'eff-card eff-card-main'}, el('div', {class: 'eff-tl', text: 'Coût global annualisé'}), el('div', {class: 'eff-tv', text: E.eur(g.total)}),
             el('div', {class: 'eff-small', text: `${E.eur(g.total - g.sus)} à la charge de l’hôpital · ${E.eur(g.sus)} remboursés en sus`})),
-          famTile('Médicaments', 'Médicaments', 'hors GHS'), famTile('Solutés', 'Solutés', 'remboursés en sus'), famTile('DMS', 'Dispositifs médicaux stériles', 'LPPR')),
+          famTile('Médicaments', 'Médicaments', 'hors GHS'), famTile('Solutés', 'Solutés', 'remboursés en sus'), famTile('Stupéfiants', 'Stupéfiants', 'remboursés en sus'), famTile('DMS', 'Dispositifs médicaux stériles', 'LPPR')),
         el('div', {class: 'eff-syn-bar', role: 'img', 'aria-label': 'Répartition du coût par type de produit'},
           SERIES.map(([k, label], j) => g.total && g[k] > 0 ? el('i', {style: `width:${g[k] / g.total * 100}%;background:${COLORS[j]}`, title: label + ' : ' + E.eur(g[k])}) : null)),
         el('div', {class: 'eff-leg'}, SERIES.map(([k, label], j) => el('span', {}, el('i', {style: 'background:' + COLORS[j]}), `${label} ${E.pct(g.total ? Math.round(g[k] / g.total * 1000) / 10 : null)}`))));
 
       /* 2. Références par coût décroissant */
-      const selF = el('select', {class: 'eff-select', 'aria-label': 'Type de produit'}, [['*', 'Tous les produits'], ['Médicaments', 'Médicaments'], ['Solutés', 'Solutés'], ['DMS', 'DMS']].map(([v, l]) => el('option', {value: v, text: l})));
+      const selF = el('select', {class: 'eff-select', 'aria-label': 'Type de produit'}, [['*', 'Tous les produits'], ...E.FAMILLES.map((f) => [f, f])].map(([v, l]) => el('option', {value: v, text: l})));
       const chk = el('input', {type: 'checkbox', checked: ''});
       const info = el('p', {class: 'eff-small'}), host = el('div'), more = el('button', {class: 'eff-btn ghost', type: 'button'});
       let all = false;
@@ -500,13 +509,25 @@
           el('div', {class: 'eff-couv-item eff-couv-sous'}, el('b', {text: E.num(nSous)}), ` références dont la dotation couvre moins de ${E.COUV_MIN} jours de consommation moyenne`)));
         const selS = el('select', {class: 'eff-select', 'aria-label': 'Statut'}, el('option', {value: 'actions', text: 'Ajustements proposés'}), el('option', {value: '*', text: 'Toutes les références'}),
           el('option', {value: 'sur', text: `Plus d’un mois de stock (> ${E.COUV_MAX} j)`}), el('option', {value: 'sous', text: `Moins de ${E.COUV_MIN} jours de stock`}), E.STATUTS.map((s) => el('option', {value: s, text: s})));
+        const selFD = el('select', {class: 'eff-select', 'aria-label': 'Type de produit'}, [['*', 'Tous les produits'], ...E.FAMILLES.map((f) => [f, f])].map(([v, l]) => el('option', {value: v, text: l})));
+        d.decisions = d.decisions || {};
+        const dec = d.decisions[g.code] = d.decisions[g.code] || {};
+        const decidee = (r) => (dec[r.code] != null ? dec[r.code] : (r.statut === 'Adaptée' ? r.dot : null));
+        const exportD = el('button', {class: 'eff-btn ghost', type: 'button', text: 'Exporter la dotation décidée (CSV)'});
+        exportD.addEventListener('click', () => {
+          const q = (s) => '"' + String(s == null ? '' : s).replace(/"/g, '""') + '"';
+          const lines = [['Code', 'Référence', 'Type', 'Rangement', 'Dotation actuelle', 'Consommation annuelle', 'Dotation proposée', 'Statut', 'Dotation décidée'].map(q).join(';')]
+            .concat(dt.rows.map((r) => [r.code, r.libelle, r.famille, r.rangement, r.dot == null ? '' : r.dot, r.qAn, r.cible, r.statut, decidee(r) == null ? '' : decidee(r)].map(q).join(';')));
+          const a = el('a', {href: URL.createObjectURL(new Blob(['\ufeff' + lines.join('\r\n')], {type: 'text/csv;charset=utf-8'})), download: `dotation-${g.code}-${new Date().toISOString().slice(0, 10)}.csv`});
+          document.body.append(a); a.click(); a.remove();
+        });
         const hostD = el('div'), infoD = el('p', {class: 'eff-small'}), moreD = el('button', {class: 'eff-btn ghost', type: 'button'});
         let allD = false;
         moreD.addEventListener('click', () => { allD = !allD; showD(); });
         const ordre = (s) => E.STATUTS.indexOf(s);
         const showD = () => {
           const v = selS.value;
-          const rows = dt.rows.filter((r) => v === '*' || (v === 'actions' ? r.statut !== 'Adaptée' : (v === 'sur' || v === 'sous' ? E.alerteCouv(r) === v : r.statut === v)))
+          const rows = dt.rows.filter((r) => (selFD.value === '*' || r.famille === selFD.value) && (v === '*' || (v === 'actions' ? r.statut !== 'Adaptée' : (v === 'sur' || v === 'sous' ? E.alerteCouv(r) === v : r.statut === v))))
             .sort(v === 'sur' ? (a, b) => b.couv - a.couv : v === 'sous' ? (a, b) => a.couv - b.couv :
               (a, b) => ordre(a.statut) - ordre(b.statut) || Math.abs(b.ecart * (b.pu || 0)) - Math.abs(a.ecart * (a.pu || 0)) || b.qAn - a.qAn);
           infoD.textContent = `${rows.length} références`;
@@ -516,14 +537,30 @@
             {key: 'besoin', label: 'Besoin 15 j', n: 1, fmt: (v) => new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 1}).format(v)},
             {key: 'couv', label: 'Couverture actuelle', n: 1, fmt: (v) => (v == null ? '—' : (v >= 100 ? E.num(v) : new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 1}).format(v)) + ' j')},
             {key: 'cond', label: 'Cond.', n: 1}, {key: 'cible', label: 'Dotation proposée', n: 1, fmt: E.num},
-            {key: 'ecart', label: 'Écart', n: 1, fmt: (v) => (v > 0 ? '+' : '') + E.num(v)}, {key: 'statut', label: 'Statut', fmt: (v) => v}
+            {key: 'ecart', label: 'Écart', n: 1, fmt: (v) => (v > 0 ? '+' : '') + E.num(v)}, {key: 'statut', label: 'Statut', fmt: (v) => v},
+            {key: 'decidee', label: 'Dotation décidée', n: 1, render: (r) => {
+              const val = decidee(r), pre = dec[r.code] == null && val != null;
+              if (!opts.editable) return el('span', {class: pre ? 'eff-pre' : null, text: val == null ? '—' : E.num(val)});
+              const inp = el('input', {class: 'eff-dec' + (pre ? ' eff-pre' : ''), type: 'number', min: '0', step: '1', inputmode: 'numeric', value: val == null ? '' : String(val), 'aria-label': 'Dotation décidée pour ' + r.libelle,
+                title: pre ? 'Prérempli : dotation actuelle jugée adaptée' : ''});
+              inp.addEventListener('change', () => {
+                const n = inp.value === '' ? null : Math.max(0, Math.round(+inp.value));
+                if (n == null) delete dec[r.code]; else dec[r.code] = n;
+                inp.classList.remove('eff-pre'); inp.title = '';
+                if (opts.onChange) opts.onChange();
+              });
+              return inp;
+            }}
           ], (allD ? rows : rows.slice(0, 25)).map((r) => ({...r, _muted: r.statut === 'Adaptée'}))) : el('p', {class: 'eff-small', text: 'Aucune référence pour ce choix.'}));
           moreD.hidden = rows.length <= 25; moreD.textContent = allD ? 'Afficher les 25 premières seulement' : `Afficher les ${rows.length} références`;
-          hostD.querySelectorAll('tbody tr').forEach((tr, i) => { const al = E.alerteCouv(rows[i]); if (al) tr.classList.add('eff-row-' + al); const td = tr.lastElementChild; if (td) td.className = 'eff-st eff-st-' + ({'À augmenter': 'warn', 'À réduire': 'info', 'Sans consommation': 'bad', 'Hors dotation': 'none', 'Adaptée': 'ok'})[rows[i].statut]; });
+          hostD.querySelectorAll('tbody tr').forEach((tr, i) => { const al = E.alerteCouv(rows[i]); if (al) tr.classList.add('eff-row-' + al); const td = tr.querySelector('td[data-k=statut]'); if (td) td.className = 'eff-st eff-st-' + ({'À augmenter': 'warn', 'À réduire': 'info', 'Sans consommation': 'bad', 'Hors dotation': 'none', 'Adaptée': 'ok'})[rows[i].statut]; });
         };
         selS.addEventListener('change', () => { allD = false; showD(); });
+        selFD.addEventListener('change', () => { allD = false; showD(); });
         sec.querySelectorAll('.eff-couv-item').forEach((it) => { it.addEventListener('click', () => { selS.value = it.classList.contains('eff-couv-sur') ? 'sur' : 'sous'; allD = false; showD(); }); });
-        sec.append(el('div', {class: 'eff-ctl'}, selS), infoD, hostD, el('div', {class: 'eff-row'}, moreD),
+        const nDec = () => dt.rows.filter((r) => decidee(r) != null).length;
+        sec.append(el('div', {class: 'eff-ctl'}, selFD, selS), infoD, hostD, el('div', {class: 'eff-row'}, moreD, exportD),
+          el('p', {class: 'eff-small', text: 'Dotation décidée : préremplie avec la dotation actuelle quand elle est jugée adaptée (en italique) ; à saisir pour les autres références' + (opts.editable ? ', puis « Publier » en bas de page pour l’enregistrer.' : '.')}),
           el('p', {class: 'eff-small', text: 'À relire avec l’équipe avant toute modification : un produit d’urgence ou à rotation lente peut rester en dotation même sans consommation récente ; « Hors dotation » = référence consommée au moins une fois par quinzaine en moyenne mais absente de la dotation (à ajouter ou à laisser en délivrance nominative).'}));
         showD();
       }
@@ -532,9 +569,9 @@
 
     const globalSec = el('section', {class: 'eff-reg eff-global', id: 'ensemble'});
     if (c.regs.length > 1) {
-      const intraTot = sum(c.regs, (g) => g.med + g.sol + g.dms + g.autres);
+      const intraTot = sum(c.regs, (g) => g.med + g.sol + g.stu + g.dms + g.autres);
       const famG = (f) => ({total: sum(c.regs, (g) => g.fam[f].total), sus: sum(c.regs, (g) => g.fam[f].sus)});
-      const G = {total: c.total, sus: c.sus, med: sum(c.regs, (g) => g.med), sol: sum(c.regs, (g) => g.sol), dms: sum(c.regs, (g) => g.dms)};
+      const G = {total: c.total, sus: c.sus, med: sum(c.regs, (g) => g.med), sol: sum(c.regs, (g) => g.sol), stu: sum(c.regs, (g) => g.stu), dms: sum(c.regs, (g) => g.dms)};
       const famTileG = (f, label, susLabel) => { const v = famG(f); return el('div', {class: 'eff-card'}, el('div', {class: 'eff-tl', text: label}), el('div', {class: 'eff-tv', text: E.eur(v.total)}),
         el('div', {class: 'eff-small', text: v.sus ? `dont ${E.eur(v.sus)} ${susLabel}` : 'entièrement à la charge de l’hôpital'})); };
       globalSec.append(el('h2', {class: 'eff-reg-h', text: 'Vue d’ensemble du service'}),
@@ -543,7 +580,7 @@
         el('div', {class: 'eff-tiles'},
           el('div', {class: 'eff-card eff-card-main'}, el('div', {class: 'eff-tl', text: 'Coût global annualisé'}), el('div', {class: 'eff-tv', text: E.eur(c.total)}),
             el('div', {class: 'eff-small', text: `${E.eur(c.intra)} à la charge de l’hôpital (${E.pct(c.partIntra)}) · ${E.eur(c.sus)} remboursés en sus`})),
-          famTileG('Médicaments', 'Médicaments', 'hors GHS'), famTileG('Solutés', 'Solutés', 'remboursés en sus'), famTileG('DMS', 'Dispositifs médicaux stériles', 'LPPR')),
+          famTileG('Médicaments', 'Médicaments', 'hors GHS'), famTileG('Solutés', 'Solutés', 'remboursés en sus'), famTileG('Stupéfiants', 'Stupéfiants', 'remboursés en sus'), famTileG('DMS', 'Dispositifs médicaux stériles', 'LPPR')),
         el('div', {class: 'eff-syn-bar', role: 'img', 'aria-label': 'Répartition du coût global par type de produit'},
           SERIES.map(([k, label], j) => G.total && G[k] > 0 ? el('i', {style: `width:${G[k] / G.total * 100}%;background:${COLORS[j]}`, title: label + ' : ' + E.eur(G[k])}) : null)),
         el('div', {class: 'eff-leg'}, SERIES.map(([k, label], j) => el('span', {}, el('i', {style: 'background:' + COLORS[j]}), `${label} ${E.pct(G.total ? Math.round(G[k] / G.total * 1000) / 10 : null)}`))),
@@ -552,7 +589,7 @@
         stackedBars(c.regs.map((g) => ({...g, nom: g.code + ' — ' + (g.ufs.length === 1 ? g.ufs[0].nom : g.ufs.length + ' UF')}))));
       const part = (v, t) => (t ? Math.round(v / t * 1000) / 10 : null);
       const cards = c.regs.map((g) => {
-        const gi = g.med + g.sol + g.dms + g.autres;
+        const gi = g.med + g.sol + g.stu + g.dms + g.autres;
         const ufs = c.ufs.filter((u) => u.reg === g.code);
         return el('div', {class: 'eff-card eff-syn'},
           el('div', {class: 'eff-syn-h'}, el('b', {text: g.code}), el('span', {class: 'eff-pill', text: E.pct(part(g.total, c.total)) + ' du service'})),
@@ -562,15 +599,15 @@
             SERIES.map(([k, label], j) => g.total && g[k] > 0 ? el('i', {style: `width:${g[k] / g.total * 100}%;background:${COLORS[j]}`, title: label + ' : ' + E.eur(g[k])}) : null)),
           el('ul', {class: 'eff-syn-list'}, ufs.map((u) => el('li', {class: u.recue ? null : 'muted'},
             el('span', {text: `${u.uf} · ${u.nom}`}),
-            el('span', {class: 'n', text: ufs.length > 1 ? (u.recue ? `${E.eur(u.med + u.sol + u.dms + u.autres)} · ${E.pct(part(u.med + u.sol + u.dms + u.autres, gi))}` : 'non transmise') : (u.recue ? E.eur(u.total) : 'non transmise')})))),
+            el('span', {class: 'n', text: ufs.length > 1 ? (u.recue ? `${E.eur(u.med + u.sol + u.stu + u.dms + u.autres)} · ${E.pct(part(u.med + u.sol + u.stu + u.dms + u.autres, gi))}` : 'non transmise') : (u.recue ? E.eur(u.total) : 'non transmise')})))),
           ufs.length > 1 ? el('p', {class: 'eff-small', text: 'Montant intra-GHS annualisé de l’UF et sa part dans le regroupement (clé globale).'}) : null);
       });
       globalSec.append(el('div', {style: 'margin-top:14px'}, table([
-          {key: 'code', label: 'Regroupement'}, {key: 'nb', label: 'UF', n: 1}, {key: 'med', label: 'Médicaments intra-GHS', n: 1, fmt: E.eur}, {key: 'sol', label: 'Solutés', n: 1, fmt: E.eur},
+          {key: 'code', label: 'Regroupement'}, {key: 'nb', label: 'UF', n: 1}, {key: 'med', label: 'Médicaments intra-GHS', n: 1, fmt: E.eur}, {key: 'sol', label: 'Solutés', n: 1, fmt: E.eur}, {key: 'stu', label: 'Stupéfiants', n: 1, fmt: E.eur},
           {key: 'dms', label: 'DMS intra-GHS', n: 1, fmt: E.eur}, {key: 'sus', label: 'Hors GHS / LPPR', n: 1, fmt: E.eur}, {key: 'total', label: 'Total', n: 1, fmt: E.eur},
           {key: 'pIntra', label: 'Part de l’intra-GHS', n: 1, fmt: E.pct}
-        ], c.regs.map((g) => ({...g, nb: g.ufs.length, pIntra: part(g.med + g.sol + g.dms + g.autres, intraTot)})),
-        {code: 'Total', nb: c.ufs.length, med: E.eur(sum(c.regs, (g) => g.med)), sol: E.eur(sum(c.regs, (g) => g.sol)), dms: E.eur(sum(c.regs, (g) => g.dms)), sus: E.eur(c.sus), total: E.eur(c.total), pIntra: '100 %'})),
+        ], c.regs.map((g) => ({...g, nb: g.ufs.length, pIntra: part(g.med + g.sol + g.stu + g.dms + g.autres, intraTot)})),
+        {code: 'Total', nb: c.ufs.length, med: E.eur(sum(c.regs, (g) => g.med)), sol: E.eur(sum(c.regs, (g) => g.sol)), stu: E.eur(sum(c.regs, (g) => g.stu)), dms: E.eur(sum(c.regs, (g) => g.dms)), sus: E.eur(c.sus), total: E.eur(c.total), pIntra: '100 %'})),
         el('h3', {text: '3. Bilan du regroupement des UF'}),
         el('p', {class: 'eff-note', text: 'Chaque carte rappelle les UF regroupées sous un même code et leur poids ; cliquez pour ouvrir le détail.'}),
         el('div', {class: 'eff-syn-grid'}, cards));
@@ -581,9 +618,9 @@
       globalSec.append(el('h3', {text: `Clés de répartition par type de produit — ${g.code}`}),
         el('p', {class: 'eff-note', text: 'Part de chaque UF dans la consommation intra-GHS du regroupement. Une UF approvisionnée sur le stock d’une autre apparaît à 0 % : pour le stock partagé, une clé fondée sur l’activité (journées, séjours, passages) peut être plus juste.'}),
         table([
-          {key: 'uf', label: 'UF'}, {key: 'nom', label: 'Service'}, {key: 'med', label: 'Médicaments', n: 1, fmt: E.pct}, {key: 'sol', label: 'Solutés', n: 1, fmt: E.pct},
+          {key: 'uf', label: 'UF'}, {key: 'nom', label: 'Service'}, {key: 'med', label: 'Médicaments', n: 1, fmt: E.pct}, {key: 'sol', label: 'Solutés', n: 1, fmt: E.pct}, {key: 'stu', label: 'Stupéfiants', n: 1, fmt: E.pct},
           {key: 'dms', label: 'DMS', n: 1, fmt: E.pct}, {key: 'glob', label: 'Global', n: 1, fmt: E.pct}, {key: 'eur', label: 'Intra-GHS / an', n: 1, fmt: E.eur}
-        ], g.cles.map((r) => ({...r, _muted: !r.recue, nom: r.nom + (r.recue ? '' : ' (non transmise)')})), {uf: 'Total', med: '100 %', sol: '100 %', dms: '100 %', glob: '100 %', eur: E.eur(sum(g.cles, (r) => r.eur))}));
+        ], g.cles.map((r) => ({...r, _muted: !r.recue, nom: r.nom + (r.recue ? '' : ' (non transmise)')})), {uf: 'Total', med: '100 %', sol: '100 %', stu: '100 %', dms: '100 %', glob: '100 %', eur: E.eur(sum(g.cles, (r) => r.eur))}));
     });
 
     const views = el('div', {class: 'eff-views'}, multi ? globalSec : null, blocs);

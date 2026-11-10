@@ -7,7 +7,7 @@
 <title>Tableau de bord du service — Pharmacie clinique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=202611102246">
+<link rel="stylesheet" href="assets/style.css?v=202611102305">
 </head>
 <body>
 <main class="eff-wrap">
@@ -22,7 +22,7 @@
   </form>
 
   <div id="app" hidden class="eff-steps">
-    <p class="eff-warn" id="draft" hidden>Aperçu : les extractions déposées ne sont pas encore publiées. Le tableau de bord ci-dessous les intègre déjà ; cliquez sur « Publier » pour le mettre à jour pour tous.</p>
+    <p class="eff-warn" id="draft" hidden>Modifications non publiées (extractions déposées ou dotations décidées). Le tableau de bord ci-dessous les intègre déjà ; cliquez sur « Publier » en bas de page pour les enregistrer pour tous.</p>
     <div id="dash" class="eff-steps"></div>
     <div id="empty" hidden class="eff-card"><p class="eff-kicker">Le pharmacien clinicien au service de l’efficience</p><h1 id="empty-name"></h1><p>Aucune consommation n’a encore été déposée pour ce service. Déposez les extractions ci-dessous.</p></div>
 
@@ -50,8 +50,8 @@
     <footer class="eff-foot">Données confidentielles, réservées au service. <a href="./">Accueil</a> · <a href="#" id="print">Imprimer</a></footer>
   </div>
 </main>
-<script src="assets/xlsx.full.min.js?v=202611102246"></script>
-<script src="assets/core.js?v=202611102246"></script>
+<script src="assets/xlsx.full.min.js?v=202611102305"></script>
+<script src="assets/core.js?v=202611102305"></script>
 <script>
 (async function () {
   'use strict';
@@ -129,7 +129,7 @@
     if (prevReg) dr.value = prevReg;
     const has = D.conso.length > 0;
     $('empty').hidden = has; $('empty-name').textContent = D.service;
-    if (has) EFF.renderDashboard($('dash'), D); else $('dash').replaceChildren();
+    if (has) EFF.renderDashboard($('dash'), D, {editable: true, onChange: () => setDirty(true)}); else $('dash').replaceChildren();
     const rows = D.regroupements.flatMap((g) => g.ufs.map((u) => ({u, g, f: D.fichiers[u.uf]})));
     $('uf-status').replaceChildren(el('div', {class: 'eff-tw'}, el('table', {class: 'eff-table'},
       el('thead', {}, el('tr', {}, ['UF', 'Service', 'Regroupement', 'Dernière extraction', 'Déposée le', 'Lignes'].map((h, i) => el('th', {class: i === 5 ? 'n' : null, text: h})))),
