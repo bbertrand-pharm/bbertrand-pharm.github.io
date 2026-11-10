@@ -506,7 +506,8 @@
         const nSur = dt.rows.filter((r) => E.alerteCouv(r) === 'sur').length, nSous = dt.rows.filter((r) => E.alerteCouv(r) === 'sous').length;
         sec.append(el('div', {class: 'eff-couv'},
           el('div', {class: 'eff-couv-item eff-couv-sur'}, el('b', {text: E.num(nSur)}), ` références dont la dotation couvre plus d’un mois (> ${E.COUV_MAX} jours) de consommation moyenne`),
-          el('div', {class: 'eff-couv-item eff-couv-sous'}, el('b', {text: E.num(nSous)}), ` références dont la dotation couvre moins de ${E.COUV_MIN} jours de consommation moyenne`)));
+          el('div', {class: 'eff-couv-item eff-couv-sous'}, el('b', {text: E.num(nSous)}), ` références dont la dotation couvre moins de ${E.COUV_MIN} jours de consommation moyenne`)),
+          el('p', {class: 'eff-small', text: 'Dans le tableau, ces références sont surlignées en bleu (plus d’un mois de stock) ou en rose (moins de 10 jours). Cliquez sur un bandeau pour les afficher seules.'}));
         const selS = el('select', {class: 'eff-select', 'aria-label': 'Statut'}, el('option', {value: 'actions', text: 'Ajustements proposés'}), el('option', {value: '*', text: 'Toutes les références'}),
           el('option', {value: 'sur', text: `Plus d’un mois de stock (> ${E.COUV_MAX} j)`}), el('option', {value: 'sous', text: `Moins de ${E.COUV_MIN} jours de stock`}), E.STATUTS.map((s) => el('option', {value: s, text: s})));
         const selFD = el('select', {class: 'eff-select', 'aria-label': 'Type de produit'}, [['*', 'Tous les produits'], ...E.FAMILLES.map((f) => [f, f])].map(([v, l]) => el('option', {value: v, text: l})));
@@ -535,9 +536,8 @@
           hostD.replaceChildren(rows.length ? table([
             {key: 'libelle', label: 'Référence'}, {key: 'rangement', label: 'Rangement'},
             {key: 'dot', label: 'Dotation actuelle', n: 1, fmt: (v) => (v == null ? '—' : E.num(v))}, {key: 'qAn', label: 'Conso / an', n: 1, fmt: E.num},
-            {key: 'couv', label: 'Couver­ture', n: 1, fmt: (v) => (v == null ? '—' : (v >= 100 ? E.num(v) : new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 1}).format(v)) + ' j')},
             {key: 'cond', label: 'Cond.', n: 1}, {key: 'cible', label: 'Dotation proposée', n: 1, fmt: E.num},
-            {key: 'ecart', label: 'Écart', n: 1, fmt: (v) => (v > 0 ? '+' : '') + E.num(v)}, {key: 'statut', label: 'Statut', fmt: (v) => v},
+            {key: 'statut', label: 'Statut', fmt: (v) => v},
             {key: 'decidee', label: 'Dotation décidée', n: 1, render: (r) => {
               const val = decidee(r), pre = dec[r.code] == null && val != null;
               if (!opts.editable) return el('span', {class: pre ? 'eff-pre' : null, text: val == null ? '—' : E.num(val)});
