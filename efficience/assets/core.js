@@ -420,8 +420,10 @@
         el('p', {class: 'eff-sub', text: `Exercice ${p.exercice} · consommations arrêtées de janvier à ${E.MOIS[p.mois - 1]} (${p.mois} mois), extrapolées sur 12 mois · valorisation au PMP`}),
         el('p', {class: 'eff-lead'}, 'Sur une année, le service consommerait ', el('b', {text: E.eur(c.total)}), ' de produits pharmaceutiques, dont ',
           el('b', {text: E.pct(c.partIntra)}), ' à la charge de l’hôpital (intra-GHS) et ', el('b', {text: E.eur(c.sus)}), ' remboursés en sus du séjour.'),
-        multi ? el('nav', {class: 'eff-nav', 'aria-label': 'Regroupements'}, c.regs.map((g) => el('a', {href: '#' + anchor(g)}, el('b', {text: g.code}), ' ', E.eur(g.total))),
-          el('a', {href: '#synthese-regroupements', text: 'Synthèse'})) : null));
+        multi ? el('nav', {class: 'eff-tabs', role: 'tablist', 'aria-label': 'Affichage'},
+          el('button', {type: 'button', role: 'tab', class: 'eff-tab', 'data-view': 'ensemble'}, el('b', {text: 'Vue d’ensemble'}), el('span', {text: E.eur(c.total)})),
+          c.regs.map((g) => el('button', {type: 'button', role: 'tab', class: 'eff-tab', 'data-view': anchor(g)}, el('b', {text: g.code}), el('span', {text: (g.ufs.length === 1 ? g.ufs[0].nom : g.ufs.length + ' UF') + ' · ' + E.eur(g.total)})))) : null));
+    const blocs = [];
 
     c.regs.forEach((g, gi) => {
       const sec = el('section', {class: 'eff-reg', id: anchor(g)});
@@ -525,11 +527,29 @@
           el('p', {class: 'eff-small', text: 'À relire avec l’équipe avant toute modification : un produit d’urgence ou à rotation lente peut rester en dotation même sans consommation récente ; « Hors dotation » = référence consommée au moins une fois par quinzaine en moyenne mais absente de la dotation (à ajouter ou à laisser en délivrance nominative).'}));
         showD();
       }
-      root.append(sec);
+      blocs.push(sec);
     });
 
+    const globalSec = el('section', {class: 'eff-reg eff-global', id: 'ensemble'});
     if (c.regs.length > 1) {
       const intraTot = sum(c.regs, (g) => g.med + g.sol + g.dms + g.autres);
+      const famG = (f) => ({total: sum(c.regs, (g) => g.fam[f].total), sus: sum(c.regs, (g) => g.fam[f].sus)});
+      const G = {total: c.total, sus: c.sus, med: sum(c.regs, (g) => g.med), sol: sum(c.regs, (g) => g.sol), dms: sum(c.regs, (g) => g.dms)};
+      const famTileG = (f, label, susLabel) => { const v = famG(f); return el('div', {class: 'eff-card'}, el('div', {class: 'eff-tl', text: label}), el('div', {class: 'eff-tv', text: E.eur(v.total)}),
+        el('div', {class: 'eff-small', text: v.sus ? `dont ${E.eur(v.sus)} ${susLabel}` : 'entièrement à la charge de l’hôpital'})); };
+      globalSec.append(el('h2', {class: 'eff-reg-h', text: 'Vue d’ensemble du service'}),
+        el('p', {class: 'eff-note', text: `${c.regs.length} UF ou regroupements, ${c.ufs.length} UF · ${E.num(c.refs)} références consommées.`}),
+        el('h3', {text: '1. Bilan financier global annualisé'}),
+        el('div', {class: 'eff-tiles'},
+          el('div', {class: 'eff-card eff-card-main'}, el('div', {class: 'eff-tl', text: 'Coût global annualisé'}), el('div', {class: 'eff-tv', text: E.eur(c.total)}),
+            el('div', {class: 'eff-small', text: `${E.eur(c.intra)} à la charge de l’hôpital (${E.pct(c.partIntra)}) · ${E.eur(c.sus)} remboursés en sus`})),
+          famTileG('Médicaments', 'Médicaments', 'hors GHS'), famTileG('Solutés', 'Solutés', 'remboursés en sus'), famTileG('DMS', 'Dispositifs médicaux stériles', 'LPPR')),
+        el('div', {class: 'eff-syn-bar', role: 'img', 'aria-label': 'Répartition du coût global par type de produit'},
+          SERIES.map(([k, label], j) => G.total && G[k] > 0 ? el('i', {style: `width:${G[k] / G.total * 100}%;background:${COLORS[j]}`, title: label + ' : ' + E.eur(G[k])}) : null)),
+        el('div', {class: 'eff-leg'}, SERIES.map(([k, label], j) => el('span', {}, el('i', {style: 'background:' + COLORS[j]}), `${label} ${E.pct(G.total ? Math.round(G[k] / G.total * 1000) / 10 : null)}`))),
+        el('h3', {text: '2. Comparaison des ' + c.regs.length + ' UF ou regroupements'}),
+        el('p', {class: 'eff-note', text: 'Coûts annualisés empilés par type de produit. Cliquez sur un onglet, ou sur une carte plus bas, pour afficher le détail d’une UF ou d’un regroupement.'}),
+        stackedBars(c.regs.map((g) => ({...g, nom: g.code + ' — ' + (g.ufs.length === 1 ? g.ufs[0].nom : g.ufs.length + ' UF')}))));
       const part = (v, t) => (t ? Math.round(v / t * 1000) / 10 : null);
       const cards = c.regs.map((g) => {
         const gi = g.med + g.sol + g.dms + g.autres;
@@ -545,26 +565,40 @@
             el('span', {class: 'n', text: ufs.length > 1 ? (u.recue ? `${E.eur(u.med + u.sol + u.dms + u.autres)} · ${E.pct(part(u.med + u.sol + u.dms + u.autres, gi))}` : 'non transmise') : (u.recue ? E.eur(u.total) : 'non transmise')})))),
           ufs.length > 1 ? el('p', {class: 'eff-small', text: 'Montant intra-GHS annualisé de l’UF et sa part dans le regroupement (clé globale).'}) : null);
       });
-      root.append(el('section', {id: 'synthese-regroupements'}, el('h2', {text: 'Synthèse des regroupements'}),
-        el('p', {class: 'eff-note', text: `${c.regs.length} regroupements, ${c.ufs.length} UF. Montants annualisés ; chaque carte rappelle les UF regroupées sous un même code et leur poids.`}),
-        el('div', {class: 'eff-syn-grid'}, cards),
-        el('div', {style: 'margin-top:14px'}, table([
-          {key: 'code', label: 'Regroupement'}, {key: 'nb', label: 'UF', n: 1}, {key: 'med', label: 'Médicaments', n: 1, fmt: E.eur}, {key: 'sol', label: 'Solutés', n: 1, fmt: E.eur},
-          {key: 'dms', label: 'DMS', n: 1, fmt: E.eur}, {key: 'sus', label: 'Hors GHS / LPPR', n: 1, fmt: E.eur}, {key: 'total', label: 'Total', n: 1, fmt: E.eur},
+      globalSec.append(el('div', {style: 'margin-top:14px'}, table([
+          {key: 'code', label: 'Regroupement'}, {key: 'nb', label: 'UF', n: 1}, {key: 'med', label: 'Médicaments intra-GHS', n: 1, fmt: E.eur}, {key: 'sol', label: 'Solutés', n: 1, fmt: E.eur},
+          {key: 'dms', label: 'DMS intra-GHS', n: 1, fmt: E.eur}, {key: 'sus', label: 'Hors GHS / LPPR', n: 1, fmt: E.eur}, {key: 'total', label: 'Total', n: 1, fmt: E.eur},
           {key: 'pIntra', label: 'Part de l’intra-GHS', n: 1, fmt: E.pct}
         ], c.regs.map((g) => ({...g, nb: g.ufs.length, pIntra: part(g.med + g.sol + g.dms + g.autres, intraTot)})),
-        {code: 'Total', nb: c.ufs.length, med: E.eur(sum(c.regs, (g) => g.med)), sol: E.eur(sum(c.regs, (g) => g.sol)), dms: E.eur(sum(c.regs, (g) => g.dms)), sus: E.eur(c.sus), total: E.eur(c.total), pIntra: '100 %'}))));
+        {code: 'Total', nb: c.ufs.length, med: E.eur(sum(c.regs, (g) => g.med)), sol: E.eur(sum(c.regs, (g) => g.sol)), dms: E.eur(sum(c.regs, (g) => g.dms)), sus: E.eur(c.sus), total: E.eur(c.total), pIntra: '100 %'})),
+        el('h3', {text: '3. Bilan du regroupement des UF'}),
+        el('p', {class: 'eff-note', text: 'Chaque carte rappelle les UF regroupées sous un même code et leur poids ; cliquez pour ouvrir le détail.'}),
+        el('div', {class: 'eff-syn-grid'}, cards));
+      cards.forEach((cd, i) => { cd.classList.add('eff-click'); cd.addEventListener('click', () => { show(anchor(c.regs[i])); window.scrollTo({top: 0, behavior: 'smooth'}); }); });
     }
 
-    const synSec = root.querySelector('#synthese-regroupements');
-    if (synSec) c.regs.filter((g) => g.cles).forEach((g) => {
-      synSec.append(el('h3', {text: `Clés de répartition par type de produit — ${g.code}`}),
+    if (c.regs.length > 1) c.regs.filter((g) => g.cles).forEach((g) => {
+      globalSec.append(el('h3', {text: `Clés de répartition par type de produit — ${g.code}`}),
         el('p', {class: 'eff-note', text: 'Part de chaque UF dans la consommation intra-GHS du regroupement. Une UF approvisionnée sur le stock d’une autre apparaît à 0 % : pour le stock partagé, une clé fondée sur l’activité (journées, séjours, passages) peut être plus juste.'}),
         table([
           {key: 'uf', label: 'UF'}, {key: 'nom', label: 'Service'}, {key: 'med', label: 'Médicaments', n: 1, fmt: E.pct}, {key: 'sol', label: 'Solutés', n: 1, fmt: E.pct},
           {key: 'dms', label: 'DMS', n: 1, fmt: E.pct}, {key: 'glob', label: 'Global', n: 1, fmt: E.pct}, {key: 'eur', label: 'Intra-GHS / an', n: 1, fmt: E.eur}
         ], g.cles.map((r) => ({...r, _muted: !r.recue, nom: r.nom + (r.recue ? '' : ' (non transmise)')})), {uf: 'Total', med: '100 %', sol: '100 %', dms: '100 %', glob: '100 %', eur: E.eur(sum(g.cles, (r) => r.eur))}));
     });
+
+    const views = el('div', {class: 'eff-views'}, multi ? globalSec : null, blocs);
+    root.append(views);
+    function show(view) {
+      const ids = [...(multi ? ['ensemble'] : []), ...blocs.map((b) => b.id)];
+      const ok = ids.includes(view) ? view : ids[0];
+      globalSec.hidden = ok !== 'ensemble';
+      blocs.forEach((b) => { b.hidden = b.id !== ok; });
+      root.querySelectorAll('.eff-tab').forEach((b) => { const on = b.dataset.view === ok; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+      if (multi && history.replaceState) history.replaceState(null, '', location.pathname + location.search + '#' + ok);
+      requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+    }
+    root.querySelectorAll('.eff-tab').forEach((b) => b.addEventListener('click', () => show(b.dataset.view)));
+    show(decodeURIComponent((location.hash || '').slice(1)));
 
     root.append(el('details', {class: 'eff-method'}, el('summary', {text: 'Méthode'}), el('ul', {},
       el('li', {text: 'Source : extractions « Analyse_conso » du logiciel de gestion, une par UF, valorisées au PMP de la dernière balance définitive ; les retours sont déduits.'}),

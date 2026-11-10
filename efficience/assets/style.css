@@ -112,3 +112,13 @@ td.eff-st-warn { color: #9a5b1e; } td.eff-st-info { color: #3a5683; } td.eff-st-
 @media (prefers-color-scheme: dark) { .eff-couv-sur, .eff-table tr.eff-row-sur td { background: #1e2a40; } .eff-couv-sur, .eff-table tr.eff-row-sur td:nth-child(6) { color: #9fb6e2; }
   .eff-couv-sous, .eff-table tr.eff-row-sous td { background: #3a221e; } .eff-couv-sous, .eff-table tr.eff-row-sous td:nth-child(6) { color: #f0a597; } }
 .eff-couv-item { cursor: pointer; } .eff-couv-item:hover { outline: 1px solid currentColor; }
+.eff-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; position: sticky; top: 0; z-index: 3; background: var(--bg); padding: 8px 0; }
+.eff-tab { font: inherit; text-align: left; cursor: pointer; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 150px; }
+.eff-tab b { font-family: var(--display); font-size: 1rem; }
+.eff-tab span { font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.eff-tab:hover { border-color: var(--accent); }
+.eff-tab.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.eff-tab.on span { color: rgba(255,255,255,.85); }
+.eff-views { display: flex; flex-direction: column; gap: 28px; }
+.eff-click { cursor: pointer; } .eff-click:hover { border-color: var(--accent); }
+@media print { .eff-tabs { position: static; } }
