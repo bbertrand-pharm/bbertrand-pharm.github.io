@@ -459,7 +459,7 @@
           chk.checked ? {key: 'fin', label: 'Financement', fmt: (v) => (v === 'Intra-GHS' ? 'Intra-GHS' : v + ' (en sus)')} : null,
           g.ufs.length > 1 ? {key: 'ufs', label: 'UF'} : null,
           {key: 'q', label: 'Quantité / an', n: 1, fmt: E.num}, {key: 'v', label: 'Coût / an', n: 1, fmt: E.eur},
-          {key: 'pGlob', label: `% du total affiché (${E.eur(tot)})`, n: 1, fmt: (v) => (v != null && v < 0.1 && v > 0 ? '<\u00a00,1\u00a0%' : E.pct(v))}, {key: 'cumul', label: '% cumulé', n: 1, fmt: E.pct}
+          {key: 'pGlob', label: '% du total', n: 1, fmt: (v) => (v != null && v < 0.1 && v > 0 ? '<\u00a00,1\u00a0%' : E.pct(v))}, {key: 'cumul', label: '% cumulé', n: 1, fmt: E.pct}
         ].filter(Boolean), (all ? rows : rows.slice(0, N)).map((r) => ({...r, pGlob: tot ? Math.round(r.vr / tot * 1000) / 10 : null, _muted: r.fin !== 'Intra-GHS'}))) : el('p', {class: 'eff-small', text: 'Aucune référence pour ce choix.'}));
         more.hidden = rows.length <= N;
         more.textContent = all ? 'Afficher les 25 premières seulement' : `Afficher les ${rows.length} références`;
@@ -467,7 +467,7 @@
       selF.addEventListener('change', showRefs); chk.addEventListener('change', showRefs);
       more.addEventListener('click', () => { all = !all; showRefs(); });
       sec.append(el('h3', {text: '2. Références par coût global décroissant'}),
-        el('p', {class: 'eff-note', text: 'Les deux pourcentages se recalculent selon le filtre : % du total affiché = part de la référence dans le total du tableau ; % cumulé = part atteinte de la première référence jusqu’à la ligne. La base figure dans l’en-tête.'}),
+        el('p', {class: 'eff-note', text: 'Les deux pourcentages se recalculent selon le filtre : % du total = part de la référence dans le total du tableau affiché (indiqué au-dessus du tableau) ; % cumulé = part atteinte de la première référence jusqu’à la ligne.'}),
         el('div', {class: 'eff-ctl'}, selF, el('label', {class: 'eff-check'}, chk, 'Inclure les références remboursées en sus du séjour (hors GHS, LPPR)')),
         info, host, el('div', {class: 'eff-row'}, more));
       showRefs();
