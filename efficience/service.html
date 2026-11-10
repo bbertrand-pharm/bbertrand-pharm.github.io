@@ -7,7 +7,7 @@
 <title>Tableau de bord du service — Pharmacie clinique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=202611092320">
+<link rel="stylesheet" href="assets/style.css?v=202611100807">
 </head>
 <body>
 <main class="eff-wrap">
@@ -28,11 +28,15 @@
 
     <details class="eff-step eff-noprint" id="maj">
       <summary><b>Mettre à jour les données du service</b></summary>
-      <p class="eff-note">Déposez les extractions « Analyse_conso » des UF du service (un fichier par UF, plusieurs à la fois). Une UF déposée remplace ses données précédentes ; les fichiers d’autres services sont refusés. Les fichiers sont lus dans ce navigateur et seules les données chiffrées sont publiées.</p>
+      <p class="eff-note">Déposez les extractions « Analyse_conso » des UF du service (un fichier par UF, plusieurs à la fois) et, pour chaque UF ou regroupement, l’état de sa dotation. Une UF déposée remplace ses données précédentes ; les fichiers d’autres services sont refusés. Les fichiers sont lus dans ce navigateur et seules les données chiffrées sont publiées.</p>
       <div class="eff-row">
         <label class="eff-field">Exercice<input class="eff-input" type="number" id="p-ex" min="2020" max="2100" style="width:110px"></label>
         <label class="eff-field">Consommations arrêtées jusqu’à fin<select class="eff-select" id="p-mois"></select></label>
         <label class="eff-field">Extractions<input type="file" id="files" accept=".xlsx,.xls" multiple></label>
+      </div>
+      <div class="eff-row">
+        <label class="eff-field">Dotation de<select class="eff-select" id="dot-reg"></select></label>
+        <label class="eff-field">État de la dotation (Code, Rangement, Libellé, Dotation)<input type="file" id="dot-file" accept=".xlsx,.xls"></label>
       </div>
       <div id="msgs" class="eff-small" role="status" style="margin-top:10px"></div>
       <div id="uf-status" style="margin-top:14px"></div>
@@ -46,8 +50,8 @@
     <footer class="eff-foot">Données confidentielles, réservées au service. <a href="./">Accueil</a> · <a href="#" id="print">Imprimer</a></footer>
   </div>
 </main>
-<script src="assets/xlsx.full.min.js?v=202611092320"></script>
-<script src="assets/core.js?v=202611092320"></script>
+<script src="assets/xlsx.full.min.js?v=202611100807"></script>
+<script src="assets/core.js?v=202611100807"></script>
 <script>
 (async function () {
   'use strict';
@@ -92,6 +96,14 @@
     if (msgs.some((m) => m.ok)) setDirty(true);
     render();
   });
+  $('dot-file').addEventListener('change', async (ev) => {
+    const f = ev.target.files[0]; if (!f) return;
+    let r; try { r = EFF.parseDotation(await EFF.readWorkbook(f)); } catch (e) { r = {lignes: [], erreur: 'lecture impossible'}; }
+    const reg = $('dot-reg').value;
+    if (r.erreur || !r.lignes.length) $('msgs').replaceChildren(el('div', {class: 'eff-err', text: `${f.name} : ${r.erreur || 'aucune ligne de dotation'}`}));
+    else { EFF.ingestDotation(D, reg, f.name, r); $('msgs').replaceChildren(el('div', {class: 'eff-ok', text: `${f.name} : dotation de ${r.lignes.length} références enregistrée pour ${reg}`})); setDirty(true); }
+    ev.target.value = ''; render();
+  });
   $('cancel').addEventListener('click', () => { D = structuredClone(PUBLISHED); $('msgs').replaceChildren(); setDirty(false); render(); });
   $('print').addEventListener('click', (e) => { e.preventDefault(); print(); });
 
@@ -112,6 +124,9 @@
 
   function render() {
     $('p-ex').value = D.periode.exercice; $('p-mois').value = D.periode.mois;
+    const dr = $('dot-reg'), prevReg = dr.value;
+    dr.replaceChildren(...D.regroupements.map((g) => el('option', {value: g.code, text: g.code + ((D.dotations || {})[g.code] ? ' (dotation chargée)' : '')})));
+    if (prevReg) dr.value = prevReg;
     const has = D.conso.length > 0;
     $('empty').hidden = has; $('empty-name').textContent = D.service;
     if (has) EFF.renderDashboard($('dash'), D); else $('dash').replaceChildren();

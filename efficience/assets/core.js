@@ -109,7 +109,8 @@
       ref: {horsGHS: (ref.horsGHS || []).map((r) => r.code), lppr: (ref.lppr || []).map((r) => r.code)},
       conso: (prev.conso || []).filter((l) => ufs.has(l.uf)),
       recues: (prev.recues || []).filter((u) => ufs.has(u)),
-      fichiers, github, pistes: prev.pistes || {}
+      fichiers, github, pistes: prev.pistes || {},
+      dotations: Object.fromEntries(Object.entries(prev.dotations || {}).filter(([k]) => regs.some((g) => g.code === k)))
     };
   };
   E.serviceUFs = (d) => d.regroupements.flatMap((g) => g.ufs.map((u) => u.uf));
@@ -135,7 +136,37 @@
     return msgs;
   };
 
-  /* Lignes classées par famille (compte de stock) et financement (listes hors GHS / LPPR). */
+  /* ---------- Dotations ---------- */
+  /* Fichier « Code / Rangement / Libellé / Dotation » (une ligne par référence). */
+  E.parseDotation = (wb) => {
+    const rows = rowsOf(wb);
+    const hi = rows.findIndex((r) => r.some((c) => norm(c) === 'dotation') && r.some((c) => norm(c) === 'code'));
+    if (hi < 0) return {lignes: [], erreur: 'colonnes « Code » et « Dotation » introuvables'};
+    const h = rows[hi].map(norm), ix = (n) => h.indexOf(n);
+    const iC = ix('code'), iR = ix('rangement'), iL = ix('libelle'), iD = ix('dotation');
+    const m = new Map();
+    for (const r of rows.slice(hi + 1)) {
+      const code = parseInt(String(r[iC] == null ? '' : r[iC]).trim(), 10), dot = +r[iD];
+      if (!Number.isFinite(code) || !Number.isFinite(dot)) continue;
+      m.set(code, {code, rangement: iR >= 0 ? String(r[iR] || '').trim() : '', libelle: iL >= 0 ? String(r[iL] || '').trim() : '', dotation: dot});
+    }
+    return {lignes: [...m.values()]};
+  };
+  E.ingestDotation = (d, code, name, r) => {
+    d.dotations = d.dotations || {};
+    d.dotations[code] = {fichier: name, date: new Date().toISOString(), lignes: r.lignes};
+  };
+  /* Conditionnement lu dans le libellé (« CARTON DE 60 », « BTE/50 », « BT/100 », « 5/SACH ») ; 1 à défaut. */
+  E.conditionnement = (lib) => {
+    const s = String(lib || '').toUpperCase();
+    const m = s.match(/(?:CARTON|BOITE|BOÎTE|BTE|BT|SACHET|PAQUET|CAISSE)\s*(?:DE\s*|\/\s*)(\d{1,4})/) || s.match(/(\d{1,4})\s*\/\s*SACH/);
+    const n = m ? parseInt(m[1], 10) : 1;
+    return n > 0 ? n : 1;
+  };
+  E.JOURS_DOTATION = 15;
+  E.STATUTS = ['À augmenter', 'À réduire', 'Sans consommation', 'Hors dotation', 'Adaptée'];
+
+  /* Lignes classées par famille  /* Lignes classées par famille (compte de stock) et financement (listes hors GHS / LPPR). */
   E.lignes = (d) => {
     const hg = new Set(d.ref.horsGHS), lp = new Set(d.ref.lppr), ufs = new Set(E.serviceUFs(d));
     return d.conso.filter((l) => ufs.has(l.uf)).map((l) => ({...l, famille: E.famille(l.compte, l.lieu, l.libelle), fin: hg.has(l.code) ? 'Hors GHS' : (lp.has(l.code) ? 'LPPR' : 'Intra-GHS')}));
@@ -251,8 +282,38 @@
           q: Math.round(p.q * F), v: Math.round(p.v * F), vr: p.v * F, cumul: t ? Math.round(cum / t * 1000) / 10 : null};
       });
     };
+    /* Adéquation dotation / consommation d'un regroupement : cible = 15 jours de consommation annualisée, arrondie au conditionnement supérieur. */
+    const pu = new Map();
+    { const acc = new Map(); for (const l of L) { const a = acc.get(l.code) || [0, 0]; if (l.q > 0 && l.v > 0) { a[0] += l.q; a[1] += l.v; } acc.set(l.code, a); }
+      acc.forEach(([q, v], k) => { if (q > 0) pu.set(k, v / q); }); }
+    const dotation = (code) => {
+      const src = ((d.dotations || {})[code] || {}).lignes;
+      if (!src) return null;
+      const g = regs.find((x) => x.code === code);
+      const conso = new Map();
+      for (const l of L) if (g.ufs.some((u) => u.uf === l.uf)) { const p = conso.get(l.code) || {q: 0, libelle: l.libelle, famille: l.famille}; p.q += l.q; conso.set(l.code, p); }
+      const J = E.JOURS_DOTATION, rows = [];
+      const mk = (code, libelle, rangement, dot, famille) => {
+        const c = conso.get(code), qAn = c ? Math.max(0, c.q * F) : 0, besoin = qAn * J / 365, condLu = E.conditionnement(libelle), cond = condLu <= Math.max(besoin, 1) ? condLu : 1;
+        const cible = besoin > 0 ? Math.ceil(besoin / cond) * cond : 0;
+        let statut;
+        if (dot == null) statut = 'Hors dotation';
+        else if (qAn <= 0) statut = 'Sans consommation';
+        else if (Math.abs(dot - cible) <= Math.max(cond, 0.2 * cible)) statut = 'Adaptée';
+        else statut = dot < cible ? 'À augmenter' : 'À réduire';
+        const p = pu.get(code);
+        return {code, libelle, rangement: rangement || '', famille: famille || (c && c.famille) || '', dot, qAn: Math.round(qAn), besoin: Math.round(besoin * 10) / 10, cond, cible,
+          ecart: dot == null ? cible : cible - dot, statut, pu: p == null ? null : p, valDot: p != null && dot != null ? dot * p : null, valCible: p != null ? cible * p : null};
+      };
+      const inDot = new Set();
+      for (const x of src) { inDot.add(x.code); rows.push(mk(x.code, x.libelle || (conso.get(x.code) || {}).libelle, x.rangement, x.dotation)); }
+      for (const [k, c] of conso) if (!inDot.has(k) && c.q * F * J / 365 >= 1) rows.push(mk(k, c.libelle, '', null, c.famille));
+      const sumv = (f) => Math.round(sum(rows.filter((r) => r.dot != null && r.pu != null), f));
+      return {rows, fichier: d.dotations[code].fichier, date: d.dotations[code].date, valActuelle: sumv((r) => r.valDot), valProposee: sumv((r) => (r.statut === 'Sans consommation' ? 0 : r.valCible)),
+        sansPrix: rows.filter((r) => r.dot != null && r.pu == null).length};
+    };
     return {F, total: Math.round(tot), intra: Math.round(intra), sus: Math.round(tot - intra), partIntra: tot ? Math.round(intra / tot * 1000) / 10 : null,
-      refs: new Set(L.map((l) => l.code)).size, regs, ufs, top, produits};
+      refs: new Set(L.map((l) => l.code)).size, regs, ufs, top, produits, dotation};
   };
 
   /* ---------- Chiffrement (AES-GCM 256, clé dérivée PBKDF2-SHA256) ---------- */
@@ -416,10 +477,43 @@
           (x.sources || []).length ? el('span', {class: 'eff-notepad-src'}, 'Sources : ', x.sources.map((s, i) => [i ? ' · ' : '', el('a', {href: s.url, target: '_blank', rel: 'noopener', text: s.label})])) : null)))));
 
       /* 3. Dotation */
-      sec.append(el('h3', {text: '3. Adéquation de la dotation aux consommations annualisées'}),
-        el('div', {class: 'eff-card eff-pending'},
-          el('p', {text: 'Ce volet comparera, référence par référence, la dotation de ' + (g.ufs.length === 1 ? 'l’UF' : 'ce regroupement') + ' à environ 15 jours de consommation annualisée, arrondie au conditionnement, pour proposer les ajustements : à augmenter, à réduire, sans consommation, hors dotation.'}),
-          el('p', {class: 'eff-small', text: 'En attente de l’état des dotations (code produit, quantité en dotation, unités par conditionnement).'})));
+      sec.append(el('h3', {text: '3. Adéquation de la dotation aux consommations annualisées'}));
+      const dt = c.dotation(g.code);
+      if (!dt) {
+        sec.append(el('div', {class: 'eff-card eff-pending'},
+          el('p', {text: 'Ce volet compare, référence par référence, la dotation de ' + (g.ufs.length === 1 ? 'l’UF' : 'ce regroupement') + ' à 15 jours de consommation annualisée, arrondie au conditionnement : à augmenter, à réduire, sans consommation, hors dotation.'}),
+          el('p', {class: 'eff-small', text: 'En attente de l’état de la dotation (colonnes Code, Rangement, Libellé, Dotation), à déposer dans « Mettre à jour les données du service ».'})));
+      } else {
+        const cnt = (s) => dt.rows.filter((r) => r.statut === s).length;
+        const nbDot = dt.rows.filter((r) => r.dot != null).length;
+        sec.append(el('p', {class: 'eff-note', text: `Dotation de ${nbDot} références (${dt.fichier}). Cible : ${E.JOURS_DOTATION} jours de consommation annualisée, arrondie au conditionnement supérieur (lu dans le libellé : carton, boîte…), ou à l’unité quand le conditionnement dépasse le besoin de 15 jours. Écart toléré : un conditionnement ou 20 %.`}),
+          el('div', {class: 'eff-tiles eff-tiles-dot'},
+            [['À augmenter', 'warn'], ['À réduire', 'info'], ['Sans consommation', 'bad'], ['Hors dotation', ''], ['Adaptée', 'ok']].map(([s, k]) => el('div', {class: 'eff-card eff-st-' + (k || 'none')}, el('div', {class: 'eff-tl', text: s}), el('div', {class: 'eff-tv', text: E.num(cnt(s))})))),
+          el('p', {class: 'eff-small'}, 'Valeur de la dotation : ', el('b', {text: E.eur(dt.valActuelle)}), ' aujourd’hui → ', el('b', {text: E.eur(dt.valProposee)}), ' avec les ajustements proposés (références sans consommation retirées)' + (dt.sansPrix ? ` ; ${dt.sansPrix} références sans prix connu non valorisées.` : '.')));
+        const selS = el('select', {class: 'eff-select', 'aria-label': 'Statut'}, el('option', {value: 'actions', text: 'Ajustements proposés'}), el('option', {value: '*', text: 'Toutes les références'}), E.STATUTS.map((s) => el('option', {value: s, text: s})));
+        const hostD = el('div'), infoD = el('p', {class: 'eff-small'}), moreD = el('button', {class: 'eff-btn ghost', type: 'button'});
+        let allD = false;
+        moreD.addEventListener('click', () => { allD = !allD; showD(); });
+        const ordre = (s) => E.STATUTS.indexOf(s);
+        const showD = () => {
+          const rows = dt.rows.filter((r) => selS.value === '*' || (selS.value === 'actions' ? r.statut !== 'Adaptée' : r.statut === selS.value))
+            .sort((a, b) => ordre(a.statut) - ordre(b.statut) || Math.abs(b.ecart * (b.pu || 0)) - Math.abs(a.ecart * (a.pu || 0)) || b.qAn - a.qAn);
+          infoD.textContent = `${rows.length} références`;
+          hostD.replaceChildren(rows.length ? table([
+            {key: 'libelle', label: 'Référence'}, {key: 'rangement', label: 'Rangement'},
+            {key: 'dot', label: 'Dotation actuelle', n: 1, fmt: (v) => (v == null ? '—' : E.num(v))}, {key: 'qAn', label: 'Conso / an', n: 1, fmt: E.num},
+            {key: 'besoin', label: 'Besoin 15 j', n: 1, fmt: (v) => new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 1}).format(v)},
+            {key: 'cond', label: 'Cond.', n: 1}, {key: 'cible', label: 'Dotation proposée', n: 1, fmt: E.num},
+            {key: 'ecart', label: 'Écart', n: 1, fmt: (v) => (v > 0 ? '+' : '') + E.num(v)}, {key: 'statut', label: 'Statut', fmt: (v) => v}
+          ], (allD ? rows : rows.slice(0, 25)).map((r) => ({...r, _muted: r.statut === 'Adaptée'}))) : el('p', {class: 'eff-small', text: 'Aucune référence pour ce choix.'}));
+          moreD.hidden = rows.length <= 25; moreD.textContent = allD ? 'Afficher les 25 premières seulement' : `Afficher les ${rows.length} références`;
+          hostD.querySelectorAll('tbody tr').forEach((tr, i) => { const td = tr.lastElementChild; if (td) td.className = 'eff-st eff-st-' + ({'À augmenter': 'warn', 'À réduire': 'info', 'Sans consommation': 'bad', 'Hors dotation': 'none', 'Adaptée': 'ok'})[rows[i].statut]; });
+        };
+        selS.addEventListener('change', () => { allD = false; showD(); });
+        sec.append(el('div', {class: 'eff-ctl'}, selS), infoD, hostD, el('div', {class: 'eff-row'}, moreD),
+          el('p', {class: 'eff-small', text: 'À relire avec l’équipe avant toute modification : un produit d’urgence ou à rotation lente peut rester en dotation même sans consommation récente ; « Hors dotation » = référence consommée au moins une fois par quinzaine en moyenne mais absente de la dotation (à ajouter ou à laisser en délivrance nominative).'}));
+        showD();
+      }
       root.append(sec);
     });
 
