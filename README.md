@@ -1,9 +1,9 @@
 # Site de Benjamin Bertrand
 
-Site statique (une page `index.html`) dont tout le contenu est dans deux fichiers :
+Site statique (une page `site/index.html`) dont tout le contenu est dans deux fichiers :
 
-- `data/profil.json` : présentation, contact, expertise, engagements, enseignement
-- `data/travaux.json` : articles, communications orales et posters
+- `site/data/profil.json` : présentation, contact, expertise, engagements, enseignement
+- `site/data/travaux.json` : articles, communications orales et posters
 
 ## Mettre le site en ligne (gratuit, GitHub Pages)
 

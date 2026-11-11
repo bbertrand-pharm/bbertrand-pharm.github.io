@@ -4,7 +4,7 @@ content:
   - name: profil
     label: Profil et contact
     type: file
-    path: data/profil.json
+    path: site/data/profil.json
     format: json
     fields:
       - { name: nom, label: Nom, type: string }
@@ -46,7 +46,7 @@ content:
   - name: travaux
     label: Travaux (articles, communications, posters)
     type: file
-    path: data/travaux.json
+    path: site/data/travaux.json
     format: json
     fields:
       - name: travaux
