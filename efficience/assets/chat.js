@@ -1,26 +1,13 @@
-/* Espace pharmacien : dialogue avec Claude sous les pistes d'efficience.
-   La clé API reste sur l'appareil du pharmacien, chiffrée avec son code ; elle n'est jamais publiée. */
+/* Espace pharmacien : discuter des pistes d'efficience avec Claude, via l'abonnement claude.ai du pharmacien.
+   La page prépare le contexte (copié dans le presse-papiers et ouvert dans claude.ai), puis applique la liste
+   de pistes que Claude renvoie entre les balises <pistes>…</pistes>. Aucune clé API, aucun coût supplémentaire. */
 (function () {
   'use strict';
   const E = window.EFF, el = E.el;
-  const STORE = 'eff-pharma-v1';
-  const MODEL = 'claude-sonnet-5-5';
-  let SESSION = null; // {apiKey}
-  const histories = {};
-
-  E.pharmaConfigured = () => { try { return !!localStorage.getItem(STORE); } catch (e) { return false; } };
-  E.pharmaUnlock = async (code) => {
-    const env = JSON.parse(localStorage.getItem(STORE));
-    SESSION = await E.decrypt(env, code);
-    return SESSION;
-  };
-  E.pharmaSetup = async (apiKey, code) => {
-    localStorage.setItem(STORE, JSON.stringify(await E.encrypt({apiKey: apiKey.trim()}, code)));
-    SESSION = {apiKey: apiKey.trim()};
-  };
-  E.pharmaForget = () => { try { localStorage.removeItem(STORE); } catch (e) {} SESSION = null; };
-  E.pharmaActive = () => !!SESSION;
-  E.pharmaLock = () => { SESSION = null; };
+  let ACTIVE = false;
+  E.pharmaActive = () => ACTIVE;
+  E.pharmaOpen = () => { ACTIVE = true; };
+  E.pharmaLock = () => { ACTIVE = false; };
 
   const fmtN = (v) => new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 0}).format(v);
   const contexte = ({g, c, d}) => {
@@ -34,87 +21,74 @@
       const ex = dt.rows.filter((r) => r.statut === 'À augmenter' || r.statut === 'Sans consommation').slice(0, 15).map((r) => `${r.libelle} : dotation ${r.dot ?? '—'}, conso ${fmtN(r.qAn)}/an, proposée ${r.cible} (${r.statut})`);
       dot = `Dotation : ${Object.entries(cnt).map(([k, v]) => `${k} ${v}`).join(', ')}. Exemples : ${ex.join(' ; ')}`;
     }
-    const pistes = ((d.pistes || {})[g.code] || []).map((x, i) => `${i + 1}. ${x.titre} — ${x.texte}${x.gain ? ' (gain : ' + x.gain + ')' : ''}`).join('\n');
-    return `Service : ${d.service}. Bloc : ${g.code} (${g.ufs.map((u) => u.uf + ' ' + u.nom).join(', ')}).
-Période : exercice ${p.exercice}, janvier à fin du mois ${p.mois}, extrapolée sur 12 mois.
+    const pistes = JSON.stringify((d.pistes || {})[g.code] || [], null, 1);
+    return `Je suis pharmacien hospitalier clinicien (France). J'analyse les consommations de médicaments, solutés, stupéfiants et dispositifs médicaux stériles d'un service de soins pour proposer des actions d'efficience sans diminuer la qualité de la prise en charge. Aide-moi à affiner les pistes ci-dessous.
+
+Consignes : réponds en français, de façon concise et argumentée ; appuie-toi sur les données fournies sans les inventer, et sur des données probantes (essais, recommandations HAS, sociétés savantes) en les nommant ; signale ce qui reste à vérifier localement ; distingue ce qui est à la charge de l'hôpital (intra-GHS) de ce qui est remboursé en sus. Chaque fois que je te demande de modifier, ajouter, retirer ou réécrire des pistes, termine ta réponse par la liste COMPLÈTE des pistes mises à jour, en JSON strict entre les balises <pistes> et </pistes> : un tableau d'objets {"titre": "...", "texte": "...", "gain": "..." (facultatif), "sources": [{"label": "...", "url": "https://..."}] (facultatif, seulement des URL dont tu es sûr)}.
+
+DONNÉES
+Service : ${d.service}. Bloc : ${g.code} (${g.ufs.map((u) => u.uf + ' ' + u.nom).join(', ')}).
+Période : exercice ${p.exercice}, de janvier à la fin du mois n° ${p.mois}, extrapolée sur 12 mois.
 Coût global annualisé : ${fmtN(g.total)} €, dont ${fmtN(g.sus)} € remboursés en sus (hors GHS / LPPR). ${fam}.
 Références par coût décroissant (45 premières) :
 ${lignes.join('\n')}
 ${dot}
-Pistes d'efficience actuellement affichées :
-${pistes || '(aucune)'}`;
-  };
-  const SYSTEME = `Tu es Claude, assistant d'un pharmacien hospitalier clinicien (France) qui analyse les consommations de médicaments, solutés, stupéfiants et dispositifs médicaux stériles d'un service de soins, pour proposer des actions d'efficience sans diminuer la qualité de la prise en charge.
-Réponds en français, de façon concise et argumentée. Appuie-toi sur les données fournies (ne les invente pas) et sur des données probantes connues (essais, recommandations HAS, sociétés savantes) en les nommant ; signale clairement les incertitudes, et ce qui reste à vérifier localement. Distingue ce qui est à la charge de l'hôpital (intra-GHS) de ce qui est remboursé en sus.
-Quand le pharmacien demande de modifier, ajouter, retirer ou réécrire des pistes, termine ta réponse par la liste COMPLÈTE des pistes mises à jour, au format JSON strict entre les balises <pistes> et </pistes> : un tableau d'objets {"titre": "...", "texte": "...", "gain": "..." (facultatif), "sources": [{"label": "...", "url": "https://..."}] (facultatif, uniquement des URL dont tu es sûr)}. Sinon, n'ajoute pas ce bloc.`;
 
-  const appel = async (messages, ctx) => {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {'content-type': 'application/json', 'x-api-key': SESSION.apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true'},
-      body: JSON.stringify({model: MODEL, max_tokens: 2000, system: SYSTEME + '\n\nDonnées du service :\n' + ctx, messages})
-    });
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok) {
-      const m = (j.error && j.error.message) || r.status;
-      if (r.status === 401) throw new Error('clé API refusée (invalide ou révoquée).');
-      if (r.status === 429) throw new Error('limite d’usage atteinte, réessayez dans un instant.');
-      if (r.status === 400 && /credit|balance/i.test(m)) throw new Error('crédit API épuisé : rechargez votre compte sur console.anthropic.com.');
-      throw new Error(m);
+PISTES ACTUELLES (JSON)
+${pistes}
+
+Ma première demande : `;
+  };
+
+  const copier = async (txt) => {
+    try { await navigator.clipboard.writeText(txt); return true; }
+    catch (e) {
+      const ta = el('textarea', {style: 'position:absolute;left:-9999px'}); ta.value = txt; document.body.append(ta); ta.select();
+      let ok = false; try { ok = document.execCommand('copy'); } catch (x) {} ta.remove(); return ok;
     }
-    return (j.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('\n');
   };
 
-  /* Panneau de dialogue d'un bloc. */
+  /* Lit la liste de pistes dans une réponse collée : balises <pistes>, ou à défaut un tableau JSON. */
+  const extraire = (txt) => {
+    const m = txt.match(/<pistes>([\s\S]*?)<\/pistes>/i);
+    let src = m ? m[1] : (txt.match(/\[\s*\{[\s\S]*\}\s*\]/) || [null])[0];
+    if (!src) return null;
+    src = src.replace(/^```(?:json)?/m, '').replace(/```\s*$/m, '').trim();
+    try { const l = JSON.parse(src); return Array.isArray(l) && l.length && l.every((x) => x && x.titre && x.texte) ? l : null; } catch (e) { return null; }
+  };
+
   E.chatPanel = (args, onPistes) => {
     const {g} = args;
-    const key = args.d.id + '|' + g.code;
-    const hist = histories[key] = histories[key] || [];
-    const log = el('div', {class: 'eff-chat-log', role: 'log', 'aria-live': 'polite'});
-    const ta = el('textarea', {class: 'eff-input eff-chat-in', rows: '2', placeholder: 'Ex. : « Détaille la piste sur l’albumine avec un protocole type », « Ajoute une piste sur les antibiotiques », « Le génotypage RHD est déjà systématique, retire cette piste ».'});
-    const send = el('button', {class: 'eff-btn', type: 'button', text: 'Envoyer'});
-    const err = el('p', {class: 'eff-err'});
-    const bulle = (role, text) => {
-      const b = el('div', {class: 'eff-chat-msg eff-chat-' + role});
-      const m = role === 'assistant' ? text.match(/<pistes>([\s\S]*?)<\/pistes>/) : null;
-      const visible = m ? text.replace(m[0], '').trim() : text;
-      visible.split(/\n{2,}/).forEach((para) => b.append(el('p', {text: para})));
-      if (m) {
-        let liste = null;
-        try { liste = JSON.parse(m[1]); } catch (e) {}
-        if (Array.isArray(liste) && liste.every((x) => x && x.titre && x.texte)) {
-          const btn = el('button', {class: 'eff-btn ghost', type: 'button', text: `Appliquer ces ${liste.length} pistes à l’encadré`});
-          btn.addEventListener('click', () => {
-            args.d.pistes = args.d.pistes || {};
-            args.d.pistes[g.code] = liste.map((x) => ({titre: String(x.titre), texte: String(x.texte), gain: x.gain ? String(x.gain) : undefined,
-              sources: Array.isArray(x.sources) ? x.sources.filter((s) => s && s.label && /^https:\/\//.test(s.url)).map((s) => ({label: String(s.label), url: String(s.url)})) : undefined}));
-            args.redraw(); btn.disabled = true; btn.textContent = 'Pistes appliquées';
-            if (onPistes) onPistes();
-          });
-          b.append(el('div', {class: 'eff-chat-apply'}, el('span', {class: 'eff-small', text: `Proposition de ${liste.length} pistes mises à jour.`}), btn));
-        }
-      }
-      log.append(b); log.scrollTop = log.scrollHeight;
-    };
-    hist.forEach((h) => bulle(h.role, h.content));
-    const go = async () => {
-      const q = ta.value.trim(); if (!q) { err.textContent = 'Écrivez une question d’abord.'; return; }
-      err.textContent = ''; ta.value = '';
-      hist.push({role: 'user', content: q}); bulle('user', q);
-      const wait = el('div', {class: 'eff-chat-msg eff-chat-assistant eff-chat-wait', text: 'Claude réfléchit…'}); log.append(wait);
-      send.disabled = true;
-      try {
-        const a = await appel(hist.slice(-12), contexte(args));
-        wait.remove(); hist.push({role: 'assistant', content: a}); bulle('assistant', a);
-      } catch (e) { wait.remove(); hist.pop(); err.textContent = 'Échec : ' + e.message; ta.value = q; }
-      finally { send.disabled = false; ta.focus(); }
-    };
-    send.addEventListener('click', go);
-    ta.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); go(); } });
-    ta.addEventListener('input', () => { err.textContent = ''; });
-    return el('section', {class: 'eff-chat', 'aria-label': 'Dialogue avec Claude'},
+    const msg = el('p', {class: 'eff-small', role: 'status'});
+    const go = el('button', {class: 'eff-btn', type: 'button', text: 'Copier le contexte et ouvrir Claude'});
+    go.addEventListener('click', async () => {
+      const ok = await copier(contexte(args));
+      window.open('https://claude.ai/new', '_blank', 'noopener');
+      msg.className = ok ? 'eff-ok' : 'eff-err';
+      msg.textContent = ok ? 'Contexte copié. Dans la conversation Claude qui s’ouvre, collez-le (Ctrl+V ou ⌘V), complétez votre demande à la fin, puis envoyez.' : 'La copie automatique a échoué : utilisez « Afficher le contexte » et copiez-le à la main.';
+    });
+    const voir = el('details', {class: 'eff-chat-ctx'}, el('summary', {text: 'Afficher le contexte envoyé'}));
+    voir.addEventListener('toggle', () => { if (voir.open && !voir.querySelector('pre')) voir.append(el('pre', {text: contexte(args)})); });
+    const ta = el('textarea', {class: 'eff-input eff-chat-in', rows: '4', placeholder: 'Collez ici la réponse de Claude qui contient la nouvelle liste de pistes (entre <pistes> et </pistes>).'});
+    const apply = el('button', {class: 'eff-btn ghost', type: 'button', text: 'Appliquer à l’encadré'});
+    const res = el('p', {class: 'eff-small', role: 'status'});
+    apply.addEventListener('click', () => {
+      const liste = extraire(ta.value);
+      if (!liste) { res.className = 'eff-err'; res.textContent = 'Aucune liste de pistes lisible dans le texte collé. Demandez à Claude de redonner la liste complète entre <pistes> et </pistes>.'; return; }
+      args.d.pistes = args.d.pistes || {};
+      args.d.pistes[g.code] = liste.map((x) => ({titre: String(x.titre), texte: String(x.texte), gain: x.gain ? String(x.gain) : undefined,
+        sources: Array.isArray(x.sources) ? x.sources.filter((s) => s && s.label && /^https:\/\//.test(s.url)).map((s) => ({label: String(s.label), url: String(s.url)})) : undefined}));
+      args.redraw(); ta.value = '';
+      res.className = 'eff-ok'; res.textContent = `${liste.length} pistes appliquées à l’encadré. Relisez-les, puis « Publier » pour les enregistrer.`;
+      if (onPistes) onPistes();
+    });
+    ta.addEventListener('input', () => { res.textContent = ''; });
+    return el('section', {class: 'eff-chat', 'aria-label': 'Discuter des pistes avec Claude'},
       el('div', {class: 'eff-chat-h'}, el('b', {text: 'Discuter des pistes avec Claude'}), el('span', {class: 'eff-pill', text: 'Espace pharmacien'})),
-      el('p', {class: 'eff-small', text: 'Claude connaît les consommations, la dotation et les pistes de ce bloc. Demandez-lui de nuancer, détailler, ajouter ou retirer des pistes ; il pourra proposer une nouvelle version de l’encadré à appliquer. Ctrl + Entrée pour envoyer.'}),
-      log, ta, err, el('div', {class: 'eff-row'}, send));
+      el('ol', {class: 'eff-chat-steps'},
+        el('li', {}, 'Cliquez sur le bouton : le contexte de ce bloc (coûts, références, dotation, pistes actuelles) est copié et une conversation Claude s’ouvre avec votre abonnement.'),
+        el('li', {}, 'Collez le contexte, ajoutez votre demande (« le génotypage RHD est déjà systématique, retire cette piste », « détaille un protocole albumine »…) et dialoguez librement.'),
+        el('li', {}, 'Quand la liste vous convient, copiez la réponse de Claude et collez-la ci-dessous pour mettre l’encadré à jour.')),
+      el('div', {class: 'eff-row'}, go), msg, voir, ta, el('div', {class: 'eff-row'}, apply), res);
   };
 })();

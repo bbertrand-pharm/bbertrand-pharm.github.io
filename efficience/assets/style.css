@@ -141,5 +141,9 @@ td.eff-st-warn { color: #9a5b1e; } td.eff-st-info { color: #3a5683; } td.eff-st-
 .eff-chat-user { align-self: flex-end; background: var(--accent-soft); }
 .eff-chat-assistant { align-self: flex-start; background: var(--bg); border: 1px solid var(--line); }
 .eff-chat-wait { color: var(--muted); font-style: italic; }
+.eff-chat-steps { margin: 0; padding-left: 1.3em; font-size: .9rem; color: var(--ink); display: flex; flex-direction: column; gap: 4px; }
+.eff-chat-ctx summary { cursor: pointer; font-size: .85rem; color: var(--muted); }
+.eff-chat-ctx pre { max-height: 260px; overflow: auto; white-space: pre-wrap; font-size: .75rem; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 6px 0 0; }
+.eff-chat-in { width: 100%; min-height: 90px; font-family: inherit; resize: vertical; }
 .eff-chat-apply { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); }
 .eff-chat-in { min-height: 64px; font-family: var(--body); font-size: .92rem; }
