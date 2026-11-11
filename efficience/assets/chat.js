@@ -72,6 +72,12 @@ Ma première demande : `;
     const ta = el('textarea', {class: 'eff-input eff-chat-in', rows: '4', placeholder: 'Collez ici la réponse de Claude qui contient la nouvelle liste de pistes (entre <pistes> et </pistes>).'});
     const apply = el('button', {class: 'eff-btn ghost', type: 'button', text: 'Appliquer à l’encadré'});
     const res = el('p', {class: 'eff-small', role: 'status'});
+    const pub = el('button', {class: 'eff-btn', type: 'button', text: 'Publier les pistes', hidden: ''});
+    pub.addEventListener('click', () => {
+      const b = document.getElementById('publish'), maj = document.getElementById('maj');
+      if (!b) return; if (maj) maj.open = true; b.click();
+      const log = document.getElementById('pub-log'); if (log) log.scrollIntoView({behavior: 'smooth', block: 'center'});
+    });
     apply.addEventListener('click', () => {
       const liste = extraire(ta.value);
       if (!liste) { res.className = 'eff-err'; res.textContent = 'Aucune liste de pistes lisible dans le texte collé. Demandez à Claude de redonner la liste complète entre <pistes> et </pistes>.'; return; }
@@ -79,8 +85,9 @@ Ma première demande : `;
       args.d.pistes[g.code] = liste.map((x) => ({titre: String(x.titre), texte: String(x.texte), gain: x.gain ? String(x.gain) : undefined,
         sources: Array.isArray(x.sources) ? x.sources.filter((s) => s && s.label && /^https:\/\//.test(s.url)).map((s) => ({label: String(s.label), url: String(s.url)})) : undefined}));
       args.redraw(); ta.value = '';
-      res.className = 'eff-ok'; res.textContent = `${liste.length} pistes appliquées à l’encadré. Relisez-les, puis « Publier » pour les enregistrer.`;
+      res.className = 'eff-ok'; res.textContent = `${liste.length} pistes appliquées à l’encadré. Relisez-les, puis « Publier les pistes » pour les enregistrer.`;
       if (onPistes) onPistes();
+      pub.hidden = !document.getElementById('publish');
     });
     ta.addEventListener('input', () => { res.textContent = ''; });
     return el('section', {class: 'eff-chat', 'aria-label': 'Discuter des pistes avec Claude'},
@@ -89,6 +96,6 @@ Ma première demande : `;
         el('li', {}, 'Cliquez sur le bouton : le contexte de ce bloc (coûts, références, dotation, pistes actuelles) est copié et une conversation Claude s’ouvre avec votre abonnement.'),
         el('li', {}, 'Collez le contexte, ajoutez votre demande (« le génotypage RHD est déjà systématique, retire cette piste », « détaille un protocole albumine »…) et dialoguez librement.'),
         el('li', {}, 'Quand la liste vous convient, copiez la réponse de Claude et collez-la ci-dessous pour mettre l’encadré à jour.')),
-      el('div', {class: 'eff-row'}, go), msg, voir, ta, el('div', {class: 'eff-row'}, apply), res);
+      el('div', {class: 'eff-row'}, go), msg, voir, ta, el('div', {class: 'eff-row'}, apply, pub), res);
   };
 })();

@@ -7,7 +7,7 @@
 <title>Tableau de bord du service — Pharmacie clinique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=202611111720">
+<link rel="stylesheet" href="assets/style.css?v=202611111805">
 </head>
 <body>
 <main class="eff-wrap">
@@ -55,9 +55,9 @@
     <footer class="eff-foot">Données confidentielles, réservées au service. <a href="./">Accueil</a> · <a href="#" id="print">Imprimer</a></footer>
   </div>
 </main>
-<script src="assets/xlsx.full.min.js?v=202611111720"></script>
-<script src="assets/core.js?v=202611111720"></script>
-<script src="assets/chat.js?v=202611111720"></script>
+<script src="assets/xlsx.full.min.js?v=202611111805"></script>
+<script src="assets/core.js?v=202611111805"></script>
+<script src="assets/chat.js?v=202611111805"></script>
 <script>
 (async function () {
   'use strict';
@@ -121,8 +121,20 @@
       return;
     }
     st.textContent = '';
-    body.replaceChildren(el('p', {class: 'eff-small', text: 'Réservé aux pharmaciens. Ouvre, sous l’encadré des pistes de chaque bloc, un dialogue avec Claude via votre abonnement claude.ai habituel (sans clé API ni coût supplémentaire) pour affiner les propositions.'}),
-      el('div', {class: 'eff-row'}, el('button', {class: 'eff-btn', type: 'button', text: 'Ouvrir l’espace pharmacien', onclick: () => { EFF.pharmaOpen(); render(); }})));
+    const pwd = el('input', {class: 'eff-input', type: 'password', autocomplete: 'off', style: 'max-width:280px'});
+    const ok = el('button', {class: 'eff-btn', type: 'submit', text: 'Ouvrir l’espace pharmacien'});
+    const msg = el('p', {class: 'eff-err', role: 'alert'});
+    const form = el('form', {}, el('label', {class: 'eff-field'}, 'Mot de passe pharmacien', pwd), el('div', {class: 'eff-row'}, ok), msg);
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault(); msg.textContent = ''; ok.disabled = true;
+      try {
+        const r = await fetch('data/pharma.enc.json?t=' + Date.now(), {cache: 'no-store'});
+        if (!r.ok) throw new Error('absent');
+        await EFF.decrypt(await r.json(), pwd.value);
+        EFF.pharmaOpen(); render();
+      } catch (e) { msg.textContent = e.message === 'absent' ? 'L’espace pharmacien n’est pas encore configuré (page d’administration).' : 'Mot de passe incorrect.'; ok.disabled = false; }
+    });
+    body.replaceChildren(el('p', {class: 'eff-small', text: 'Réservé aux pharmaciens. Ouvre, sous l’encadré des pistes de chaque bloc, un dialogue avec Claude via votre abonnement claude.ai (sans clé API ni coût supplémentaire) pour affiner les propositions.'}), form);
   }
   $('print').addEventListener('click', (e) => { e.preventDefault(); print(); });
 

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Administration — Pharmacien clinicien et efficience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
+<link rel="stylesheet" href="assets/style.css?v=202611111805">
+</head>
+<body>
+<main class="eff-wrap">
+  <form class="eff-lock" id="lock">
+    <p class="eff-kicker">Le pharmacien clinicien au service de l’efficience</p>
+    <h1>Administration</h1>
+    <p class="eff-small" id="lock-help">Chargement…</p>
+    <label class="eff-field">Mot de passe administrateur<input class="eff-input" type="password" id="apwd" autocomplete="current-password" required></label>
+    <label class="eff-field" id="apwd2-wrap" hidden>Confirmer le mot de passe<input class="eff-input" type="password" id="apwd2" autocomplete="new-password"></label>
+    <button class="eff-btn" type="submit" id="unlock">Ouvrir</button>
+    <p class="eff-err" id="lock-err" role="alert"></p>
+    <p class="eff-small"><a href="./">Retour à l’accueil</a></p>
+  </form>
+
+  <div id="admin" hidden>
+    <header>
+      <p class="eff-kicker">Administration</p>
+      <h1>Le pharmacien clinicien au service de l’efficience</h1>
+      <p class="eff-sub">Mise en place des services. Les extractions de consommations se déposent ensuite sur la page de chaque service, par son pharmacien référent.</p>
+    </header>
+    <div class="eff-steps">
+      <section class="eff-step">
+        <h2>1. Référentiels</h2>
+        <p class="eff-note">Listes de l’exercice (2 colonnes : code, libellé). Elles sont transmises à chaque service à la publication.</p>
+        <div class="eff-grid2">
+          <label class="eff-field">Médicaments hors GHS (.xlsx)<input type="file" accept=".xlsx,.xls,.csv" data-ref="horsGHS"><span class="eff-small" data-ref-info="horsGHS"></span></label>
+          <label class="eff-field">DMS LPPR (.xlsx)<input type="file" accept=".xlsx,.xls,.csv" data-ref="lppr"><span class="eff-small" data-ref-info="lppr"></span></label>
+          <label class="eff-field">Correspondance des UF (.xlsx)<input type="file" accept=".xlsx,.xls,.csv" data-ref="uf"><span class="eff-small" data-ref-info="uf"></span></label>
+        </div>
+      </section>
+
+      <section class="eff-step">
+        <h2>2. Accès GitHub</h2>
+        <p class="eff-note">Jeton « fine-grained » limité à ce seul dépôt, droit « Contents : read and write », avec une date d’expiration. Il est enregistré chiffré et transmis aux pages de service pour leur permettre de publier.</p>
+        <div class="eff-grid2">
+          <label class="eff-field">Dépôt (propriétaire/nom)<input class="eff-input" id="gh-repo"></label>
+          <label class="eff-field">Branche<input class="eff-input" id="gh-branch"></label>
+          <label class="eff-field">Jeton GitHub<input class="eff-input" type="password" id="gh-token" autocomplete="off"></label>
+        </div>
+      </section>
+
+      <section class="eff-step">
+        <h2>3. Services et regroupements d’UF</h2>
+        <p class="eff-note">Un service = une page, un lien et un mot de passe, communs au chef de service et aux pharmaciens référents. Une ligne par regroupement : <code>1751e = 1751, 1753, 1754, 1755</code> ; une UF seule s’écrit <code>1482 = 1482</code>.</p>
+        <div id="svc-list" class="eff-steps"></div>
+        <div class="eff-row"><button class="eff-btn ghost" type="button" id="svc-add">Ajouter un service</button></div>
+      </section>
+
+      <section class="eff-step">
+        <h2>4. Espace pharmacien</h2>
+        <p class="eff-note">Mot de passe propre aux pharmaciens, distinct de celui des services : il ouvre, sur chaque page de service, le dialogue avec Claude qui permet de modifier les pistes d’efficience.</p>
+        <div class="eff-grid2"><label class="eff-field">Mot de passe pharmacien<input class="eff-input" type="password" id="ph-pwd" autocomplete="off">
+          <span class="eff-row" style="margin-top:4px"><button class="eff-btn ghost" type="button" id="ph-show">Afficher</button><button class="eff-btn ghost" type="button" id="ph-gen">Générer</button></span></label></div>
+      </section>
+
+      <section class="eff-step">
+        <h2>5. Publier la configuration</h2>
+        <p class="eff-note">Crée ou met à jour la page de chaque service (nom, UF, référentiels, mot de passe, accès GitHub) sans toucher aux consommations déjà déposées, et enregistre votre configuration chiffrée.</p>
+        <div class="eff-row"><button class="eff-btn" type="button" id="publish">Publier la configuration</button><span class="eff-small" id="dirty"></span></div>
+        <div id="pub-log" class="eff-small" role="status"></div>
+      </section>
+
+      <section class="eff-step">
+        <h2>6. Vue d’ensemble</h2>
+        <p class="eff-note">Déchiffre les données publiées de tous les services.</p>
+        <div class="eff-row"><button class="eff-btn ghost" type="button" id="load-all">Charger les données publiées</button></div>
+        <div id="overview" style="margin-top:12px"></div>
+        <div class="eff-row"><label class="eff-field">Aperçu d’un service<select class="eff-select" id="view-sel"></select></label></div>
+        <div id="preview" class="eff-steps" style="margin-top:18px"></div>
+      </section>
+    </div>
+    <footer class="eff-foot"><a href="./">Accueil</a> · <a href="acces.html">Liens et mots de passe</a></footer>
+  </div>
+</main>
+<script src="assets/xlsx.full.min.js?v=202611111805"></script>
+<script src="assets/core.js?v=202611111805"></script>
+<script>
+(function () {
+  'use strict';
+  const $ = (id) => document.getElementById(id), el = EFF.el;
+  const guess = () => {
+    const h = location.hostname, seg = location.pathname.split('/').filter(Boolean);
+    if (!/\.github\.io$/.test(h)) return {repo: '', base: ''};
+    const owner = h.replace(/\.github\.io$/, '');
+    const dirs = seg.slice(0, /\.html$/.test(seg[seg.length - 1] || '') ? -1 : seg.length);
+    if (!dirs.length) return {repo: owner + '/' + h, base: ''};
+    return {repo: owner + '/' + dirs[0], base: dirs.slice(1).map((s) => s + '/').join('')};
+  };
+  let ADMIN_PWD = null, ENV = null, LOADED = {};
+  let cfg = {version: 2, services: [], ref: {horsGHS: [], lppr: [], uf: []}, github: Object.assign({branch: 'main', token: ''}, guess()), publies: [], pharma: {motDePasse: ''}};
+  const markDirty = () => { $('dirty').textContent = 'Modifications non publiées.'; };
+
+  (async () => {
+    try { const r = await fetch('data/admin.enc.json?t=' + Date.now(), {cache: 'no-store'}); if (r.ok) ENV = await r.json(); } catch (e) {}
+    if (ENV) $('lock-help').textContent = 'Saisissez votre mot de passe administrateur.';
+    else {
+      $('lock-help').textContent = 'Première utilisation : choisissez un mot de passe administrateur (12 caractères au moins). Il chiffre votre configuration et ne pourra pas être récupéré s’il est perdu.';
+      $('apwd2-wrap').hidden = false; $('apwd').autocomplete = 'new-password'; $('unlock').textContent = 'Commencer';
+    }
+  })();
+  $('lock').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const p = $('apwd').value; $('lock-err').textContent = '';
+    if (!ENV) {
+      if (p.length < 12) { $('lock-err').textContent = 'Choisissez au moins 12 caractères.'; return; }
+      if (p !== $('apwd2').value) { $('lock-err').textContent = 'Les deux mots de passe diffèrent.'; return; }
+    } else {
+      $('unlock').disabled = true; $('unlock').textContent = 'Déchiffrement…';
+      try { const c = await EFF.decrypt(ENV, p); cfg = Object.assign(cfg, c, {github: Object.assign(cfg.github, c.github || {}), pharma: Object.assign(cfg.pharma, c.pharma || {})}); }
+      catch (e) { $('lock-err').textContent = 'Mot de passe incorrect.'; $('unlock').disabled = false; $('unlock').textContent = 'Ouvrir'; return; }
+    }
+    ADMIN_PWD = p; $('lock').hidden = true; $('admin').hidden = false; init();
+  });
+
+  /* Référentiels */
+  const refLabels = {horsGHS: 'médicaments hors GHS', lppr: 'DMS LPPR', uf: 'UF'};
+  const showRef = () => document.querySelectorAll('[data-ref-info]').forEach((s) => { const n = (cfg.ref[s.dataset.refInfo] || []).length; s.textContent = n ? `${n} ${refLabels[s.dataset.refInfo]} enregistrés` : 'Non renseigné'; });
+  document.querySelectorAll('[data-ref]').forEach((inp) => inp.addEventListener('change', async () => {
+    const f = inp.files[0]; if (!f) return;
+    cfg.ref[inp.dataset.ref] = EFF.parseList(await EFF.readWorkbook(f)); showRef(); renderServices(); markDirty();
+  }));
+
+  /* GitHub */
+  [['gh-repo', 'repo'], ['gh-branch', 'branch'], ['gh-token', 'token']].forEach(([i, k]) => $(i).addEventListener('input', () => { cfg.github[k] = $(i).value.trim(); markDirty(); }));
+
+  /* Espace pharmacien */
+  $('ph-pwd').addEventListener('input', () => { cfg.pharma.motDePasse = $('ph-pwd').value; markDirty(); });
+  $('ph-show').addEventListener('click', (e) => { const i = $('ph-pwd'); i.type = i.type === 'password' ? 'text' : 'password'; e.target.textContent = i.type === 'password' ? 'Afficher' : 'Masquer'; });
+  $('ph-gen').addEventListener('click', () => { if (cfg.pharma.motDePasse && !confirm('Remplacer le mot de passe pharmacien ? L’ancien ne fonctionnera plus après publication.')) return; cfg.pharma.motDePasse = $('ph-pwd').value = EFF.genPassword(); markDirty(); });
+
+  /* Services */
+  function renderServices() {
+    const nomUF = new Map(cfg.ref.uf.map((r) => [r.code, r.libelle]));
+    $('svc-list').replaceChildren(...cfg.services.map((s, i) => {
+      const nom = el('input', {class: 'eff-input', value: s.nom});
+      const pwd = el('input', {class: 'eff-input', type: 'password', value: s.motDePasse, autocomplete: 'off'});
+      const regs = el('textarea', {class: 'eff-input', spellcheck: 'false'}); regs.value = s.regroupements || '';
+      const ufs = EFF.parseRegroupements(s.regroupements).flatMap((g) => g.ufs);
+      const inconnues = cfg.ref.uf.length ? ufs.filter((u) => !nomUF.has(u)) : [];
+      const link = new URL('service.html?s=' + s.id, location.href).href;
+      nom.addEventListener('input', () => { s.nom = nom.value; markDirty(); });
+      pwd.addEventListener('input', () => { s.motDePasse = pwd.value; markDirty(); });
+      regs.addEventListener('change', () => { s.regroupements = regs.value; markDirty(); renderServices(); });
+      return el('div', {class: 'eff-card'},
+        el('div', {class: 'eff-grid2'},
+          el('label', {class: 'eff-field'}, 'Nom du service', nom),
+          el('label', {class: 'eff-field'}, 'Mot de passe du service', pwd,
+            el('span', {class: 'eff-row', style: 'margin-top:4px'},
+              el('button', {class: 'eff-btn ghost', type: 'button', text: 'Afficher', onclick: (e) => { pwd.type = pwd.type === 'password' ? 'text' : 'password'; e.target.textContent = pwd.type === 'password' ? 'Afficher' : 'Masquer'; }}),
+              el('button', {class: 'eff-btn ghost', type: 'button', text: 'Générer', onclick: () => { if (confirm('Remplacer le mot de passe ? L’ancien ne fonctionnera plus après publication.')) { s.motDePasse = EFF.genPassword(); renderServices(); markDirty(); } }})))),
+        el('label', {class: 'eff-field', style: 'margin-top:10px'}, 'Regroupements d’UF', regs),
+        el('p', {class: 'eff-small'}, `${ufs.length} UF` + (ufs.length ? ' : ' + ufs.map((u) => u + (nomUF.has(u) ? ' ' + nomUF.get(u) : '')).join(' · ') : '')),
+        inconnues.length ? el('p', {class: 'eff-err', text: 'UF absentes de la correspondance : ' + inconnues.join(', ')}) : null,
+        el('p', {class: 'eff-small'}, (cfg.publies.includes(s.id) ? 'Publié · lien : ' : 'Pas encore publié · lien après publication : '), el('a', {href: link, target: '_blank', rel: 'noopener', text: link})),
+        el('div', {class: 'eff-row'}, el('button', {class: 'eff-btn ghost', type: 'button', text: 'Supprimer ce service', onclick: () => {
+          if (confirm(`Supprimer « ${s.nom} » ? Sa page et ses données seront retirées à la prochaine publication.`)) { cfg.services.splice(i, 1); renderServices(); markDirty(); }
+        }})));
+    }));
+    if (!cfg.services.length) $('svc-list').append(el('p', {class: 'eff-small', text: 'Aucun service. Ajoutez-en un.'}));
+  }
+  $('svc-add').addEventListener('click', () => {
+    const nom = prompt('Nom du service (ex. Gynécologie-obstétrique) :'); if (!nom) return;
+    let id = EFF.slug(nom) || 'service', k = 2; const base = id;
+    while (cfg.services.some((s) => s.id === id) || (cfg.publies || []).includes(id)) id = base + '-' + k++;
+    cfg.services.push({id, nom: nom.trim(), motDePasse: EFF.genPassword(), regroupements: ''});
+    renderServices(); markDirty();
+  });
+
+  /* Publication de la configuration */
+  const log = (t, cls) => $('pub-log').append(el('div', {class: cls || null, text: t}));
+  $('publish').addEventListener('click', async () => {
+    $('pub-log').replaceChildren();
+    const g = cfg.github;
+    if (!g.repo || !g.token) { log('Renseignez le dépôt et le jeton GitHub (étape 2).', 'eff-err'); return; }
+    const bad = cfg.services.filter((s) => !s.motDePasse || s.motDePasse.length < 10 || !EFF.parseRegroupements(s.regroupements).length);
+    if (!cfg.pharma.motDePasse || cfg.pharma.motDePasse.length < 10) { log('Choisissez un mot de passe pharmacien de 10 caractères au moins (étape 4).', 'eff-err'); return; }
+    if (bad.length) { log('À compléter (mot de passe de 10 caractères au moins et au moins un regroupement) : ' + bad.map((s) => s.nom).join(', '), 'eff-err'); return; }
+    $('publish').disabled = true;
+    const gh = EFF.github(g);
+    try {
+      for (const s of cfg.services) {
+        log(`${s.nom} : lecture des données publiées…`);
+        let prev = null;
+        const raw = await gh.raw(`data/${s.id}.enc.json`);
+        if (raw) {
+          const env = JSON.parse(raw);
+          for (const p of [s.motDePassePublie, s.motDePasse].filter(Boolean)) { try { prev = await EFF.decrypt(env, p); break; } catch (e) {} }
+          if (!prev) { log(`${s.nom} : impossible de déchiffrer les données existantes avec le mot de passe connu ; service ignoré pour ne pas les écraser.`, 'eff-err'); continue; }
+        }
+        const d = EFF.buildService(s, cfg.ref, {repo: g.repo, branch: g.branch || 'main', base: g.base || '', token: g.token}, prev);
+        await EFF.publishService(d, s.motDePasse);
+        s.motDePassePublie = s.motDePasse;
+        if (!cfg.publies.includes(s.id)) cfg.publies.push(s.id);
+        log(`${s.nom} : publié (${d.conso.length} lignes de consommation conservées).`);
+      }
+      const gone = cfg.publies.filter((id) => !cfg.services.some((s) => s.id === id));
+      if (gone.length) {
+        let m = {titre: EFF.TITRE, services: []};
+        try { const cur = await gh.raw('data/manifest.json'); if (cur) m = JSON.parse(cur); } catch (e) {}
+        for (const id of gone) { log(`Retrait du service supprimé : ${id}…`); await gh.del(`data/${id}.enc.json`, `Efficience : retrait ${id}`); }
+        m.services = (m.services || []).filter((x) => !gone.includes(x.id));
+        await gh.put('data/manifest.json', JSON.stringify(m, null, 2), 'Efficience : liste des services');
+        cfg.publies = cfg.publies.filter((id) => !gone.includes(id));
+      }
+      if (cfg.pharma.publie !== cfg.pharma.motDePasse) {
+        log('Espace pharmacien : enregistrement du mot de passe…');
+        await gh.put('data/pharma.enc.json', JSON.stringify(await EFF.encrypt({pharma: true, maj: new Date().toISOString()}, cfg.pharma.motDePasse)), 'Efficience : espace pharmacien');
+        cfg.pharma.publie = cfg.pharma.motDePasse;
+      }
+      log('Enregistrement de la configuration chiffrée…');
+      await gh.put('data/admin.enc.json', JSON.stringify(await EFF.encrypt(cfg, ADMIN_PWD)), 'Efficience : configuration');
+      log('Publication terminée. Les pages sont à jour d’ici une à deux minutes.', 'eff-ok');
+      $('dirty').textContent = ''; renderServices();
+    } catch (e) { log('Échec : ' + EFF.ghError(e), 'eff-err'); }
+    finally { $('publish').disabled = false; }
+  });
+
+  /* Vue d'ensemble */
+  $('load-all').addEventListener('click', async () => {
+    LOADED = {}; const out = [];
+    for (const s of cfg.services) {
+      try {
+        const env = await (await fetch(`data/${s.id}.enc.json?t=` + Date.now(), {cache: 'no-store'})).json();
+        LOADED[s.id] = await EFF.decrypt(env, s.motDePassePublie || s.motDePasse);
+      } catch (e) { out.push(s.nom); }
+    }
+    const rows = Object.values(LOADED).map((d) => ({d, c: EFF.compute(d)}));
+    $('overview').replaceChildren(...[
+      rows.length ? el('div', {class: 'eff-tw'}, el('table', {class: 'eff-table'},
+        el('thead', {}, el('tr', {}, ['Service', 'Période', 'UF transmises', 'Intra-GHS / an', 'Hors GHS + LPPR / an', 'Total / an'].map((h, i) => el('th', {class: i > 2 ? 'n' : null, text: h})))),
+        el('tbody', {}, rows.map(({d, c}) => el('tr', {}, el('td', {text: d.service}), el('td', {text: d.conso.length ? `${d.periode.exercice}, ${d.periode.mois} mois` : '—'}),
+          el('td', {text: `${c.ufs.filter((u) => u.recue).length} / ${c.ufs.length}`}), el('td', {class: 'n', text: EFF.eur(c.intra)}), el('td', {class: 'n', text: EFF.eur(c.sus)}), el('td', {class: 'n', text: EFF.eur(c.total)})))))) : el('p', {class: 'eff-small', text: 'Aucune donnée publiée.'}),
+      out.length ? el('p', {class: 'eff-err', text: 'Non chargés (pas encore publiés ou mot de passe modifié non publié) : ' + out.join(', ')}) : null].filter(Boolean));
+    $('view-sel').replaceChildren(el('option', {value: '', text: '— Choisir un service —'}), ...Object.values(LOADED).map((d) => el('option', {value: d.id, text: d.service})));
+    $('preview').replaceChildren();
+  });
+  $('view-sel').addEventListener('change', () => {
+    const d = LOADED[$('view-sel').value];
+    if (!d) $('preview').replaceChildren(); else if (!d.conso.length) $('preview').replaceChildren(el('p', {class: 'eff-small', text: 'Aucune consommation déposée pour ce service.'})); else EFF.renderDashboard($('preview'), d);
+  });
+
+  function init() {
+    $('gh-repo').value = cfg.github.repo || ''; $('gh-branch').value = cfg.github.branch || 'main'; $('gh-token').value = cfg.github.token || ''; $('ph-pwd').value = cfg.pharma.motDePasse || '';
+    showRef(); renderServices();
+  }
+  window.addEventListener('beforeunload', (e) => { if ($('dirty').textContent) { e.preventDefault(); e.returnValue = ''; } });
+})();
+</script>
+</body>
+</html>
