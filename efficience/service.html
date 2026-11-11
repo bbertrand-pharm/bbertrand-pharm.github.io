@@ -7,7 +7,7 @@
 <title>Tableau de bord du service — Pharmacie clinique</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,500;7..72,600&display=swap">
-<link rel="stylesheet" href="assets/style.css?v=202611102322">
+<link rel="stylesheet" href="assets/style.css?v=202611111533">
 </head>
 <body>
 <main class="eff-wrap">
@@ -47,11 +47,17 @@
       <div id="pub-log" class="eff-small" role="status"></div>
     </details>
 
+    <details class="eff-step eff-noprint" id="pharma">
+      <summary><b>Espace pharmacien</b> <span class="eff-small" id="pharma-state"></span></summary>
+      <div id="pharma-body"></div>
+    </details>
+
     <footer class="eff-foot">Données confidentielles, réservées au service. <a href="./">Accueil</a> · <a href="#" id="print">Imprimer</a></footer>
   </div>
 </main>
-<script src="assets/xlsx.full.min.js?v=202611102322"></script>
-<script src="assets/core.js?v=202611102322"></script>
+<script src="assets/xlsx.full.min.js?v=202611111533"></script>
+<script src="assets/core.js?v=202611111533"></script>
+<script src="assets/chat.js?v=202611111533"></script>
 <script>
 (async function () {
   'use strict';
@@ -105,6 +111,41 @@
     ev.target.value = ''; render();
   });
   $('cancel').addEventListener('click', () => { D = structuredClone(PUBLISHED); $('msgs').replaceChildren(); setDirty(false); render(); });
+  function renderPharma() {
+    const body = $('pharma-body');
+    const st = $('pharma-state');
+    if (EFF.pharmaActive()) {
+      st.textContent = '· ouvert';
+      body.replaceChildren(el('p', {class: 'eff-small', text: 'Le dialogue avec Claude est affiché sous l’encadré des pistes de chaque bloc. Les pistes modifiées s’enregistrent avec « Publier ».'}),
+        el('div', {class: 'eff-row'}, el('button', {class: 'eff-btn ghost', type: 'button', text: 'Fermer l’espace pharmacien', onclick: () => { EFF.pharmaLock(); render(); }})));
+      return;
+    }
+    st.textContent = '';
+    const msg = el('p', {class: 'eff-err', role: 'alert'});
+    if (EFF.pharmaConfigured()) {
+      const code = el('input', {class: 'eff-input', type: 'password', autocomplete: 'off', style: 'max-width:260px'});
+      const ok = el('button', {class: 'eff-btn', type: 'button', text: 'Ouvrir'});
+      ok.addEventListener('click', async () => { msg.textContent = ''; ok.disabled = true; try { await EFF.pharmaUnlock(code.value); render(); } catch (e) { msg.textContent = 'Code incorrect.'; ok.disabled = false; } });
+      body.replaceChildren(el('p', {class: 'eff-small', text: 'Réservé aux pharmaciens : saisissez votre code pour dialoguer avec Claude sur les pistes d’efficience.'}),
+        el('label', {class: 'eff-field'}, 'Code pharmacien', code), el('div', {class: 'eff-row'}, ok,
+          el('button', {class: 'eff-btn ghost', type: 'button', text: 'Effacer la clé de cet appareil', onclick: () => { if (confirm('Effacer la clé API enregistrée sur cet appareil ?')) { EFF.pharmaForget(); renderPharma(); } }})), msg);
+    } else {
+      const key = el('input', {class: 'eff-input', type: 'password', autocomplete: 'off', placeholder: 'sk-ant-…'});
+      const c1 = el('input', {class: 'eff-input', type: 'password', autocomplete: 'new-password'}), c2 = el('input', {class: 'eff-input', type: 'password', autocomplete: 'new-password'});
+      const ok = el('button', {class: 'eff-btn', type: 'button', text: 'Enregistrer sur cet appareil'});
+      ok.addEventListener('click', async () => {
+        msg.textContent = '';
+        if (!/^sk-ant-/.test(key.value.trim())) { msg.textContent = 'La clé API commence par « sk-ant- ».'; return; }
+        if (c1.value.length < 8) { msg.textContent = 'Choisissez un code d’au moins 8 caractères.'; return; }
+        if (c1.value !== c2.value) { msg.textContent = 'Les deux codes diffèrent.'; return; }
+        await EFF.pharmaSetup(key.value, c1.value); render();
+      });
+      body.replaceChildren(
+        el('p', {class: 'eff-small', text: 'Première utilisation sur cet appareil. Le dialogue utilise votre clé API Anthropic (console.anthropic.com, facturation à l’usage). Elle est chiffrée avec votre code et conservée uniquement dans ce navigateur : elle n’est jamais publiée ni visible des autres lecteurs.'}),
+        el('div', {class: 'eff-grid2'}, el('label', {class: 'eff-field'}, 'Clé API Anthropic', key), el('label', {class: 'eff-field'}, 'Code pharmacien (8 caractères au moins)', c1), el('label', {class: 'eff-field'}, 'Confirmer le code', c2)),
+        el('div', {class: 'eff-row'}, ok), msg);
+    }
+  }
   $('print').addEventListener('click', (e) => { e.preventDefault(); print(); });
 
   $('publish').addEventListener('click', async () => {
@@ -129,7 +170,8 @@
     if (prevReg) dr.value = prevReg;
     const has = D.conso.length > 0;
     $('empty').hidden = has; $('empty-name').textContent = D.service;
-    if (has) EFF.renderDashboard($('dash'), D, {editable: true, onChange: () => setDirty(true)}); else $('dash').replaceChildren();
+    if (has) EFF.renderDashboard($('dash'), D, {editable: true, onChange: () => setDirty(true), chat: EFF.pharmaActive() ? (a) => EFF.chatPanel(a, () => setDirty(true)) : null}); else $('dash').replaceChildren();
+    renderPharma();
     const rows = D.regroupements.flatMap((g) => g.ufs.map((u) => ({u, g, f: D.fichiers[u.uf]})));
     $('uf-status').replaceChildren(el('div', {class: 'eff-tw'}, el('table', {class: 'eff-table'},
       el('thead', {}, el('tr', {}, ['UF', 'Service', 'Regroupement', 'Dernière extraction', 'Déposée le', 'Lignes'].map((h, i) => el('th', {class: i === 5 ? 'n' : null, text: h})))),

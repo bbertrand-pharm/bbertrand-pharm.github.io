@@ -480,14 +480,20 @@
         el('div', {class: 'eff-ctl'}, selF, el('label', {class: 'eff-check'}, chk, 'Inclure les références remboursées en sus du séjour (hors GHS, LPPR)')),
         info, host, el('div', {class: 'eff-row'}, more));
       showRefs();
-      const pistes = (d.pistes || {})[g.code] || [];
-      if (pistes.length) sec.append(el('aside', {class: 'eff-notepad', 'aria-label': 'Pistes d’efficience'},
-        el('p', {class: 'eff-notepad-h', text: 'Pistes d’efficience'}),
-        el('p', {class: 'eff-notepad-sub', text: 'Idées à discuter avec l’équipe médicale et soignante, sans diminuer la qualité de la prise en charge. Montants et gains estimés à partir des consommations annualisées.'}),
-        el('ul', {}, pistes.map((x) => el('li', {},
-          el('b', {text: x.titre}), ' — ', x.texte,
-          x.gain ? el('span', {class: 'eff-notepad-gain', text: 'Gain estimé : ' + x.gain}) : null,
-          (x.sources || []).length ? el('span', {class: 'eff-notepad-src'}, 'Sources : ', x.sources.map((s, i) => [i ? ' · ' : '', el('a', {href: s.url, target: '_blank', rel: 'noopener', text: s.label})])) : null)))));
+      const notepadHost = el('div');
+      const drawNotepad = () => {
+        const pistes = (d.pistes || {})[g.code] || [];
+        notepadHost.replaceChildren(pistes.length ? el('aside', {class: 'eff-notepad', 'aria-label': 'Pistes d’efficience'},
+          el('p', {class: 'eff-notepad-h', text: 'Pistes d’efficience'}),
+          el('p', {class: 'eff-notepad-sub', text: 'Idées à discuter avec l’équipe médicale et soignante, sans diminuer la qualité de la prise en charge. Montants et gains estimés à partir des consommations annualisées.'}),
+          el('ul', {}, pistes.map((x) => el('li', {},
+            el('b', {text: x.titre}), ' — ', x.texte,
+            x.gain ? el('span', {class: 'eff-notepad-gain', text: 'Gain estimé : ' + x.gain}) : null,
+            (x.sources || []).length ? el('span', {class: 'eff-notepad-src'}, 'Sources : ', x.sources.map((s, i) => [i ? ' · ' : '', el('a', {href: s.url, target: '_blank', rel: 'noopener', text: s.label})])) : null)))) : '');
+      };
+      drawNotepad();
+      sec.append(notepadHost);
+      if (opts.chat) sec.append(opts.chat({g, c, d, redraw: drawNotepad}));
 
       /* 3. Dotation */
       sec.append(el('h3', {text: '3. Adéquation de la dotation aux consommations annualisées'}));
